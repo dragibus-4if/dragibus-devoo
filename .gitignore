@@ -4,3 +4,5 @@
 *.jar
 *.war
 *.ear
+/IHM-OO/nbproject/private/
+/IHM-OO/build/

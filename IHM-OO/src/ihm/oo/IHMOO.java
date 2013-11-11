@@ -4,6 +4,8 @@
  */
 package ihm.oo;
 
+import secretaire.MainList;
+
 /**
  *
  * @author Quentin
@@ -14,6 +16,7 @@ public class IHMOO {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        // TODO code application logic here
+        MainList f1=new MainList();
+        f1.setVisible(true);
     }
 }
