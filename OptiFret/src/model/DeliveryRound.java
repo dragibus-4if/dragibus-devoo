@@ -2,10 +2,6 @@ package model;
 
 import java.util.List;
 
-/**
- *
- * @author jmcomets
- */
 class DeliveryRound {
 
     private List<Delivery> deliveries;

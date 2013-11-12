@@ -1,9 +1,5 @@
 package model;
 
-/**
- *
- * @author jmcomets
- */
 class Delivery {
 
     private Long id;

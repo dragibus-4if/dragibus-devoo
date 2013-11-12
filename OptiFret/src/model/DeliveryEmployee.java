@@ -1,9 +1,5 @@
 package model;
 
-/**
- *
- * @author jmcomets
- */
 public class DeliveryEmployee {
     private Long id;
 

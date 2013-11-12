@@ -2,10 +2,6 @@ package model;
 
 import java.util.List;
 
-/**
- *
- * @author jmcomets
- */
 class RoadPath {
 
     private List<RoadNode> nodes;
