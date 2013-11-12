@@ -255,8 +255,8 @@
 <UML:Expression xmi.id="DCE.1D6CE262-2A0B-3700-FC21-60AF42C029CD" language="Java">
 <UML:Expression.body></UML:Expression.body></UML:Expression></UML:Attribute.default></UML:NavigableEnd></UML:Association.end><UML:Element.presentation>
 </UML:Element.presentation></UML:Aggregation>
-<UML:DataType xmi.id="DCE.F36BEE3B-D937-4B48-A407-38D105B54566" name="Date" owner="DCE.3CE1D6DB-2D82-332A-CD89-1EDA7F9D6C7C"/>
-<UML:DataType xmi.id="DCE.3251AEAD-0590-D039-3785-26C9750A5ABD" name="Long" owner="DCE.3CE1D6DB-2D82-332A-CD89-1EDA7F9D6C7C"/></UML:Element.ownedElement></UML:Package>
+
+</UML:Element.ownedElement></UML:Package>
 
 <UML:Package xmi.id="DCE.DFA7E5D7-9E10-7971-5236-27B0C5E59963" name="view" owner="DCE.F8B7F224-2D8F-DAF4-42B8-3A0ED91C8BA1"><UML:Element.presentation>
 </UML:Element.presentation></UML:Package>
@@ -284,7 +284,9 @@
 
 
 
-</UML:Element.ownedElement><UML:Package.packageImport>
+
+<UML:DataType xmi.id="DCE.3251AEAD-0590-D039-3785-26C9750A5ABD" name="Long" owner="DCE.F8B7F224-2D8F-DAF4-42B8-3A0ED91C8BA1"/>
+<UML:DataType xmi.id="DCE.F36BEE3B-D937-4B48-A407-38D105B54566" name="Date" owner="DCE.F8B7F224-2D8F-DAF4-42B8-3A0ED91C8BA1"/></UML:Element.ownedElement><UML:Package.packageImport>
 <UML:PackageImport xmi.id="DCE.CF53D55E-A509-92EF-D352-DE86A5108719" importingPackage="DCE.F8B7F224-2D8F-DAF4-42B8-3A0ED91C8BA1"><UML:PackageImport.importedPackage>
 <UML:Profile xmi.id="DCE.C930F618-C305-DDBA-9A12-443A62658FAA" name="Unnamed" isCloned="true" href="./OptiFret-UML.etup#//*[@xmi.id=&apos;DCE.C930F618-C305-DDBA-9A12-443A62658FAA&apos;]" isDirty="false"/></UML:PackageImport.importedPackage><UML:Element.ownedElement>
 <UML:TaggedValue xmi.id="DCE.E3B51742-97B6-8521-05BE-3D50BD997BA6" owner="DCE.CF53D55E-A509-92EF-D352-DE86A5108719" name="autoCreated">
