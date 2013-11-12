@@ -1,25 +1,27 @@
 package model;
 
-import java.util.List;
-
-/**
- *
- * @author jmcomets
- */
 public class RoadNetwork {
 
-    private List<RoadNode> nodes;
-
-    public void addNode(RoadNode node) {
-        nodes.add(node);
+    private RoadNode root;
+    
+    public RoadNetwork() {
+        this.root = null;
+    }
+    
+    public void setRoot(RoadNode root) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+    
+    public RoadNode getRoot() {
+        return this.root;
     }
 
     public RoadNode getNodeById(Long id) {
-        return null;
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     public int getSize() {
-        return nodes.size();
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     public static RoadNetwork loadFromXML(String filename) {
