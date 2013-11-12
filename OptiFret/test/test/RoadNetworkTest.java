@@ -29,11 +29,11 @@ public class RoadNetworkTest extends TestCase {
     private boolean writeInFile(String filename, String content) {
         try {
             FileWriter fw = new FileWriter(filename, false);
-            BufferedWriter output = new BufferedWriter(fw);
-            output.write(content);
-            output.flush();
-            output.close();
-            return true;
+            try (BufferedWriter output = new BufferedWriter(fw)) {
+                output.write(content);
+                output.flush();
+                return true;
+            }
         } catch (IOException ioe) {
             System.out.print("Erreur : ");
             ioe.printStackTrace();
