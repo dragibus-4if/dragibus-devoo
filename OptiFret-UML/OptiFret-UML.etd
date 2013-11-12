@@ -5,91 +5,39 @@
 
 
 
-<UML:Interface xmi.id="DCE.9738057D-7FCD-5329-4940-70F05AA102F7" name="Command" isAbstract="true" owner="DCE.9DB58954-1900-32C4-1CE4-301C41CA5E6A" appliedStereotype="__uri_./OptiFret-UML.etup#//*[@xmi.id=&quot;DCE.A5DE66AE-833D-26F1-CB89-05EE2CB58829&quot;]" supplierDependency="DCE.54BA9188-C39E-4AA9-D650-CB7BE489A656" isTransient="true" associationEnd="DCE.FE81FA4C-B9F2-489E-96D3-E97C9210845E"><UML:Element.ownedElement>
-<UML:Operation xmi.id="DCE.57E42639-1244-4709-A913-AAC434562858" name="execute" owner="DCE.9738057D-7FCD-5329-4940-70F05AA102F7" isAbstract="true" isStrictFP="false" isQuery="false" isProperty="false" isFriend="false" isSub="false" isVirtual="false" isOverride="false" isDelegate="false" isIndexer="false"><UML:Element.ownedElement>
-<UML:Parameter xmi.id="DCE.2EC6F1B7-77AA-B507-0DDD-7A5204EAEFCA" type="DCE.AF0EB1C2-BF00-1843-0196-3EB0C9548FE3" direction="result" owner="DCE.57E42639-1244-4709-A913-AAC434562858"><UML:TypedElement.multiplicity>
-<UML:Multiplicity xmi.id="DCE.EF4B1789-5628-B428-C85E-172FEF2C7DA5" isOrdered="true"/></UML:TypedElement.multiplicity></UML:Parameter></UML:Element.ownedElement><UML:Element.presentation>
-</UML:Element.presentation></UML:Operation>
-<UML:TaggedValue xmi.id="DCE.3D1E15BC-44C2-EA66-FA66-76890C868BE2" owner="DCE.9738057D-7FCD-5329-4940-70F05AA102F7" name="PatternApplied" hidden="true">
-<UML:TaggedValue.dataValue>/home/jmcomets/.netbeans/7.4/.uml/config/DesignCenter/DesignPatterns/GoF/GoF.etpat^DCE.2A3FB477-2C88-4F2C-B871-BD5587B2C2C7^DCE.0E4994E9-2503-4D4C-88E9-211CD1BD7280</UML:TaggedValue.dataValue></UML:TaggedValue></UML:Element.ownedElement><UML:Element.presentation>
-</UML:Element.presentation></UML:Interface>
-<UML:Class xmi.id="DCE.27420A3A-DC2D-68E7-97EE-E45E2E9FA6C5" name="CommandReceiver" owner="DCE.9DB58954-1900-32C4-1CE4-301C41CA5E6A" isTransient="true" associationEnd="DCE.D1BE138A-1939-B070-8208-3B193452E252 DCE.6CA0B435-EC8E-7331-5524-AFAE23B71F5E" isActive="false"><UML:Element.ownedElement>
-<UML:Operation xmi.id="DCE.525725B9-1A39-D28D-760D-3FDB4F30E184" name="action" owner="DCE.27420A3A-DC2D-68E7-97EE-E45E2E9FA6C5" isStrictFP="false" isQuery="false" isProperty="false" isFriend="false" isSub="false" isVirtual="false" isOverride="false" isDelegate="false" isIndexer="false"><UML:Element.ownedElement>
-<UML:Parameter xmi.id="DCE.CB99A265-33F0-BFEE-B5E9-A586F8ABC463" type="DCE.AF0EB1C2-BF00-1843-0196-3EB0C9548FE3" direction="result" owner="DCE.525725B9-1A39-D28D-760D-3FDB4F30E184"><UML:TypedElement.multiplicity>
-<UML:Multiplicity xmi.id="DCE.BC4879E8-BE05-7FD6-2538-A47D7BE9307F" isOrdered="true"/></UML:TypedElement.multiplicity></UML:Parameter></UML:Element.ownedElement><UML:Element.presentation>
-</UML:Element.presentation></UML:Operation>
-<UML:TaggedValue xmi.id="DCE.E5F7D0E8-6AD5-082D-B9B7-CEB322E7FC09" owner="DCE.27420A3A-DC2D-68E7-97EE-E45E2E9FA6C5" name="PatternApplied" hidden="true">
-<UML:TaggedValue.dataValue>/home/jmcomets/.netbeans/7.4/.uml/config/DesignCenter/DesignPatterns/GoF/GoF.etpat^DCE.2A3FB477-2C88-4F2C-B871-BD5587B2C2C7^DCE.9A60CBC6-06F9-4676-9964-77C54694CFFD</UML:TaggedValue.dataValue></UML:TaggedValue></UML:Element.ownedElement><UML:Element.presentation>
-</UML:Element.presentation></UML:Class>
-<UML:Class xmi.id="DCE.69EA8DD7-5080-7978-25FB-F5E818D9A555" name="ConcreteCommand" owner="DCE.9DB58954-1900-32C4-1CE4-301C41CA5E6A" clientDependency="DCE.54BA9188-C39E-4AA9-D650-CB7BE489A656" associationEnd="DCE.95EE34CF-ADB4-6C02-36FF-915985C76A10" supplierDependency="DCE.26CBB10F-1291-89AB-F083-FE9D9BB6AAC8" isTransient="true" isActive="false"><UML:Element.ownedElement>
-<UML:Operation xmi.id="DCE.89A04725-7C1F-2400-65F6-DCD0C609697E" name="execute" owner="DCE.69EA8DD7-5080-7978-25FB-F5E818D9A555" isStrictFP="false" isQuery="false" isProperty="false" isFriend="false" isSub="false" isVirtual="false" isOverride="false" isDelegate="false" isIndexer="false"><UML:Element.ownedElement>
-<UML:Parameter xmi.id="DCE.55F72A31-1F19-ECA4-0762-7C635F5D591E" type="DCE.AF0EB1C2-BF00-1843-0196-3EB0C9548FE3" direction="result" owner="DCE.89A04725-7C1F-2400-65F6-DCD0C609697E"><UML:TypedElement.multiplicity>
-<UML:Multiplicity xmi.id="DCE.822F878C-C215-D5DE-8211-DBEF9B414EC4" isOrdered="true"/></UML:TypedElement.multiplicity></UML:Parameter></UML:Element.ownedElement><UML:Element.presentation>
-</UML:Element.presentation></UML:Operation>
-<UML:TaggedValue xmi.id="DCE.701CDFEC-50C1-02DA-83CA-22EF5F9906F1" owner="DCE.69EA8DD7-5080-7978-25FB-F5E818D9A555" name="PatternApplied" hidden="true">
-<UML:TaggedValue.dataValue>/home/jmcomets/.netbeans/7.4/.uml/config/DesignCenter/DesignPatterns/GoF/GoF.etpat^DCE.2A3FB477-2C88-4F2C-B871-BD5587B2C2C7^DCE.F6626F20-BCC7-4333-8C5C-4A95EC597445</UML:TaggedValue.dataValue></UML:TaggedValue></UML:Element.ownedElement><UML:Element.presentation>
-</UML:Element.presentation></UML:Class>
-<UML:Class xmi.id="DCE.DF1E5F93-67FD-AA59-0053-52BFF7DA884E" name="Client" owner="DCE.9DB58954-1900-32C4-1CE4-301C41CA5E6A" associationEnd="DCE.1F12A165-0C48-FC8A-0597-6E55941B272A" clientDependency="DCE.26CBB10F-1291-89AB-F083-FE9D9BB6AAC8" isTransient="true" isActive="false"><UML:Element.ownedElement>
-<UML:TaggedValue xmi.id="DCE.F785BDA4-DCD8-B5B9-D19C-4D0A6DE86CE1" owner="DCE.DF1E5F93-67FD-AA59-0053-52BFF7DA884E" name="PatternApplied" hidden="true">
-<UML:TaggedValue.dataValue>/home/jmcomets/.netbeans/7.4/.uml/config/DesignCenter/DesignPatterns/GoF/GoF.etpat^DCE.2A3FB477-2C88-4F2C-B871-BD5587B2C2C7^DCE.E797691E-E987-4906-9455-831BA79E059F</UML:TaggedValue.dataValue></UML:TaggedValue></UML:Element.ownedElement><UML:Element.presentation>
-</UML:Element.presentation></UML:Class>
-<UML:Class xmi.id="DCE.87EB5222-0194-7070-9D8A-5526B5D5AD7A" name="Invoker" owner="DCE.9DB58954-1900-32C4-1CE4-301C41CA5E6A" associationEnd="DCE.9C985D81-867C-BCA3-5FF1-542DB466691A" isTransient="true" isActive="false"><UML:Element.ownedElement>
-<UML:TaggedValue xmi.id="DCE.7D06D83F-3A0E-4621-DE61-5AF00FEFFA39" owner="DCE.87EB5222-0194-7070-9D8A-5526B5D5AD7A" name="PatternApplied" hidden="true">
-<UML:TaggedValue.dataValue>/home/jmcomets/.netbeans/7.4/.uml/config/DesignCenter/DesignPatterns/GoF/GoF.etpat^DCE.2A3FB477-2C88-4F2C-B871-BD5587B2C2C7^DCE.38748A95-5CDD-416C-A478-ACACF7A9072A</UML:TaggedValue.dataValue></UML:TaggedValue></UML:Element.ownedElement><UML:Element.presentation>
-</UML:Element.presentation></UML:Class>
-<UML:Implementation xmi.id="DCE.54BA9188-C39E-4AA9-D650-CB7BE489A656" owner="DCE.9DB58954-1900-32C4-1CE4-301C41CA5E6A" client="DCE.69EA8DD7-5080-7978-25FB-F5E818D9A555" supplier="DCE.9738057D-7FCD-5329-4940-70F05AA102F7"><UML:Element.presentation>
-</UML:Element.presentation></UML:Implementation>
-<UML:Aggregation xmi.id="DCE.1F4C0DCC-F48B-6CCF-2DAB-4A109EC0A2CD" owner="DCE.9DB58954-1900-32C4-1CE4-301C41CA5E6A" aggregateEnd="DCE.9C985D81-867C-BCA3-5FF1-542DB466691A" partEnd="DCE.FE81FA4C-B9F2-489E-96D3-E97C9210845E" isTransient="true" isComposite="false"><UML:Association.end>
-<UML:AssociationEnd xmi.id="DCE.9C985D81-867C-BCA3-5FF1-542DB466691A" visibility="private" type="DCE.87EB5222-0194-7070-9D8A-5526B5D5AD7A" association="DCE.1F4C0DCC-F48B-6CCF-2DAB-4A109EC0A2CD" isTransient="false" isVolatile="false" clientChangeability="unrestricted"><UML:TypedElement.multiplicity>
-<UML:Multiplicity xmi.id="DCE.D4A6FC21-934B-9FA6-A29D-BCBC168976C3"/></UML:TypedElement.multiplicity></UML:AssociationEnd>
-<UML:NavigableEnd xmi.id="DCE.FE81FA4C-B9F2-489E-96D3-E97C9210845E" visibility="private" type="DCE.9738057D-7FCD-5329-4940-70F05AA102F7" association="DCE.1F4C0DCC-F48B-6CCF-2DAB-4A109EC0A2CD" isTransient="false" isVolatile="false" clientChangeability="unrestricted"><UML:TypedElement.multiplicity>
-<UML:Multiplicity xmi.id="DCE.476A0AAA-3EB4-950D-40F3-DB8B18B9D7C8"/></UML:TypedElement.multiplicity></UML:NavigableEnd></UML:Association.end><UML:Element.presentation>
-</UML:Element.presentation></UML:Aggregation>
-<UML:Association xmi.id="DCE.A2F54846-655D-73C7-0488-97B2BE7CFE66" owner="DCE.9DB58954-1900-32C4-1CE4-301C41CA5E6A" isTransient="true" isDerived="false"><UML:Association.end>
-<UML:AssociationEnd xmi.id="DCE.95EE34CF-ADB4-6C02-36FF-915985C76A10" visibility="private" association="DCE.A2F54846-655D-73C7-0488-97B2BE7CFE66" type="DCE.69EA8DD7-5080-7978-25FB-F5E818D9A555" isTransient="false" isVolatile="false" clientChangeability="unrestricted"><UML:TypedElement.multiplicity>
-<UML:Multiplicity xmi.id="DCE.54ADB5D7-E392-0D00-CDBF-B2BE66B0295D"/></UML:TypedElement.multiplicity></UML:AssociationEnd>
-<UML:NavigableEnd xmi.id="DCE.D1BE138A-1939-B070-8208-3B193452E252" visibility="private" association="DCE.A2F54846-655D-73C7-0488-97B2BE7CFE66" type="DCE.27420A3A-DC2D-68E7-97EE-E45E2E9FA6C5" name="receiver" isTransient="false" isVolatile="false" clientChangeability="unrestricted"><UML:TypedElement.multiplicity>
-<UML:Multiplicity xmi.id="DCE.6A1145A3-13D2-0DF5-497C-D2B97E7F6C7F"/></UML:TypedElement.multiplicity><UML:Attribute.default>
-<UML:Expression xmi.id="DCE.D14B6CB2-C536-E7DF-A633-B08F86BD96D9"/></UML:Attribute.default></UML:NavigableEnd></UML:Association.end><UML:Element.presentation>
-</UML:Element.presentation></UML:Association>
-<UML:Association xmi.id="DCE.718CEF84-5105-067E-35CD-4A3FE7A72AA2" owner="DCE.9DB58954-1900-32C4-1CE4-301C41CA5E6A" isTransient="true" isDerived="false"><UML:Association.end>
-<UML:AssociationEnd xmi.id="DCE.1F12A165-0C48-FC8A-0597-6E55941B272A" visibility="private" association="DCE.718CEF84-5105-067E-35CD-4A3FE7A72AA2" type="DCE.DF1E5F93-67FD-AA59-0053-52BFF7DA884E" isTransient="false" isVolatile="false" clientChangeability="unrestricted"><UML:TypedElement.multiplicity>
-<UML:Multiplicity xmi.id="DCE.DBBB62D6-C759-E257-28BA-31D1E4E00BE8"/></UML:TypedElement.multiplicity></UML:AssociationEnd>
-<UML:NavigableEnd xmi.id="DCE.6CA0B435-EC8E-7331-5524-AFAE23B71F5E" visibility="private" association="DCE.718CEF84-5105-067E-35CD-4A3FE7A72AA2" type="DCE.27420A3A-DC2D-68E7-97EE-E45E2E9FA6C5" isTransient="false" isVolatile="false" clientChangeability="unrestricted"><UML:TypedElement.multiplicity>
-<UML:Multiplicity xmi.id="DCE.32552E99-B707-2D7C-E89A-7B26E146A776"/></UML:TypedElement.multiplicity><UML:Attribute.default>
-<UML:Expression xmi.id="DCE.179664CC-0F4D-095A-56E0-95E51C31EB74"/></UML:Attribute.default></UML:NavigableEnd></UML:Association.end><UML:Element.presentation>
-</UML:Element.presentation></UML:Association>
-<UML:Dependency xmi.id="DCE.26CBB10F-1291-89AB-F083-FE9D9BB6AAC8" owner="DCE.9DB58954-1900-32C4-1CE4-301C41CA5E6A" client="DCE.DF1E5F93-67FD-AA59-0053-52BFF7DA884E" supplier="DCE.69EA8DD7-5080-7978-25FB-F5E818D9A555"><UML:Element.presentation>
-</UML:Element.presentation></UML:Dependency>
 
-<UML:Class xmi.id="DCE.71ED0FCD-3096-1D3D-CB02-652836D63377" name="Unnamed" owner="DCE.9DB58954-1900-32C4-1CE4-301C41CA5E6A" associationEnd="DCE.77780D32-0757-6ED2-3D2D-665D26AC35EC"><UML:Element.presentation>
-</UML:Element.presentation></UML:Class>
 
-<UML:Class xmi.id="DCE.FE5E5E82-E8A7-2233-1C33-DB633984B2C1" name="Unnamed" owner="DCE.9DB58954-1900-32C4-1CE4-301C41CA5E6A" associationEnd="DCE.BC483666-6AA6-3DCD-8C36-6CC16A1EEC44"><UML:Element.presentation>
-</UML:Element.presentation></UML:Class>
 
-<UML:Class xmi.id="DCE.ACCFA4B1-4B81-EBF7-E161-EDFEA15707F9" name="Unnamed" owner="DCE.9DB58954-1900-32C4-1CE4-301C41CA5E6A" associationEnd="DCE.69508F32-EEA1-B9FB-807D-707DD7039DAA"><UML:Element.presentation>
-</UML:Element.presentation></UML:Class>
 
-<UML:Class xmi.id="DCE.E4DBC1C0-A001-38D8-3D1E-C4A5164A4F72" name="Unnamed" owner="DCE.9DB58954-1900-32C4-1CE4-301C41CA5E6A" associationEnd=""><UML:Element.presentation>
-</UML:Element.presentation></UML:Class>
 
-<UML:DataType xmi.id="DCE.27F29CD2-98E3-10D3-53C8-13312690F031" name="List&lt;DeliverySheetCommand&gt;int" owner="DCE.9DB58954-1900-32C4-1CE4-301C41CA5E6A"/>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 <UML:DataType xmi.id="DCE.51F75970-DC3A-2808-AC65-8DA8D2B58A84" name="List&lt;DeliverySheetCommand&gt;" owner="DCE.9DB58954-1900-32C4-1CE4-301C41CA5E6A"/>
 
 
 
-<UML:Class xmi.id="DCE.D302218D-1B51-B904-2601-ED3E8D9FC884" name="Unnamed" owner="DCE.9DB58954-1900-32C4-1CE4-301C41CA5E6A" associationEnd="DCE.D2DE8835-F05E-EB5F-A872-349E6158C1CC"><UML:Element.presentation>
-</UML:Element.presentation></UML:Class>
-
-
-<UML:DataType xmi.id="DCE.AADB13C7-B157-E888-05DA-80B0B69FE128" name="DeliverySheetvelioid" owner="DCE.9DB58954-1900-32C4-1CE4-301C41CA5E6A"/>
 
 
 
 
-<UML:Class xmi.id="DCE.243FCFD2-A71D-FDE5-6F82-9EB278135E9A" name="Unnamed" owner="DCE.9DB58954-1900-32C4-1CE4-301C41CA5E6A" associationEnd="DCE.F022FD66-56A1-C0EE-1F25-A43EA673E53E"><UML:Element.presentation>
-</UML:Element.presentation></UML:Class>
+
+
+
+
+
 
 
 <UML:Class xmi.id="DCE.DA887A45-575A-24CF-0EA0-287F8DE01927" name="DeliverySheetCommand" owner="DCE.9DB58954-1900-32C4-1CE4-301C41CA5E6A" associationEnd="DCE.DB9E9965-8843-9458-E008-F8637925BCE4 DCE.CB68FBEB-F705-48D9-32C8-A796C64148E0 DCE.F5318B47-9D05-E6D3-3CA3-0119D65C53C4"><UML:Element.presentation>
@@ -103,7 +51,8 @@
 <UML:Operation xmi.id="DCE.4D0A65B1-ADE4-CB34-47F7-DFE66D1A7037" name="undo" owner="DCE.DA887A45-575A-24CF-0EA0-287F8DE01927"><UML:Element.ownedElement>
 <UML:Parameter xmi.id="DCE.84E0F92E-BC70-5141-B75A-B83EAC8DF199" type="DCE.AF0EB1C2-BF00-1843-0196-3EB0C9548FE3" direction="result" owner="DCE.4D0A65B1-ADE4-CB34-47F7-DFE66D1A7037"><UML:TypedElement.multiplicity>
 <UML:Multiplicity xmi.id="DCE.A3140D86-9439-1542-9B5E-EC907CC230BA"/></UML:TypedElement.multiplicity></UML:Parameter></UML:Element.ownedElement><UML:Element.presentation>
-</UML:Element.presentation></UML:Operation></UML:Element.ownedElement></UML:Class>
+</UML:Element.presentation></UML:Operation>
+<UML:SourceFileArtifact xmi.id="DCE.17F46F5C-3433-3C98-82D6-718E4C410333" name="Unnamed" owner="DCE.DA887A45-575A-24CF-0EA0-287F8DE01927" sourcefile="../OptiFret/src/controller/DeliverySheetCommand.java"/></UML:Element.ownedElement></UML:Class>
 
 
 
@@ -122,14 +71,9 @@
 <UML:Realization xmi.id="DCE.37041524-549A-2FEF-22CA-13106862248E" owner="DCE.DACDD7C1-26CC-8BC1-E13F-103B7A9B0E72" client="DCE.270E9720-8654-E5B3-6FD3-6BDDE155FDE3" supplier="DCE.0CED0976-AE12-A098-3CAF-1B12A1AE1998"/>
 
 <UML:Realization xmi.id="DCE.4093EEB8-400F-61E0-C927-AC45B9DD8CB5" owner="DCE.DACDD7C1-26CC-8BC1-E13F-103B7A9B0E72" client="DCE.0CED0976-AE12-A098-3CAF-1B12A1AE1998" supplier="DCE.0C347135-73A0-15EC-F0B6-230440BA2239"/>
-</UML:Element.ownedElement></UML:Class>
-<UML:Aggregation xmi.id="DCE.DCDA4407-2BE0-E7A0-2669-4BC86409066A" isComposite="true" owner="DCE.9DB58954-1900-32C4-1CE4-301C41CA5E6A" aggregateEnd="DCE.43828156-9693-A1FF-D667-36CFA66C87E3" partEnd="DCE.F022FD66-56A1-C0EE-1F25-A43EA673E53E"><UML:Association.end>
-<UML:AssociationEnd xmi.id="DCE.43828156-9693-A1FF-D667-36CFA66C87E3" visibility="private" type="DCE.DACDD7C1-26CC-8BC1-E13F-103B7A9B0E72" association="DCE.DCDA4407-2BE0-E7A0-2669-4BC86409066A"><UML:TypedElement.multiplicity>
-<UML:Multiplicity xmi.id="DCE.CB2ACED2-C180-96EE-02C6-703CBB2A882A"/></UML:TypedElement.multiplicity></UML:AssociationEnd>
-<UML:NavigableEnd xmi.id="DCE.F022FD66-56A1-C0EE-1F25-A43EA673E53E" visibility="private" type="DCE.243FCFD2-A71D-FDE5-6F82-9EB278135E9A" association="DCE.DCDA4407-2BE0-E7A0-2669-4BC86409066A"><UML:TypedElement.multiplicity>
-<UML:Multiplicity xmi.id="DCE.1EB3EF6F-EDA7-F92A-CABC-424615609E1D"/></UML:TypedElement.multiplicity><UML:Attribute.default>
-<UML:Expression xmi.id="DCE.300F0584-74F8-B336-7A63-D3742B413D00"/></UML:Attribute.default></UML:NavigableEnd></UML:Association.end><UML:Element.presentation>
-</UML:Element.presentation></UML:Aggregation>
+
+<UML:SourceFileArtifact xmi.id="DCE.8526B5AA-465C-AB3B-788B-D7407DC309BF" name="Unnamed" owner="DCE.DACDD7C1-26CC-8BC1-E13F-103B7A9B0E72" sourcefile="../OptiFret/src/controller/DeliverySheet.java"/></UML:Element.ownedElement></UML:Class>
+
 <UML:Aggregation xmi.id="DCE.53183399-62F8-25F4-2DB8-E31D1D096D3C" isComposite="true" owner="DCE.9DB58954-1900-32C4-1CE4-301C41CA5E6A" aggregateEnd="DCE.DC88559B-2CAE-65B9-4D6F-A9A6390CE183" partEnd="DCE.F5318B47-9D05-E6D3-3CA3-0119D65C53C4"><UML:Association.end>
 <UML:AssociationEnd xmi.id="DCE.DC88559B-2CAE-65B9-4D6F-A9A6390CE183" visibility="private" type="DCE.DACDD7C1-26CC-8BC1-E13F-103B7A9B0E72" association="DCE.53183399-62F8-25F4-2DB8-E31D1D096D3C"><UML:TypedElement.multiplicity>
 <UML:Multiplicity xmi.id="DCE.65F8F009-FA24-1C24-EF5B-6D83B3055713"/></UML:TypedElement.multiplicity></UML:AssociationEnd>
@@ -165,37 +109,45 @@
 <UML:Class xmi.id="DCE.9C355E49-1CEB-8D12-2E5D-7B0652051CA8" name="DeliverySheet" owner="DCE.3CE1D6DB-2D82-332A-CD89-1EDA7F9D6C7C" associationEnd="DCE.AF2DA75A-AAE0-7FE7-C8FF-BA2E24EB7051 DCE.716CF315-88F8-84AC-83D7-B31495E5F75E DCE.E29CA85C-A9E8-1A65-1D2B-72D0D4977BF4 DCE.9EF2BB67-4CE4-7FAF-4A54-6996301F9E84 DCE.C2DD1171-6348-00D0-7343-C9ABA2B24DDE DCE.2853DEBA-5580-4E0F-7357-31C164EBE7B3 DCE.3DD99963-3927-FD1A-A04F-F0EF59AB91BA"><UML:Element.presentation>
 </UML:Element.presentation><UML:Element.ownedElement>
 <UML:Operation xmi.id="DCE.456A2EF4-921E-C3CD-FB68-33B4CBFABA44" name="DeliverySheet" isConstructor="true" owner="DCE.9C355E49-1CEB-8D12-2E5D-7B0652051CA8"><UML:Element.presentation>
-</UML:Element.presentation></UML:Operation></UML:Element.ownedElement></UML:Class>
+</UML:Element.presentation></UML:Operation>
+<UML:SourceFileArtifact xmi.id="DCE.7DF57EA9-6C69-019B-AB99-4615D8664323" name="Unnamed" owner="DCE.9C355E49-1CEB-8D12-2E5D-7B0652051CA8" sourcefile="../OptiFret/src/model/DeliverySheet.java"/></UML:Element.ownedElement></UML:Class>
 <UML:Class xmi.id="DCE.3B7BE644-7D89-4085-6E67-BDDA30122651" name="DeliveryRound" owner="DCE.3CE1D6DB-2D82-332A-CD89-1EDA7F9D6C7C" associationEnd="DCE.9BCDBDE0-74A6-F76E-31F7-102C3EDE35B0 DCE.776F9925-44AF-B1A2-394F-B7AA2B89747A DCE.151C3CE7-FEA4-44B2-517C-32EB804F7EF6 DCE.2B41766E-6183-ED61-9EEF-79875808627F"><UML:Element.presentation>
 </UML:Element.presentation><UML:Element.ownedElement>
 <UML:Operation xmi.id="DCE.C2A2BD07-CBD8-B394-190B-53403867F4A2" name="DeliveryRound" isConstructor="true" owner="DCE.3B7BE644-7D89-4085-6E67-BDDA30122651"><UML:Element.presentation>
-</UML:Element.presentation></UML:Operation></UML:Element.ownedElement></UML:Class>
+</UML:Element.presentation></UML:Operation>
+<UML:SourceFileArtifact xmi.id="DCE.859D2ABC-3183-8461-CAEC-CCB42403A068" name="Unnamed" owner="DCE.3B7BE644-7D89-4085-6E67-BDDA30122651" sourcefile="../OptiFret/src/model/DeliveryRound.java"/></UML:Element.ownedElement></UML:Class>
 
 <UML:Class xmi.id="DCE.AB757606-C678-6E23-120C-FD5CFF88F826" name="DeliveryMan" owner="DCE.3CE1D6DB-2D82-332A-CD89-1EDA7F9D6C7C" associationEnd="DCE.7919FBE4-6891-37F7-6549-309727EBE2E1"><UML:Element.presentation>
 </UML:Element.presentation><UML:Element.ownedElement>
 <UML:Operation xmi.id="DCE.BF2A4044-0587-9C52-F07F-F68EA5BA7AC8" name="DeliveryMan" isConstructor="true" owner="DCE.AB757606-C678-6E23-120C-FD5CFF88F826"><UML:Element.presentation>
-</UML:Element.presentation></UML:Operation></UML:Element.ownedElement></UML:Class>
+</UML:Element.presentation></UML:Operation>
+<UML:SourceFileArtifact xmi.id="DCE.EC219421-40FA-AD81-DE1C-4019589C0461" name="Unnamed" owner="DCE.AB757606-C678-6E23-120C-FD5CFF88F826" sourcefile="../OptiFret/src/model/DeliveryMan.java"/></UML:Element.ownedElement></UML:Class>
 <UML:Class xmi.id="DCE.B8A0CD38-8A3B-C99B-88AE-2D3FC8B1F49E" name="RoadPath" owner="DCE.3CE1D6DB-2D82-332A-CD89-1EDA7F9D6C7C" associationEnd="DCE.BC4EB188-CABA-DBCC-90DF-7CC4643760F5 DCE.9895F4F9-58B2-238F-D86D-4CA3EA953437"><UML:Element.presentation>
 </UML:Element.presentation><UML:Element.ownedElement>
 <UML:Operation xmi.id="DCE.622CEAB2-1296-435F-F909-D0028185A1FD" name="RoadPath" isConstructor="true" owner="DCE.B8A0CD38-8A3B-C99B-88AE-2D3FC8B1F49E"><UML:Element.presentation>
-</UML:Element.presentation></UML:Operation></UML:Element.ownedElement></UML:Class>
+</UML:Element.presentation></UML:Operation>
+<UML:SourceFileArtifact xmi.id="DCE.DA9EDDB5-9CD7-9C2A-0727-343F497D94B5" name="Unnamed" owner="DCE.B8A0CD38-8A3B-C99B-88AE-2D3FC8B1F49E" sourcefile="../OptiFret/src/model/RoadPath.java"/></UML:Element.ownedElement></UML:Class>
 
-<UML:Class xmi.id="DCE.DEB1E404-EFD3-8785-4235-C0D68FC9D947" name="Delivery" owner="DCE.3CE1D6DB-2D82-332A-CD89-1EDA7F9D6C7C" associationEnd="DCE.6FC0FD5D-7C20-7A4C-BCFE-BC4FD4BB84A1"><UML:Element.presentation>
+<UML:Class xmi.id="DCE.DEB1E404-EFD3-8785-4235-C0D68FC9D947" name="Delivery" owner="DCE.3CE1D6DB-2D82-332A-CD89-1EDA7F9D6C7C" associationEnd="DCE.6FC0FD5D-7C20-7A4C-BCFE-BC4FD4BB84A1 DCE.153AFC06-B8F8-5797-6954-38B9DD5B0807"><UML:Element.presentation>
 </UML:Element.presentation><UML:Element.ownedElement>
 <UML:Operation xmi.id="DCE.C72A9664-73C1-04CC-B21E-DC1C86E30187" name="Delivery" isConstructor="true" owner="DCE.DEB1E404-EFD3-8785-4235-C0D68FC9D947"><UML:Element.presentation>
-</UML:Element.presentation></UML:Operation></UML:Element.ownedElement></UML:Class>
-<UML:Class xmi.id="DCE.8FED228F-18C0-3B3B-50FF-0B19856DA65D" name="Client" owner="DCE.3CE1D6DB-2D82-332A-CD89-1EDA7F9D6C7C"><UML:Element.presentation>
+</UML:Element.presentation></UML:Operation>
+<UML:SourceFileArtifact xmi.id="DCE.A7222492-ECEB-4674-60B1-4608BDB90400" name="Unnamed" owner="DCE.DEB1E404-EFD3-8785-4235-C0D68FC9D947" sourcefile="../OptiFret/src/model/Delivery.java"/></UML:Element.ownedElement></UML:Class>
+<UML:Class xmi.id="DCE.8FED228F-18C0-3B3B-50FF-0B19856DA65D" name="Client" owner="DCE.3CE1D6DB-2D82-332A-CD89-1EDA7F9D6C7C" associationEnd="DCE.04A5EAD7-CFD3-F5C4-4CF5-AFD13D67942C"><UML:Element.presentation>
 </UML:Element.presentation><UML:Element.ownedElement>
 <UML:Operation xmi.id="DCE.5C3FB9A6-79E8-DE72-B60C-665D09DF0642" name="Client" isConstructor="true" owner="DCE.8FED228F-18C0-3B3B-50FF-0B19856DA65D"><UML:Element.presentation>
-</UML:Element.presentation></UML:Operation></UML:Element.ownedElement></UML:Class>
+</UML:Element.presentation></UML:Operation>
+<UML:SourceFileArtifact xmi.id="DCE.AA27D82A-F6A5-9EDD-1BDF-BC44E6C8A52C" name="Unnamed" owner="DCE.8FED228F-18C0-3B3B-50FF-0B19856DA65D" sourcefile="../OptiFret/src/model/Client.java"/></UML:Element.ownedElement></UML:Class>
 <UML:Class xmi.id="DCE.7B786DD0-9399-7D57-E0C0-5924748F50DF" name="TimeSlot" owner="DCE.3CE1D6DB-2D82-332A-CD89-1EDA7F9D6C7C"><UML:Element.presentation>
 </UML:Element.presentation><UML:Element.ownedElement>
 <UML:Operation xmi.id="DCE.77F11FDB-E5A5-2C9F-C7EF-2252554B44B2" name="TimeSlot" isConstructor="true" owner="DCE.7B786DD0-9399-7D57-E0C0-5924748F50DF"><UML:Element.presentation>
-</UML:Element.presentation></UML:Operation></UML:Element.ownedElement></UML:Class>
+</UML:Element.presentation></UML:Operation>
+<UML:SourceFileArtifact xmi.id="DCE.7842C889-E5F5-042C-99D4-69B27D005BDF" name="Unnamed" owner="DCE.7B786DD0-9399-7D57-E0C0-5924748F50DF" sourcefile="../OptiFret/src/model/TimeSlot.java"/></UML:Element.ownedElement></UML:Class>
 <UML:Class xmi.id="DCE.554142B4-4A6C-2D4A-C303-91C879778B26" name="DeliveryPoint" owner="DCE.3CE1D6DB-2D82-332A-CD89-1EDA7F9D6C7C"><UML:Element.presentation>
 </UML:Element.presentation><UML:Element.ownedElement>
 <UML:Operation xmi.id="DCE.AC8D2E91-384C-E644-A9E6-341DCC2B166B" name="DeliveryPoint" isConstructor="true" owner="DCE.554142B4-4A6C-2D4A-C303-91C879778B26"><UML:Element.presentation>
-</UML:Element.presentation></UML:Operation></UML:Element.ownedElement></UML:Class>
+</UML:Element.presentation></UML:Operation>
+<UML:SourceFileArtifact xmi.id="DCE.25F6061F-EDC1-B55E-55D1-A8E9B5749A32" name="Unnamed" owner="DCE.554142B4-4A6C-2D4A-C303-91C879778B26" sourcefile="../OptiFret/src/model/DeliveryPoint.java"/></UML:Element.ownedElement></UML:Class>
 <UML:Class xmi.id="DCE.50E337F2-D23A-5B18-0D6F-B54D051AFC4A" name="RoadNetwork" owner="DCE.3CE1D6DB-2D82-332A-CD89-1EDA7F9D6C7C" associationEnd="DCE.A8726582-DA2A-5F6E-ADCA-5497B3EAE43E DCE.7A815D4D-A198-B329-B102-76D845EFBB2F DCE.7469C8A7-AF48-7A09-1B10-F10302E06CDC DCE.0CED0976-AE12-A098-3CAF-1B12A1AE1998"><UML:Element.presentation>
 </UML:Element.presentation><UML:Element.ownedElement>
 <UML:Operation xmi.id="DCE.82DCD05F-562C-21ED-1310-C02CEE51AB85" name="RoadNetwork" isConstructor="true" owner="DCE.50E337F2-D23A-5B18-0D6F-B54D051AFC4A"><UML:Element.presentation>
@@ -203,11 +155,13 @@
 <UML:Realization xmi.id="DCE.421C0A72-B583-60F1-07EC-542D24D6A047" owner="DCE.50E337F2-D23A-5B18-0D6F-B54D051AFC4A" client="DCE.B1F3E407-8540-7060-EAED-AC9416FE507C" supplier="DCE.C4D6FE54-F6CB-0559-5AAE-2F21A0FC78C0"/>
 
 <UML:Realization xmi.id="DCE.527F57C4-FF16-0948-5BE4-194563094C20" owner="DCE.50E337F2-D23A-5B18-0D6F-B54D051AFC4A" client="DCE.C4D6FE54-F6CB-0559-5AAE-2F21A0FC78C0" supplier="DCE.5AC5FF13-6713-7DEE-E388-13ECE94F5342"/>
-</UML:Element.ownedElement></UML:Class>
+
+<UML:SourceFileArtifact xmi.id="DCE.4078B2B8-A566-5D8B-2308-A3B553EA7D7B" name="Unnamed" owner="DCE.50E337F2-D23A-5B18-0D6F-B54D051AFC4A" sourcefile="../OptiFret/src/model/RoadNetwork.java"/></UML:Element.ownedElement></UML:Class>
 <UML:Class xmi.id="DCE.42588EA5-A6A6-0A86-6B1B-526F997C575F" name="RoadNode" owner="DCE.3CE1D6DB-2D82-332A-CD89-1EDA7F9D6C7C" associationEnd="DCE.C4D6FE54-F6CB-0559-5AAE-2F21A0FC78C0"><UML:Element.presentation>
 </UML:Element.presentation><UML:Element.ownedElement>
 <UML:Operation xmi.id="DCE.443ABC58-00C2-F9E4-9B57-753F56DF186C" name="RoadNode" isConstructor="true" owner="DCE.42588EA5-A6A6-0A86-6B1B-526F997C575F"><UML:Element.presentation>
-</UML:Element.presentation></UML:Operation></UML:Element.ownedElement></UML:Class>
+</UML:Element.presentation></UML:Operation>
+<UML:SourceFileArtifact xmi.id="DCE.2C418CD0-AC40-2482-6EC0-6AD53530C3FF" name="Unnamed" owner="DCE.42588EA5-A6A6-0A86-6B1B-526F997C575F" sourcefile="../OptiFret/src/model/RoadNode.java"/></UML:Element.ownedElement></UML:Class>
 
 
 <UML:Aggregation xmi.id="DCE.3DC57AFE-83AD-9033-7AC7-8E16BCE2287C" isComposite="true" owner="DCE.3CE1D6DB-2D82-332A-CD89-1EDA7F9D6C7C" aggregateEnd="DCE.7469C8A7-AF48-7A09-1B10-F10302E06CDC" partEnd="DCE.C4D6FE54-F6CB-0559-5AAE-2F21A0FC78C0"><UML:Association.end>
@@ -249,6 +203,14 @@
 <UML:NavigableEnd xmi.id="DCE.9895F4F9-58B2-238F-D86D-4CA3EA953437" visibility="private" type="DCE.B8A0CD38-8A3B-C99B-88AE-2D3FC8B1F49E" association="DCE.055BFC44-E823-423C-4029-613FCB390F15" name="roadPath"><UML:TypedElement.multiplicity>
 <UML:Multiplicity xmi.id="DCE.110BE892-8408-F27B-94F2-8DA75E3E371D"/></UML:TypedElement.multiplicity><UML:Attribute.default>
 <UML:Expression xmi.id="DCE.03714998-6121-85F5-FB57-64913541901C"/></UML:Attribute.default></UML:NavigableEnd></UML:Association.end><UML:Element.presentation>
+</UML:Element.presentation></UML:Aggregation>
+<UML:Aggregation xmi.id="DCE.F9730A18-0D88-7DEF-715C-87E6E284AB77" owner="DCE.3CE1D6DB-2D82-332A-CD89-1EDA7F9D6C7C" aggregateEnd="DCE.153AFC06-B8F8-5797-6954-38B9DD5B0807" partEnd="DCE.04A5EAD7-CFD3-F5C4-4CF5-AFD13D67942C"><UML:Association.end>
+<UML:AssociationEnd xmi.id="DCE.153AFC06-B8F8-5797-6954-38B9DD5B0807" visibility="private" type="DCE.DEB1E404-EFD3-8785-4235-C0D68FC9D947" association="DCE.F9730A18-0D88-7DEF-715C-87E6E284AB77"><UML:TypedElement.multiplicity>
+<UML:Multiplicity xmi.id="DCE.FD275A68-5F28-2EA1-2A0A-8DE41BF30C3D"/></UML:TypedElement.multiplicity></UML:AssociationEnd>
+<UML:NavigableEnd xmi.id="DCE.04A5EAD7-CFD3-F5C4-4CF5-AFD13D67942C" visibility="private" type="DCE.8FED228F-18C0-3B3B-50FF-0B19856DA65D" association="DCE.F9730A18-0D88-7DEF-715C-87E6E284AB77" name="client"><UML:TypedElement.multiplicity>
+<UML:Multiplicity xmi.id="DCE.B18E0C7F-621C-B5DA-F89E-AD17279BB06F"><UML:Multiplicity.range>
+<UML:MultiplicityRange xmi.id="DCE.B65557B2-BB68-8E16-8D04-F89036FEE2EB" lower="1" upper="1"/></UML:Multiplicity.range></UML:Multiplicity></UML:TypedElement.multiplicity><UML:Attribute.default>
+<UML:Expression xmi.id="DCE.D83CC299-D5A0-9F65-63B1-F493E6CEF04D"/></UML:Attribute.default></UML:NavigableEnd></UML:Association.end><UML:Element.presentation>
 </UML:Element.presentation></UML:Aggregation></UML:Element.ownedElement></UML:Package>
 
 <UML:Package xmi.id="DCE.DFA7E5D7-9E10-7971-5236-27B0C5E59963" name="view" owner="DCE.F8B7F224-2D8F-DAF4-42B8-3A0ED91C8BA1"><UML:Element.presentation>
