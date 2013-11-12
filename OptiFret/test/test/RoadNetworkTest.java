@@ -1,16 +1,18 @@
 package test;
 
-import java.io.File;
 import java.io.FileWriter;
 import java.io.BufferedWriter;
 
+import java.io.IOException;
+import junit.framework.TestCase;
 import model.RoadNetwork;
-import model.RodeNode;
+import model.RoadNode;
 
-public class RoadNetwork extends TestCase {
+public class RoadNetworkTest extends TestCase {
+
     public void testFile() {
         // Si le filename est null, la fonction retourne null.
-        assertNull(RoadNetwork.loadFromXML(Null));
+        assertNull(RoadNetwork.loadFromXML(null));
 
         // Si le fichier n'existe pas, la fonction retourne Null
         // Normalement le fichier /4242 n'existe pas
@@ -25,16 +27,14 @@ public class RoadNetwork extends TestCase {
     }
 
     private boolean writeInFile(String filename, String content) {
-        try
-        {
+        try {
             FileWriter fw = new FileWriter(filename, false);
             BufferedWriter output = new BufferedWriter(fw);
             output.write(content);
             output.flush();
             output.close();
             return true;
-        }
-        catch(IOException ioe){
+        } catch (IOException ioe) {
             System.out.print("Erreur : ");
             ioe.printStackTrace();
         }
@@ -109,8 +109,8 @@ public class RoadNetwork extends TestCase {
         RoadNetwork net = new RoadNetwork();
 
         // Essaye d'acceder à élément n'existant pas (ou invalide)
-        assertNull(net.getNodeById(-1));
-        assertNull(net.getNodeById(0));
+        assertNull(net.getNodeById(new Long(-1)));
+        assertNull(net.getNodeById(new Long(0)));
 
         // Ajout d'un noeud dans le graphe puis récupération de ce noeud par
         // l'id
@@ -129,6 +129,6 @@ public class RoadNetwork extends TestCase {
         assertEquals(net.getNodeById(id2).getId(), id2);
 
         // Essaye d'acceder à élément n'existant toujours pas (ou invalide)
-        assertNull(net.getNodeById(-1));
+        assertNull(net.getNodeById(new Long(-1)));
     }
 };

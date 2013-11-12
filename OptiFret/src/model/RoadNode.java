@@ -7,7 +7,7 @@ import java.util.Objects;
  *
  * @author jmcomets
  */
-class RoadNode {
+public class RoadNode {
 
     private Long id;
     private List<RoadNode> neighbors;

@@ -14,7 +14,15 @@ public class RoadNetwork {
         nodes.add(node);
     }
 
-    public RoadNode getRoadNodeById(Long id) {
+    public RoadNode getNodeById(Long id) {
         return null;
+    }
+
+    public int getSize() {
+        return nodes.size();
+    }
+
+    public static RoadNetwork loadFromXML(String filename) {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 }
