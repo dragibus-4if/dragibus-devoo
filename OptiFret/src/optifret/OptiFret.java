@@ -1,8 +1,5 @@
 package optifret;
 
-/**
- * @author jmcomets
- */
 public class OptiFret {
 
     /**
