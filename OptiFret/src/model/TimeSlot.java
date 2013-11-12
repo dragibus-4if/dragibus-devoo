@@ -2,17 +2,13 @@ package model;
 
 import java.util.Date;
 
-/**
- *
- * @author jmcomets
- */
-class TimeSlot {
+public class TimeSlot {
     private Date begin;
-    private Date end;
+    private Long duration;
 
-    public TimeSlot(Date begin, Date end) {
+    public TimeSlot(Date begin, Long duration) {
         this.begin = begin;
-        this.end = end;
+        this.duration = duration;
     }
 
     public Date getBegin() {
@@ -23,11 +19,15 @@ class TimeSlot {
         this.begin = begin;
     }
 
-    public Date getEnd() {
-        return end;
+    public Long getDuration() {
+        return duration;
     }
 
-    public void setEnd(Date end) {
-        this.end = end;
+    public void setDuration(Long duration) {
+        this.duration = duration;
+    }
+
+    public Date getEnd() {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 }

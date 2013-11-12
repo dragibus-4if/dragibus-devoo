@@ -84,24 +84,29 @@ public class RoadNetworkTest extends TestCase {
         // Voir le format des xmls à lire pour vérifier ça
     }
 
-    public void testAddNSize() {
+    public void testRoot() {
         // Si le réseau vient d'etre créé, sa taille est de 0
         RoadNetwork net = new RoadNetwork();
         assertEquals(net.getSize(), 0);
 
         // Ajoute un noeud unique
-        net.addNode(new RoadNode());
+        net.setRoot(new RoadNode());
         assertEquals(net.getSize(), 1);
 
         // Ajoute un noeud avec un fils
         RoadNode node = new RoadNode();
         node.addNeighbor(new RoadNode());
-        net.addNode(node);
-        assertEquals(net.getSize(), 3);
+        net.setRoot(node);
+        assertSame(net.getRoot(), node);
+        assertEquals(net.getSize(), 2);
 
         // Ajoute un fils au noeud précédemment créé puis vérification que la
         // taille augmente de 1
         node.addNeighbor(new RoadNode());
+        assertEquals(net.getSize(), 3);
+        
+        // Ajout d'un noeud directement depuis le getter
+        net.getRoot().addNeighbor(new RoadNode());
         assertEquals(net.getSize(), 4);
     }
 
@@ -109,6 +114,7 @@ public class RoadNetworkTest extends TestCase {
         RoadNetwork net = new RoadNetwork();
 
         // Essaye d'acceder à élément n'existant pas (ou invalide)
+        assertNull(net.getNodeById(null));
         assertNull(net.getNodeById(new Long(-1)));
         assertNull(net.getNodeById(new Long(0)));
 
@@ -116,7 +122,7 @@ public class RoadNetworkTest extends TestCase {
         // l'id
         RoadNode node = new RoadNode();
         Long id = node.getId();
-        net.addNode(node);
+        net.setRoot(node);
         assertNotNull(net.getNodeById(id));
         assertEquals(net.getNodeById(id).getId(), id);
 
@@ -129,6 +135,7 @@ public class RoadNetworkTest extends TestCase {
         assertEquals(net.getNodeById(id2).getId(), id2);
 
         // Essaye d'acceder à élément n'existant toujours pas (ou invalide)
+        assertNull(net.getNodeById(null));
         assertNull(net.getNodeById(new Long(-1)));
     }
 };

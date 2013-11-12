@@ -5,10 +5,6 @@ import static junit.framework.Assert.assertNotNull;
 import junit.framework.TestCase;
 import model.RoadNode;
 
-/**
- *
- * @author turpif
- */
 public class RoadNodeTest extends TestCase {
     public void testConstruction() {
         // Test de la construction
@@ -31,6 +27,16 @@ public class RoadNodeTest extends TestCase {
         RoadNode node2 = new RoadNode();
         node2.addNeighbor(node);
         assertEquals(node2.getNeighbors().size(), 1);
+        assertEquals(node.getNeighbors().size(), 2);
+        
+        // Ajout d'un node null comme fils. Lève une exception et la taille ne
+        // doit pas changer.
+        try {
+            node.addNeighbor(null);
+            fail("Ajout d'un pointeur vide comme voisin");
+        }
+        catch(NullPointerException e) {
+        }
         assertEquals(node.getNeighbors().size(), 2);
     }
 };
