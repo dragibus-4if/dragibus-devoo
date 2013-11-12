@@ -1,5 +1,12 @@
 package test;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.BufferedWriter;
+
+import model.RoadNetwork;
+import model.RodeNode;
+
 public class RoadNetwork extends TestCase {
     public void testFile() {
         // Si le filename est null, la fonction retourne null.
