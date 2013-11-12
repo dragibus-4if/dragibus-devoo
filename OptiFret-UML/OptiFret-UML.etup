@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<XMI xmlns:UML="omg.org/UML/1.4" xmi.version="2.0">
+   <XMI.header>
+      <XMI.metamodel xmi.name="UML" xmi.version="1.4"/>
+		<XMI.documentation>
+			<XMI.exporter>
+				Embarcadero's Describe
+			</XMI.exporter>
+			<XMI.exporterVersion>
+				6.0
+			</XMI.exporterVersion>
+		</XMI.documentation>
+   </XMI.header>
+
+   <XMI.content>
+   <UML:Profile xmi.id="DCE.C930F618-C305-DDBA-9A12-443A62658FAA" name="Unnamed" isCloned="true" href="./OptiFret-UML.etup#//*[@xmi.id=&apos;DCE.C930F618-C305-DDBA-9A12-443A62658FAA&apos;]" isDirty="false"><UML:Element.ownedElement>
+<UML:Stereotype xmi.id="DCE.A5DE66AE-833D-26F1-CB89-05EE2CB58829" name="interface" owner="__uri_./OptiFret-UML.etup#//*[@xmi.id=&apos;DCE.C930F618-C305-DDBA-9A12-443A62658FAA&apos;]"/></UML:Element.ownedElement></UML:Profile></XMI.content>
+</XMI>
