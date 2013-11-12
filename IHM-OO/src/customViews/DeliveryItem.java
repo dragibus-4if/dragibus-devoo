@@ -74,8 +74,12 @@ public class DeliveryItem extends javax.swing.JPanel implements ListCellRenderer
 
         heureLabel.setText("Heure :");
 
+        contentField.setColumns(40);
+        contentField.setCursor(new java.awt.Cursor(java.awt.Cursor.TEXT_CURSOR));
+        contentField.setEditable(false);
         contentField.setText("textField1");
 
+        clientField.setColumns(40);
         clientField.setText("textField2");
 
         livNumberField.setText("textField3");

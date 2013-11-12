@@ -38,7 +38,6 @@ public class MainList extends javax.swing.JFrame {
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
-        scrollPane1 = new java.awt.ScrollPane();
         jScrollPane1 = new javax.swing.JScrollPane();
         jList1 = new javax.swing.JList();
 
@@ -62,8 +61,6 @@ public class MainList extends javax.swing.JFrame {
 
         jScrollPane1.setViewportView(jList1);
 
-        scrollPane1.add(jScrollPane1);
-
         org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -76,22 +73,26 @@ public class MainList extends javax.swing.JFrame {
                 .add(70, 70, 70)
                 .add(jButton3)
                 .addContainerGap(86, Short.MAX_VALUE))
-            .add(layout.createSequentialGroup()
-                .addContainerGap()
-                .add(scrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
+            .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                .add(layout.createSequentialGroup()
+                    .addContainerGap()
+                    .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 677, Short.MAX_VALUE)
+                    .addContainerGap()))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
-                .addContainerGap()
-                .add(scrollPane1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 319, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 28, Short.MAX_VALUE)
+                .addContainerGap(357, Short.MAX_VALUE)
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(jButton1)
                     .add(jButton2)
                     .add(jButton3))
                 .add(20, 20, 20))
+            .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                .add(layout.createSequentialGroup()
+                    .addContainerGap()
+                    .add(jScrollPane1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 340, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                    .addContainerGap(60, Short.MAX_VALUE)))
         );
 
         pack();
@@ -145,7 +146,6 @@ public class MainList extends javax.swing.JFrame {
     private javax.swing.JButton jButton3;
     private javax.swing.JList jList1;
     private javax.swing.JScrollPane jScrollPane1;
-    private java.awt.ScrollPane scrollPane1;
     // End of variables declaration//GEN-END:variables
 
     private void initList() {
@@ -160,6 +160,10 @@ public class MainList extends javax.swing.JFrame {
         DeliveryItem i1=new DeliveryItem(d1);
         ArrayList<DeliveryItem> list=new ArrayList<DeliveryItem>();
         list.add(i1);
+        list.add(i1);
         jList1.setListData(list.toArray());
+        jList1.invalidate();
+        jList1.repaint();
+        jList1.updateUI();
     }
 }
