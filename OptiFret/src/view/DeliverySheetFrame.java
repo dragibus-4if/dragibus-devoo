@@ -28,9 +28,7 @@ public class DeliverySheetFrame extends JFrame {
     public DeliverySheetFrame() {
         super("Optifret");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setResizable(false);
         setSize(800, 600);
-        setDefaultLookAndFeelDecorated(false);
         Container cont = getContentPane();
         setLayout(new BoxLayout(cont, BoxLayout.X_AXIS));
         add(makeBothDeliveryLists(), BorderLayout.WEST);
