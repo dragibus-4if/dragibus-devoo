@@ -1,6 +1,10 @@
 package Model;
 
+import Model.TSP.*;
+
 public class RoadNetwork {
+
+	Strategy tpsStrategy;
 
 	public RoadNetwork() {
 		// TODO - implement RoadNetwork.RoadNetwork
