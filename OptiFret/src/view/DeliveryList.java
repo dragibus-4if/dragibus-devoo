@@ -1,10 +1,22 @@
 package view;
 
+import javax.swing.DefaultListModel;
+
 public class DeliveryList {
+    private DefaultListModel notPlanned ;
 
-	public DeliveryList() {
-		// TODO - implement DeliveryList.DeliveryList
-		throw new UnsupportedOperationException();
-	}
+    
+    private DefaultListModel planned ;
+    
+    public DeliveryList() {
+            notPlanned= new DefaultListModel();
+            planned= new DefaultListModel();
+    }
+    public DefaultListModel getNotPlanned() {
+            return notPlanned;
+    }
 
+        public DefaultListModel getPlanned() {
+            return planned;
+    }
 }
