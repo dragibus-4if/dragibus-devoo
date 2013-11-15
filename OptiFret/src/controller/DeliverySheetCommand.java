@@ -2,8 +2,7 @@ package controller;
 
 public interface DeliverySheetCommand {
 
-	void execute();
+    void execute();
 
-	void undo();
-
+    void undo();
 }

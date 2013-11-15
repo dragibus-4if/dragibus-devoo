@@ -1,28 +1,32 @@
 package model;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DeliveryRound {
 
-	Collection<Delivery> deliveries;
-	Collection<RoadSection> sections;
+    private List<Delivery> deliveries = new ArrayList<Delivery>();
+    private List<RoadNode> path;
 
-	/**
-	 * 
-	 * @param Delivery
-	 */
-	public DeliveryRound(int Delivery) {
-		// TODO - implement DeliveryRound.DeliveryRound
-		throw new UnsupportedOperationException();
-	}
+    public DeliveryRound() {
+        // TODO - implement DeliveryRound.DeliveryRound
+        throw new UnsupportedOperationException();
+    }
 
-	public Delivery getDeliveries() {
-		return this.deliveries;
-	}
+    public List<Delivery> getDeliveries() {
+        return deliveries;
+    }
 
-	public RoadSection getPath() {
-		// TODO - implement DeliveryRound.getPath
-		throw new UnsupportedOperationException();
-	}
+    public void addDelivery(Delivery delivery) {
+        deliveries.add(delivery);
+    }
+
+    public List<RoadNode> getPath() {
+        return path;
+    }
+
+    public void setPath(List<RoadNode> path) {
+        this.path = path;
+    }
 
 }

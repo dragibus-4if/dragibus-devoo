@@ -4,28 +4,31 @@ import java.util.*;
 
 public class RoadNode {
 
-	private Long id;
-	DeliveryPoint roadNode;
-	private int x;
-	private int y;
-	Collection<RoadSection> sections;
+    private Long id;
+    private int x;
+    private int y;
+    private List<RoadSection> sections;
 
-    public Collection<RoadSection> getSections() {
+    public RoadNode() {
+        // TODO - implement RoadNode.RoadNode
+        throw new UnsupportedOperationException();
+    }
+    
+    public void addNeighbor(RoadNode node, RoadSection section) {
+        // TODO - implement RoadNode.addNeighbor
+        throw new UnsupportedOperationException();
+    }
+
+    public List<RoadSection> getSections() {
         return sections;
     }
 
-	public RoadNode() {
-		// TODO - implement RoadNode.RoadNode
-		throw new UnsupportedOperationException();
-	}
-
-	/**
-	 * 
-	 * @param RoadNode
-	 */
-	public void addNeighbor(int RoadNode) {
-		// TODO - implement RoadNode.addNeighbor
-		throw new UnsupportedOperationException();
-	}
+    public List<RoadNode> getNeighbors() {
+        List<RoadNode> ls = new LinkedList<RoadNode>();
+        for (RoadSection section : getSections()) {
+            ls.add(section.getRoadNodeEnd());
+        }
+        return ls;
+    }
 
 }
