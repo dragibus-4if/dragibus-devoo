@@ -1,13 +1,14 @@
 package model;
 
+import java.util.*;
+
 public class RoadNode {
 
 	private Long id;
 	DeliveryPoint roadNode;
-	RoadPath roadPathBegin;
-	RoadPath roadPathEnd;
 	private int x;
 	private int y;
+	Collection<RoadSection> sections;
 
 	public RoadNode() {
 		// TODO - implement RoadNode.RoadNode
