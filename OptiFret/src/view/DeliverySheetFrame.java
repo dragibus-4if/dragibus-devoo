@@ -9,6 +9,8 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.File;
+import java.io.FileFilter;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
@@ -34,7 +36,6 @@ public class DeliverySheetFrame extends JFrame {
     private JMenu menuFile, menuEdit;
     private JMenuItem loadRound, loadMap, exportRound, undo, redo;
     private JFileChooser fc = new JFileChooser();
-    
 
     public DeliverySheetFrame() {
         super("Optifret");
@@ -46,7 +47,7 @@ public class DeliverySheetFrame extends JFrame {
         add(makeDeliveryMap(), BorderLayout.EAST);
         makeMenu();
         setJMenuBar(bar);
-        
+
         // TODO remove this test data
         planned.addElement("Serge le Lama");
         planned.addElement("Petit papa Noël");
@@ -69,7 +70,7 @@ public class DeliverySheetFrame extends JFrame {
         panel.add(makeDeliveryList(planned), gbc);
         gbc.weighty = 0.3;
         panel.add(makeDeliveryList(notPlanned), gbc);
-        
+
         return panel;
     }
 
@@ -85,18 +86,37 @@ public class DeliverySheetFrame extends JFrame {
         panel.add(canvas);
         return panel;
     }
-    
-    
+
     private void makeMenu() {
-        menuFile = new JMenu("Fichier");      
+        menuFile = new JMenu("Fichier");
         loadRound = new JMenuItem("Charger une tournée");
         loadMap = new JMenuItem("Charger un plan");
         exportRound = new JMenuItem("Exporter une tournée");
+
+        fc.setMultiSelectionEnabled(false);
+        fc.setFileFilter(new javax.swing.filechooser.FileFilter() {
+            @Override
+            public boolean accept(File f) {
+                if (f.isDirectory()) {
+                    return true;
+                } else if (f.getName().endsWith(".xml")) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+
+            @Override
+            public String getDescription() {
+                return "Display directorys and .xml files";
+            }
+        });
+
         menuFile.add(loadMap);
         menuFile.add(loadRound);
         menuFile.add(exportRound);
-        loadMap.addMouseListener(new MouseListener() {
 
+        loadMap.addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
             }
@@ -104,8 +124,7 @@ public class DeliverySheetFrame extends JFrame {
             @Override
             public void mousePressed(MouseEvent e) {
                 int ret = fc.showOpenDialog(null);
-                if(ret == JFileChooser.APPROVE_OPTION)
-                {
+                if (ret == JFileChooser.APPROVE_OPTION) {
                     //loadNetwork(fc.getSelectedFile());
                 }
             }
@@ -117,23 +136,121 @@ public class DeliverySheetFrame extends JFrame {
             @Override
             public void mouseEntered(MouseEvent e) {
             }
-            
 
             @Override
             public void mouseExited(MouseEvent e) {
             }
         });
+        loadRound.addMouseListener(new MouseListener() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+                int ret = fc.showOpenDialog(null);
+                if (ret == JFileChooser.APPROVE_OPTION) {
+                    //loadRound(fc.getSelectedFile());
+                }
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+            }
+        });
+        exportRound.addMouseListener(new MouseListener() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+                int ret = fc.showOpenDialog(null);
+                if (ret == JFileChooser.APPROVE_OPTION) {
+                    //exportRound(fc.getSelectedFile());
+                }
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+            }
+        });
+
         bar.add(menuFile);
-               
+
         menuEdit = new JMenu("Edition");
         undo = new JMenuItem("Undo");
         redo = new JMenuItem("Redo");
+
+        undo.addMouseListener(new MouseListener() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+                //DEBUG
+                System.err.println("UNDO");
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+            }
+        });
+        redo.addMouseListener(new MouseListener() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+                //DEBUG
+                System.err.println("REDO");
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+            }
+        });
+
         menuEdit.add(undo);
         menuEdit.add(redo);
         bar.add(menuEdit);
-        
-        
-        
-        
+
+
+
+
     }
 }
