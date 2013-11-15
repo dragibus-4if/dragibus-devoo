@@ -5,7 +5,7 @@ import java.io.File;
 public class DeliverySheetModel {
 
     private DeliveryRound deliveryRound = new DeliveryRound();
-    private DeliveryEmployee deliveryEmployee;
+    private DeliveryEmployee deliveryEmployee = new DeliveryEmployee();
 
     public static DeliverySheetModel loadFromXML(File file) {
         // TODO - implement DeliverySheetModel.loadFromXML
@@ -13,8 +13,10 @@ public class DeliverySheetModel {
     }
 
     public DeliverySheetModel() {
-        // TODO - implement DeliverySheetModel.DeliverySheetModel
-        throw new UnsupportedOperationException();
+    }
+    
+    public DeliveryRound getDeliveryRound() {
+        return this.deliveryRound;
     }
 
     public DeliveryEmployee getDeliveryEmployee() {

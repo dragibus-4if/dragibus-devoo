@@ -8,8 +8,8 @@ import view.DeliverySheetView;
 
 public class DeliverySheetController {
 
-    private Stack<DeliverySheetCommand> history = new Stack<DeliverySheetCommand>();
-    private Stack<DeliverySheetCommand> redoneHistory = new Stack<DeliverySheetCommand>();
+    private Stack<DeliverySheetCommand> history = new Stack<>();
+    private Stack<DeliverySheetCommand> redoneHistory = new Stack<>();
     private RoadNetwork roadNetwork;
     private DeliverySheetModel deliverySheetModel;
     private DeliverySheetView deliverySheetView;

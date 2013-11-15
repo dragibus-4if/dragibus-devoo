@@ -3,6 +3,9 @@ package model;
 public class DeliveryEmployee {
 
     private Long id;
+    
+    public DeliveryEmployee() {
+    }
 
     public DeliveryEmployee(Long id) {
         this.id = id;

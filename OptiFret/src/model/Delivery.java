@@ -7,10 +7,14 @@ public class Delivery {
     private TimeSlot timeSlot;
     private Client client;
 
+    public Delivery() {
+    }
+
+    public Delivery(long id) {
+        this(new Long(id));
+    }
+
     public Delivery(Long id) {
-        if (id == null) {
-            throw new IllegalArgumentException("'id' cannot be null");
-        }
         this.id = id;
     }
 
