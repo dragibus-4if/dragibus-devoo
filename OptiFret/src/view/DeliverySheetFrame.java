@@ -5,6 +5,8 @@ import java.awt.Canvas;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsEnvironment;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.MouseEvent;
@@ -29,12 +31,11 @@ public class DeliverySheetFrame extends JFrame {
 
     private DefaultListModel notPlanned = new DefaultListModel();
     private DefaultListModel planned = new DefaultListModel();
-    private Canvas canvas = new Canvas();
+    private MapCanvas canvas = new MapCanvas();
     private JMenuBar bar = new JMenuBar();
     private JMenu menuFile, menuEdit;
     private JMenuItem loadRound, loadMap, exportRound, undo, redo;
     private JFileChooser fc = new JFileChooser();
-    
 
     public DeliverySheetFrame() {
         super("Optifret");
