@@ -2,40 +2,45 @@ package model;
 
 public class Delivery {
 
-	private Long id;
-	TimeSlot timeSlot;
-	Client client;
-	DeliveryPoint deliveryPoint;
+    private Long id;
+    private Long address;
+    private TimeSlot timeSlot;
+    private Client client;
 
-	public Delivery() {
-		// TODO - implement Delivery.Delivery
-		throw new UnsupportedOperationException();
-	}
+    public Delivery() {
+        // TODO - implement Delivery.Delivery
+        throw new UnsupportedOperationException();
+    }
 
-	/**
-	 * 
-	 * @param TimeSlot
-	 */
-	public void setTimeSlot(int TimeSlot) {
-		// TODO - implement Delivery.setTimeSlot
-		throw new UnsupportedOperationException();
-	}
+    public Long getId() {
+        return id;
+    }
 
-	/**
-	 * 
-	 * @param DeliveryPoint
-	 */
-	public void setDeliveryPoint(int DeliveryPoint) {
-		// TODO - implement Delivery.setDeliveryPoint
-		throw new UnsupportedOperationException();
-	}
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-	public TimeSlot getTimeSlot() {
-		return this.timeSlot;
-	}
+    public Long getAddress() {
+        return address;
+    }
 
-	public DeliveryPoint getDeliveryPoint() {
-		return this.deliveryPoint;
-	}
+    public void setAddress(Long address) {
+        this.address = address;
+    }
 
+    public TimeSlot getTimeSlot() {
+        return timeSlot;
+    }
+
+    public void setTimeSlot(TimeSlot timeSlot) {
+        this.timeSlot = timeSlot;
+    }
+
+    public Client getClient() {
+        return client;
+    }
+
+    public void setClient(Client client) {
+        this.client = client;
+    }
 }

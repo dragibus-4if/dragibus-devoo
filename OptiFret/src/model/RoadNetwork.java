@@ -1,45 +1,33 @@
 package model;
 
 import java.io.File;
+import java.util.List;
 
 public class RoadNetwork {
 
-        RoadNode root;
-
-	public RoadNetwork() {
-		this.root = null;
-	}
-
-	/**
-	 * 
-     * @param node
-	 */
-	public void setRoot(RoadNode node) {
-		this.root = node;
-	}
-
-	/**
-	 * 
-	 * @param Long
-     * @return 
-	 */
-	public RoadNode getNodeById(int Long) {
-		// TODO - implement RoadNetwork.getNodeById
-		throw new UnsupportedOperationException();
-	}
-
-    public RoadNode getRoot() {
-        return root;
+    private RoadNode root;
+    
+    public static RoadNetwork loadFromXML(File file) {
+        // TODO - implement RoadNetwork.loadFromXml
+        throw new UnsupportedOperationException();
     }
 
-	/**
-	 * 
-	 * @param file
-     * @return 
-	 */
-	public int loadFromXML(File file) {
-		// TODO - implement RoadNetwork.loadFromXml
-		throw new UnsupportedOperationException();
-	}
+    public RoadNetwork() {
+    }
+    
+    public RoadNode getNodeById(Long id) {
+        // TODO - implement RoadNetwork.getNodeById
+        throw new UnsupportedOperationException();
+    }
+    
+    public List<RoadNode> getNodes() {
+        // TODO - implement RoadNetwork.getNodes
+        throw new UnsupportedOperationException();
+    }
+    
+    public List<RoadNode> makeRoute(List<RoadNode> objectives) {
+        // TODO - implement RoadNetwork.makeRoute
+        throw new UnsupportedOperationException();
+    }
 
 }
