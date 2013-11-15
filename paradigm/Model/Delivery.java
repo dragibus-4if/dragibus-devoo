@@ -1,11 +1,10 @@
-package Model;
+package model;
 
 public class Delivery {
 
-	private String mClientName;
-	private Long mId;
-	private String mPhoneNumber;
-	private Long mClientId;
+	private Long id;
+	TimeSlot timeSlot;
+	Client client;
 
 	public Delivery() {
 		// TODO - implement Delivery.Delivery
@@ -31,13 +30,11 @@ public class Delivery {
 	}
 
 	public TimeSlot getTimeSlot() {
-		// TODO - implement Delivery.getTimeSlot
-		throw new UnsupportedOperationException();
+
 	}
 
 	public DeliveryPoint getDeliveryPoint() {
-		// TODO - implement Delivery.getDeliveryPoint
-		throw new UnsupportedOperationException();
+
 	}
 
 }

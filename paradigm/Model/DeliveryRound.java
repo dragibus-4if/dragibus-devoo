@@ -1,6 +1,11 @@
-package Model;
+package model;
+
+import java.util.*;
 
 public class DeliveryRound {
+
+	Collection<Delivery> deliveries;
+	RoadPath roadPath;
 
 	/**
 	 * 
@@ -12,13 +17,11 @@ public class DeliveryRound {
 	}
 
 	public Delivery getDeliveries() {
-		// TODO - implement DeliveryRound.getDeliveries
-		throw new UnsupportedOperationException();
+
 	}
 
-	public Path getPath() {
-		// TODO - implement DeliveryRound.getPath
-		throw new UnsupportedOperationException();
+	public RoadSection getPath() {
+
 	}
 
 }

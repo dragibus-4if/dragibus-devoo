@@ -1,10 +1,12 @@
-package Model;
+package model;
 
-import Model.TSP.*;
+import tsp.*;
+import java.util.*;
 
 public class RoadNetwork {
 
 	Strategy tpsStrategy;
+	Collection<RoadNode> nodes;
 
 	public RoadNetwork() {
 		// TODO - implement RoadNetwork.RoadNetwork
@@ -25,7 +27,15 @@ public class RoadNetwork {
 	 * @param Long
 	 */
 	public RoadNode getNodeById(int Long) {
-		// TODO - implement RoadNetwork.getNodeById
+
+	}
+
+	/**
+	 * 
+	 * @param file
+	 */
+	public int loadFromXml(File file) {
+		// TODO - implement RoadNetwork.loadFromXml
 		throw new UnsupportedOperationException();
 	}
 
