@@ -5,7 +5,7 @@ import java.util.*;
 public class DeliveryRound {
 
 	Collection<Delivery> deliveries;
-	RoadPath roadPath;
+	Collection<RoadSection> sections;
 
 	/**
 	 * 
@@ -17,11 +17,12 @@ public class DeliveryRound {
 	}
 
 	public Delivery getDeliveries() {
-
+		return this.deliveries;
 	}
 
 	public RoadSection getPath() {
-
+		// TODO - implement DeliveryRound.getPath
+		throw new UnsupportedOperationException();
 	}
 
 }

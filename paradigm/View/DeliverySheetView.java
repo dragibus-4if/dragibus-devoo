@@ -2,7 +2,7 @@ package view;
 
 public class DeliverySheetView {
 
-	DeliveryRoute deliveryRoute;
+	MapCanvas mapCanvas;
 	DeliveryList deliveryList;
 
 	public DeliveryRoute getDeliveryRoute() {
@@ -10,17 +10,17 @@ public class DeliverySheetView {
 	}
 
 	public DeliverySheetView getPlannedList() {
-		// TODO - implement MapPanel.getPlannedList
+		// TODO - implement DeliverySheetView.getPlannedList
 		throw new UnsupportedOperationException();
 	}
 
 	public DeliveryList getNotPlannedList() {
-		// TODO - implement MapPanel.getNotPlannedList
+		// TODO - implement DeliverySheetView.getNotPlannedList
 		throw new UnsupportedOperationException();
 	}
 
 	public DeliverySheetView() {
-		// TODO - implement MapPanel.DeliverySheetView
+		// TODO - implement DeliverySheetView.DeliverySheetView
 		throw new UnsupportedOperationException();
 	}
 

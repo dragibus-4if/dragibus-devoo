@@ -1,11 +1,9 @@
 package model;
 
-import tsp.*;
 import java.util.*;
 
 public class RoadNetwork {
 
-	Strategy tpsStrategy;
 	Collection<RoadNode> nodes;
 
 	public RoadNetwork() {
@@ -27,7 +25,8 @@ public class RoadNetwork {
 	 * @param Long
 	 */
 	public RoadNode getNodeById(int Long) {
-
+		// TODO - implement RoadNetwork.getNodeById
+		throw new UnsupportedOperationException();
 	}
 
 	/**

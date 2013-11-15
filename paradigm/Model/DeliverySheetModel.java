@@ -7,7 +7,7 @@ public class DeliverySheetModel {
 	DeliveryEmployee deliveryEmployee;
 
 	public DeliverySheetModel() {
-		// TODO - implement DeliverySheet.DeliverySheetModel
+		// TODO - implement DeliverySheetModel.DeliverySheetModel
 		throw new UnsupportedOperationException();
 	}
 

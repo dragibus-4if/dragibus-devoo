@@ -5,6 +5,7 @@ public class Delivery {
 	private Long id;
 	TimeSlot timeSlot;
 	Client client;
+	DeliveryPoint deliveryPoint;
 
 	public Delivery() {
 		// TODO - implement Delivery.Delivery
@@ -30,11 +31,11 @@ public class Delivery {
 	}
 
 	public TimeSlot getTimeSlot() {
-
+		return this.timeSlot;
 	}
 
 	public DeliveryPoint getDeliveryPoint() {
-
+		return this.deliveryPoint;
 	}
 
 }
