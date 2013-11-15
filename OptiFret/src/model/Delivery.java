@@ -7,17 +7,15 @@ public class Delivery {
     private TimeSlot timeSlot;
     private Client client;
 
-    public Delivery() {
-        // TODO - implement Delivery.Delivery
-        throw new UnsupportedOperationException();
+    public Delivery(Long id) {
+        if (id == null) {
+            throw new IllegalArgumentException("'id' cannot be null");
+        }
+        this.id = id;
     }
 
     public Long getId() {
         return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public Long getAddress() {
