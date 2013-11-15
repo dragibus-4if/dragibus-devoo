@@ -1,17 +1,16 @@
 package model;
 
 public class DeliveryEmployee {
-    private Long id;
 
-    public DeliveryEmployee() {
-        this.id = new Long(-1);
-    }
+	private Long id;
 
-    public DeliveryEmployee(Long id) {
-        this.id = id;
-    }
+	public Long getId() {
+		return this.id;
+	}
 
-    public Long getId() {
-        return id;
-    }
+	public DeliveryEmployee() {
+		// TODO - implement DeliveryEmployee.DeliveryEmployee
+		throw new UnsupportedOperationException();
+	}
+
 }
