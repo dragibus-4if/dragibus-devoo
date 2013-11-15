@@ -4,9 +4,8 @@ public class DeliveryEmployee {
 
     private Long id;
 
-    public DeliveryEmployee() {
-        // TODO - implement DeliveryEmployee.DeliveryEmployee
-        throw new UnsupportedOperationException();
+    public DeliveryEmployee(Long id) {
+        this.id = id;
     }
 
     public Long getId() {
