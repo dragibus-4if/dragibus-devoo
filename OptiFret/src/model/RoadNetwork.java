@@ -14,6 +14,10 @@ public class RoadNetwork {
 
     public RoadNetwork() {
     }
+
+    public RoadNode getRoot() {
+        return root;
+    }
     
     public RoadNode getNodeById(Long id) {
         // TODO - implement RoadNetwork.getNodeById
