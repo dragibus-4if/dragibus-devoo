@@ -1,39 +1,43 @@
 package model;
 
-import java.util.*;
+import java.io.File;
 
 public class RoadNetwork {
 
-	Collection<RoadNode> nodes;
+        RoadNode root;
 
 	public RoadNetwork() {
-		// TODO - implement RoadNetwork.RoadNetwork
-		throw new UnsupportedOperationException();
+		this.root = null;
 	}
 
 	/**
 	 * 
-	 * @param RoadNode
+     * @param node
 	 */
-	public void addNode(int RoadNode) {
-		// TODO - implement RoadNetwork.addNode
-		throw new UnsupportedOperationException();
+	public void setRoot(RoadNode node) {
+		this.root = node;
 	}
 
 	/**
 	 * 
 	 * @param Long
+     * @return 
 	 */
 	public RoadNode getNodeById(int Long) {
 		// TODO - implement RoadNetwork.getNodeById
 		throw new UnsupportedOperationException();
 	}
 
+    public RoadNode getRoot() {
+        return root;
+    }
+
 	/**
 	 * 
 	 * @param file
+     * @return 
 	 */
-	public int loadFromXml(File file) {
+	public int loadFromXML(File file) {
 		// TODO - implement RoadNetwork.loadFromXml
 		throw new UnsupportedOperationException();
 	}
