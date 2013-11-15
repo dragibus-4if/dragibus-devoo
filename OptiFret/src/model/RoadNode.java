@@ -10,6 +10,10 @@ public class RoadNode {
 	private int y;
 	Collection<RoadSection> sections;
 
+    public Collection<RoadSection> getSections() {
+        return sections;
+    }
+
 	public RoadNode() {
 		// TODO - implement RoadNode.RoadNode
 		throw new UnsupportedOperationException();
