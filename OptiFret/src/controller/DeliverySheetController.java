@@ -4,7 +4,7 @@ import java.util.*;
 import model.*;
 import view.*;
 
-public class DeliverySheet {
+public class DeliverySheetController {
 
 	DeliverySheetCommand history;
 	private Collection<int> deliverySheet;
@@ -12,9 +12,8 @@ public class DeliverySheet {
 	DeliverySheetModel deliverySheetModel;
 	DeliverySheetView deliverySheetView;
 
-	public DeliverySheet() {
-		// TODO - implement DeliverySheet.DeliverySheet
-		throw new UnsupportedOperationException();
+	public DeliverySheetController() {
+
 	}
 
 	public void loadRoadNetwork() {

@@ -1,4 +1,10 @@
 package model;
 
-class DeliveryPoint {
+public class DeliveryPoint {
+
+	public DeliveryPoint() {
+		// TODO - implement DeliveryPoint.DeliveryPoint
+		throw new UnsupportedOperationException();
+	}
+
 }

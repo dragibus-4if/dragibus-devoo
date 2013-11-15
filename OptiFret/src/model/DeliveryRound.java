@@ -1,17 +1,28 @@
 package model;
 
-import java.util.List;
+import java.util.*;
 
-class DeliveryRound {
+public class DeliveryRound {
 
-    private List<Delivery> deliveries;
-    private RoadPath path;
+	Collection<Delivery> deliveries;
+	Collection<RoadSection> sections;
 
-    public List<Delivery> getDeliveries() {
-        return deliveries;
-    }
+	/**
+	 * 
+	 * @param Delivery
+	 */
+	public DeliveryRound(int Delivery) {
+		// TODO - implement DeliveryRound.DeliveryRound
+		throw new UnsupportedOperationException();
+	}
 
-    public RoadPath getPath() {
-        return path;
-    }
+	public Delivery getDeliveries() {
+		return this.deliveries;
+	}
+
+	public RoadSection getPath() {
+		// TODO - implement DeliveryRound.getPath
+		throw new UnsupportedOperationException();
+	}
+
 }

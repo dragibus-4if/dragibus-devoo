@@ -1,30 +1,45 @@
 package model;
 
+import java.io.File;
+
 public class RoadNetwork {
 
-    private RoadNode root;
-    
-    public RoadNetwork() {
-        this.root = null;
-    }
-    
-    public void setRoot(RoadNode root) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-    
+        RoadNode root;
+
+	public RoadNetwork() {
+		this.root = null;
+	}
+
+	/**
+	 * 
+     * @param node
+	 */
+	public void setRoot(RoadNode node) {
+		this.root = node;
+	}
+
+	/**
+	 * 
+	 * @param Long
+     * @return 
+	 */
+	public RoadNode getNodeById(int Long) {
+		// TODO - implement RoadNetwork.getNodeById
+		throw new UnsupportedOperationException();
+	}
+
     public RoadNode getRoot() {
-        return this.root;
+        return root;
     }
 
-    public RoadNode getNodeById(Long id) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
+	/**
+	 * 
+	 * @param file
+     * @return 
+	 */
+	public int loadFromXML(File file) {
+		// TODO - implement RoadNetwork.loadFromXml
+		throw new UnsupportedOperationException();
+	}
 
-    public int getSize() {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public static RoadNetwork loadFromXML(String filename) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
 }

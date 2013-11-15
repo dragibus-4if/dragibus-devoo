@@ -1,45 +1,31 @@
 package model;
 
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public class RoadNode {
 
-    private Long id;
-    private List<RoadNode> neighbors;
+	private Long id;
+	DeliveryPoint roadNode;
+	private int x;
+	private int y;
+	Collection<RoadSection> sections;
 
-    public Long getId() {
-        return id;
+    public Collection<RoadSection> getSections() {
+        return sections;
     }
 
-    public List<RoadNode> getNeighbors() {
-        return neighbors;
-    }
+	public RoadNode() {
+		// TODO - implement RoadNode.RoadNode
+		throw new UnsupportedOperationException();
+	}
 
-    public void addNeighbor(RoadNode node) {
-        neighbors.add(node);
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 3;
-        hash = 11 * hash + Objects.hashCode(this.id);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final RoadNode other = (RoadNode) obj;
-        if (!Objects.equals(this.id, other.id)) {
-            return false;
-        }
-        return true;
-    }
+	/**
+	 * 
+	 * @param RoadNode
+	 */
+	public void addNeighbor(int RoadNode) {
+		// TODO - implement RoadNode.addNeighbor
+		throw new UnsupportedOperationException();
+	}
 
 }

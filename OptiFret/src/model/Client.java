@@ -1,20 +1,15 @@
 package model;
 
-class Client {
+public class Client {
 
-    private Long id;
-    private String nom;
+	private Long id;
+	private String phoneNum;
+	private String address;
+	private String name;
 
-    public Long getId() {
-        return id;
-    }
-
-    public String getNom() {
-        return nom;
-    }
-
-    public void setNom(String nom) {
-        this.nom = nom;
-    }
+	public Client() {
+		// TODO - implement Client.Client
+		throw new UnsupportedOperationException();
+	}
 
 }
