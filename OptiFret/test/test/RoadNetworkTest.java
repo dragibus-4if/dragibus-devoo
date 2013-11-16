@@ -104,7 +104,7 @@ public class RoadNetworkTest extends TestCase {
         // taille augmente de 1
         node.addNeighbor(new RoadNode());
         assertEquals(net.getSize(), 3);
-        
+
         // Ajout d'un noeud directement depuis le getter
         net.getRoot().addNeighbor(new RoadNode());
         assertEquals(net.getSize(), 4);
