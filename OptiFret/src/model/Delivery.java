@@ -8,16 +8,18 @@ public class Delivery {
     private Client client;
 
     public Delivery() {
-        // TODO - implement Delivery.Delivery
-        throw new UnsupportedOperationException();
+    }
+
+    public Delivery(long id) {
+        this(new Long(id));
+    }
+
+    public Delivery(Long id) {
+        this.id = id;
     }
 
     public Long getId() {
         return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public Long getAddress() {

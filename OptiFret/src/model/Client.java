@@ -8,8 +8,14 @@ public class Client {
     private String name;
 
     public Client() {
-        // TODO - implement Client.Client
-        throw new UnsupportedOperationException();
+    }
+
+    public Client(long id) {
+        this(new Long(id));
+    }
+
+    public Client(Long id) {
+        this.id = id;
     }
 
     public Long getId() {

@@ -5,12 +5,22 @@ public class RoadSection {
     private String roadName;
     private double speed;
     private double length;
-    private RoadNode roadNodeBegin;
-    private RoadNode roadNodeEnd;
+    private final RoadNode roadNodeBegin;
+    private final RoadNode roadNodeEnd;
 
-    public RoadSection() {
-        // TODO - implement RoadSection.RoadSection
-        throw new UnsupportedOperationException();
+    public RoadSection(RoadNode roadNodeBegin, RoadNode roadNodeEnd, double speed, double length) {
+        if (roadNodeBegin == null) {
+            throw new NullPointerException("'roadNodeBegin' ne doit pas être nul");
+        }
+        this.roadNodeBegin = roadNodeBegin;
+
+        if (roadNodeBegin == null) {
+            throw new NullPointerException("'roadNodeEnd' ne doit pas être nul");
+        }
+        this.roadNodeEnd = roadNodeEnd;
+
+        this.speed = speed;
+        this.length = length;
     }
 
     public double getCost() {
@@ -45,16 +55,28 @@ public class RoadSection {
         return roadNodeBegin;
     }
 
-    public void setRoadNodeBegin(RoadNode roadNodeBegin) {
-        this.roadNodeBegin = roadNodeBegin;
-    }
-
     public RoadNode getRoadNodeEnd() {
         return roadNodeEnd;
     }
 
-    public void setRoadNodeEnd(RoadNode roadNodeEnd) {
-        this.roadNodeEnd = roadNodeEnd;
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        } else if (getClass() != obj.getClass()) {
+            return false;
+        } else {
+            final RoadSection other = (RoadSection) obj;
+            return roadNodeBegin.equals(other.roadNodeBegin);
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 67 * hash + roadNodeBegin.hashCode();
+        hash = 67 * hash + roadNodeEnd.hashCode();
+        return hash;
     }
 
 }

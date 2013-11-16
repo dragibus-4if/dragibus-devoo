@@ -65,7 +65,7 @@ public class RegularGraph implements Graph {
         }
         while (!open.isEmpty()) {
             RoadNode current = open.iterator().next();
-            Long current_index = indexMap.get(current);
+            Long currentIndex = indexMap.get(current);
             open.remove(current);
             close.add(current);
             for (RoadSection section : current.getSections()) {
@@ -73,9 +73,9 @@ public class RegularGraph implements Graph {
                 if (!close.contains(n)) {
                     open.add(n);
                 }
-                Long n_index = indexMap.get(n);
-                succ.get(current_index.intValue()).add(new Integer(n_index.intValue()));
-                costs[current_index.intValue()][n_index.intValue()] = (int)section.getCost();
+                Long nIndex = indexMap.get(n);
+                succ.get(currentIndex.intValue()).add(new Integer(nIndex.intValue()));
+                costs[currentIndex.intValue()][nIndex.intValue()] = (int)section.getCost();
             }
         }
 
