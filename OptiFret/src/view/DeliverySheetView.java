@@ -2,41 +2,32 @@ package view;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
+import javax.swing.DefaultListModel;
 import javax.swing.JFileChooser;
-import static javax.swing.JFrame.EXIT_ON_CLOSE;
 import javax.swing.JList;
 import javax.swing.JMenu;
-import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.ListModel;
 
 public class DeliverySheetView extends JPanel {
 
-	MapCanvas mapCanvas;
-	DeliveryList deliveryList;
-        
-        
-      
-	public DeliverySheetView getPlannedList() {
-		// TODO - implement DeliverySheetView.getPlannedList
-		throw new UnsupportedOperationException();
-	}
+    MapCanvas mapCanvas;
+    DeliveryList deliveryList;
+              
+    public DefaultListModel getPlannedList() {
+            return deliveryList.getPlanned();
+    }
 
-	public DeliveryList getNotPlannedList() {
-		// TODO - implement DeliverySheetView.getNotPlannedList
-		throw new UnsupportedOperationException();
-	}
-
-	
+    public DefaultListModel getNotPlannedList() {
+            return deliveryList.getNotPlanned();
+    }
+    
     private JMenu menuFile, menuEdit;
     private JMenuItem loadRound, loadMap, exportRound, undo, redo;
     private JFileChooser fc = new JFileChooser();
@@ -44,8 +35,7 @@ public class DeliverySheetView extends JPanel {
     public DeliverySheetView() {
         
         setSize(800, 600);
-        Container cont = this.getParent();
-        setLayout(new BoxLayout(cont, BoxLayout.X_AXIS));
+        setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
         add(makeBothDeliveryLists(), BorderLayout.WEST);
         add(makeDeliveryMap(), BorderLayout.EAST);        
         // TODO remove this test data
@@ -58,6 +48,7 @@ public class DeliverySheetView extends JPanel {
 
     private Component makeBothDeliveryLists() {
         JPanel panel = new JPanel();
+        deliveryList=new DeliveryList();
         panel.setPreferredSize(new Dimension(150, getHeight()));
         panel.setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
@@ -83,6 +74,8 @@ public class DeliverySheetView extends JPanel {
     private Component makeDeliveryMap() {
         JPanel panel = new JPanel();
         panel.setPreferredSize(new Dimension(650, getHeight()));
+        mapCanvas=new MapCanvas();
+        mapCanvas.setBounds(0,0,650,getHeight());
         panel.add(mapCanvas);
         return panel;
     }
