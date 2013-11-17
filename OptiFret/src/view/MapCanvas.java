@@ -24,8 +24,9 @@ public class MapCanvas extends Canvas {
     }
     
     private void draw(Graphics g) {
-
         Graphics2D g2d = (Graphics2D) g;
-        g2d.drawString("Java 2D", 50, 50);
+        g2d.drawRect(0,0,getWidth(),getHeight());
+        g2d.drawString("Java 2D", 0, 0);
+
     }
 }
