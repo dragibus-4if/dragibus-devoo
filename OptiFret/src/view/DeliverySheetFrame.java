@@ -10,7 +10,6 @@ import java.awt.GridBagLayout;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.File;
-import java.io.FileFilter;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
@@ -22,6 +21,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.ListModel;
+import javax.swing.filechooser.FileFilter;
 
 /**
  *
@@ -94,7 +94,7 @@ public class DeliverySheetFrame extends JFrame {
         exportRound = new JMenuItem("Exporter une tournée");
 
         fc.setMultiSelectionEnabled(false);
-        fc.setFileFilter(new javax.swing.filechooser.FileFilter() {
+        fc.setFileFilter(new FileFilter() {
             @Override
             public boolean accept(File f) {
                 if (f.isDirectory()) {
@@ -195,8 +195,8 @@ public class DeliverySheetFrame extends JFrame {
         bar.add(menuFile);
 
         menuEdit = new JMenu("Edition");
-        undo = new JMenuItem("Undo");
-        redo = new JMenuItem("Redo");
+        undo = new JMenuItem("Annuler");
+        redo = new JMenuItem("Répéter");
 
         undo.addMouseListener(new MouseListener() {
             @Override
