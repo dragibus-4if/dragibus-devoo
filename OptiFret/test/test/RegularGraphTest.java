@@ -60,7 +60,7 @@ public class RegularGraphTest extends TestCase{
          assertEquals(graphZero.getNbVertices(),graphGZero.getNbVertices() );
          assertEquals(graphZero.getMaxArcCost(),graphGZero.getMaxArcCost());
          assertEquals(graphZero.getMinArcCost(),graphGZero.getMinArcCost());
-         assertEquals(graphZero.getCost(),graphGZero.getCost());
+         assertEquals(graphZero.getCost().length ,graphGZero.getCost().length);
          
          
          //Test de deux nodes pointant l'un vers l'autre : cas de base
@@ -76,9 +76,9 @@ public class RegularGraphTest extends TestCase{
          
             //Création du graph "à la main" de ce cas
          int[][] costCB = new int [2][2];
-         costCB[0][0] = 2;
-         costCB[0][1] = 0;
-         costCB[1][0] = 1;
+         costCB[0][0] = 0;
+         costCB[0][1] = 88;
+         costCB[1][0] = 14;
          costCB[1][1] = 0;
          ArrayList<ArrayList<Integer>> succCB = 
                  new ArrayList<>();
@@ -93,7 +93,7 @@ public class RegularGraphTest extends TestCase{
          treeCB.put(2, node2);
          
          
-         RegularGraph graphCB = new RegularGraph(2, 88, 14, costCB, succCB, 
+         RegularGraph graphCB = new RegularGraph(2, 88, 0, costCB, succCB, 
                  treeCB);
          RegularGraph graphGCB = RegularGraph.loadFromRoadNetwork(netCB);
          assertEquals(graphCB.getNbVertices(),graphGCB.getNbVertices() );
