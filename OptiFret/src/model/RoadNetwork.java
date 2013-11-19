@@ -2,6 +2,9 @@ package model;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 
 import java.util.List;
 import javax.xml.parsers.DocumentBuilder;
@@ -9,16 +12,22 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 public class RoadNetwork {
 
     private RoadNode root;
+    
+    
 
-    public static RoadNetwork loadFromXML(File file) {
+    public static RoadNetwork loadFromXML(File file) throws Exception{ //TODO : check integrity of roadnetwork ( correspondance id des roadnodes des 
+                                     //roadsections avec celle des roadNodes
         // TODO - implement RoadNetwork.loadFromXml
         //throw new UnsupportedOperationException();
+        HashSet<RoadNode> roadNodes = new HashSet<RoadNode>();
         if (file != null) {
              try {
                  // creation d'un constructeur de documents a l'aide d'une fabrique
@@ -27,10 +36,116 @@ public class RoadNetwork {
                 Document document = builder.parse(file);
                 Element documentRoot = document.getDocumentElement();
                 if ( documentRoot.getTagName().equals("Reseau")){
-                    
+                    NodeList nodes =  documentRoot.getChildNodes();
+                    if ( nodes.getLength()>0){
+                        RoadNetwork result = new RoadNetwork();
+                        
+                        for ( int i = 0 ; i < nodes.getLength() ; i ++ ){
+                            Node n = nodes.item(i);
+                            if ( n.getNodeName().equals("Noeud")){
+                                NamedNodeMap roadNodeAttributes = n.getAttributes();
+                                
+                                
+                                // recupere l'id du roadNode
+                                Node id = roadNodeAttributes.getNamedItem("id");
+                                String stringFormNodeId = id.getNodeValue();
+                                long nodeId = Long.parseLong(stringFormNodeId);
+                                // TODO : erreurs sur le parsing ?
+                                RoadNode tmp = new RoadNode(nodeId);
+                                RoadNode rn = new RoadNode(-1);
+                                if (! roadNodes.contains(tmp) ) {
+                                    roadNodes.add(tmp);
+                                    rn = tmp;
+                                }
+                                else{
+                                    Iterator<RoadNode> iterator = roadNodes.iterator();
+                                    while( iterator.hasNext()){
+                                        RoadNode nNode = iterator.next();
+                                        if ( nNode.getId() == nodeId){
+                                            rn = nNode;
+                                        }
+                                    }
+                                }
+                               // RoadNode rn = new RoadNode(nodeId);
+                                if ( i == 0 ){
+                                    result.root = rn;
+                                }
+                                
+                                // recupere les coordonnees x et y du roadNode
+                                Node x = roadNodeAttributes.getNamedItem("x");
+                                Node y = roadNodeAttributes.getNamedItem("y");
+                                String stringFormX = x.getNodeValue();
+                                String stringFormY = y.getNodeValue();
+                                int nodeX = Integer.parseInt(stringFormX);
+                                int nodeY = Integer.parseInt(stringFormY);
+                                rn.setX( nodeX );
+                                rn.setY( nodeY );
+                                NodeList roadSections = n.getChildNodes();
+                                if ( roadSections.getLength() > 0 ){
+                                    for ( int j = 0 ; j < roadSections.getLength() ; j ++ ){
+                                        Node roadSectionNode = roadSections.item(j);
+                                        if ( roadSectionNode.getNodeName().equals("TronconSortant")){
+                                            NamedNodeMap roadSectionAttributes = roadSectionNode.getAttributes();
+                                            //attributs à récupérer : 
+                                            
+                                           // nomRue, vitesse, longueur, destination
+                                            
+                                            
+                                            Node nodeFormRoadName = roadSectionAttributes.getNamedItem("nomRue");
+                                            String roadName = nodeFormRoadName.getNodeValue();
+                                            Node nodeFormSpeed = roadSectionAttributes.getNamedItem("vitesse");
+                                            String stringFormSpeed = nodeFormSpeed.getNodeValue();
+                                            double speed = Double.parseDouble( stringFormSpeed );
+                                            Node nodeFormLength = roadSectionAttributes.getNamedItem("longueur");
+                                            String stringFormLength = nodeFormLength.getNodeValue();
+                                            double length = Double.parseDouble( stringFormLength );
+                                            Node nodeFormDestinationId= roadSectionAttributes.getNamedItem("destination");
+                                            String stringFormDestinationId = nodeFormDestinationId.getNodeValue();
+                                            long destinationId = Long.parseLong( stringFormDestinationId );
+                                            
+                                            RoadNode dest = new RoadNode( destinationId );
+                                            if ( !roadNodes.contains (dest ) ){
+                                                roadNodes.add(dest);
+                                            }
+                                            else{
+                                                Iterator<RoadNode> it = roadNodes.iterator();
+                                                while( it.hasNext()){
+                                                    RoadNode nNode = it.next();
+                                                    if ( nNode.getId() == destinationId){
+                                                        dest = nNode;
+                                                    }
+                                                }
+                                                
+                                            }
+                                            RoadSection roadSection = new RoadSection( rn, dest, speed, length );
+                                            rn.addNeighbor(roadSection);
+                                        }
+                                        else{ // noeud non defini ( n'est pas TronconSortant )
+                                            throw ( new Exception("Erreur roadNetwork.loadFromXML : \nErreur syntaxique :\n\tnom de noeud attend : TronconSortant\n\tnom de noeud trouvé : "+roadSectionNode.getNodeName()));
+                                            
+                                        }
+                                    }
+                                }
+                                else{ // roadNode sans roadSections
+                                   throw ( new Exception("Erreur roadNetwork.loadFromXML : \nErreur syntaxique :\n\tRoadNode "+rn.getId()+" sans RoadSection."));
+                                  
+                                }
+                            }
+                            else{ // le reseau contient des elements qui ne sont pas des noeuds 
+                               throw ( new Exception("Erreur roadNetwork.loadFromXML : \nErreur syntaxique :\n\t\n\tnom de noeud attend : Noeud\n\tnom de noeud trouvé : "+n.getNodeName()+""));
+                              
+                            }
+                        }
+                    }
+                    else{// 0 nodes dans le document ... 
+                        throw ( new Exception("Erreur roadNetwork.loadFromXML : \nErreur syntaxique :\n\tLe document ne contient pas de RoadNodes"));
+                        
+                    }
                 }
                 else{ // element racine different de "Reseau" (erreur de syntaxe)
-                    NodeList roadNodes =  documentRoot.getChildNodes();
+                    throw ( new Exception("Erreur roadNetwork.loadFromXML : \nErreur syntaxique :\n\tLe noeud racine n'est pas <Reseau>"));
+                    
+                   
                 }
                 /*
                  * if (racine.getNodeName().equals("dessin")) {
@@ -50,6 +165,11 @@ public class RoadNetwork {
             } catch (IOException ioe) {
                 System.out.println("Erreur d'entree/sortie");
                 System.out.println("lors de l'appel a construteur.parse(xml)");
+            }
+             catch ( Exception e){ // exceptions avec des messages personalisés
+                 System.out.println(e.getMessage());
+                 System.out.println(e.getStackTrace());
+                 return new RoadNetwork();
             }
              
         }

@@ -20,7 +20,7 @@ public class RoadNetworkTest extends TestCase {
         File f4242 = new File("C://frthi/f4242");
         assertNull(RoadNetwork.loadFromXML(f4242));
         
-        // Si c'est un dossier, la fonction retourne Null
+        // Si c'est un dossier, la fonction retourne Nulla
         
         File temp = null;
         try{
@@ -119,7 +119,7 @@ public class RoadNetworkTest extends TestCase {
         // taille augmente de 1
         node.addNeighbor(new RoadNode());
         assertEquals(net.getSize(), 3);
-
+        
         // Ajout d'un noeud directement depuis le getter
         net.getRoot().addNeighbor(new RoadNode());
         assertEquals(net.getSize(), 4);
