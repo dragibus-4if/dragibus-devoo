@@ -13,22 +13,29 @@ public class DeliverySheetController {
 
     private Stack<DeliverySheetCommand> history = new Stack<>();
     private Stack<DeliverySheetCommand> redoneHistory = new Stack<>();
-    private RoadNetwork roadNetwork = new RoadNetwork();
+    private RoadNetwork roadNetwork;
     private DeliverySheetModel deliverySheetModel;
     private DeliverySheetView deliverySheetView;
 
     public DeliverySheetController() {
     }
 
-    public void loadRoadNetwork() {
+    private void loadRoadNetwork() {
         JFileChooser fc = new JFileChooser();
         if (fc.showOpenDialog(deliverySheetView) == JFileChooser.APPROVE_OPTION) {
-            roadNetwork.loadFromXML(fc.getSelectedFile());
+            roadNetwork = RoadNetwork.loadFromXML(fc.getSelectedFile());
         }
     }
 
-    public void loadDeliverySheet() {
-        // TODO - implement DeliverySheet.loadDeliverySheet
+    private void loadDeliverySheet() {
+        JFileChooser fc = new JFileChooser();
+        if (fc.showOpenDialog(deliverySheetView) == JFileChooser.APPROVE_OPTION) {
+            deliverySheetModel = DeliverySheetModel.loadFromXML(fc.getSelectedFile());
+        }
+    }
+
+    private void exportRound() {
+        // TODO - implement DeliverySheet.exportRound
         throw new UnsupportedOperationException();
     }
 
@@ -69,28 +76,41 @@ public class DeliverySheetController {
         undoCommand(history.pop());
     }
 
+    private void setupNewView() {
+        // Historique
+        history.clear();
+        deliverySheetView.getUndo().setEnabled(false);
+        deliverySheetView.getRedo().setEnabled(false);
+        
+        // Listeners
+        setupViewListeners();
+    }
+    
     private void setupViewListeners() {
-        deliverySheetView.getLoadMap().addMouseListener(new MouseListener() {
-
-            @Override
-            public void mousePressed(MouseEvent e) {
-                loadRoadNetwork();
-            }
+        // "charger la carte"
+        deliverySheetView.getLoadMap().addMouseListener(new MenuItemClickListener() {
 
             @Override
             public void mouseClicked(MouseEvent e) {
+                loadRoadNetwork();
             }
+        });
+        
+        // "charger des demandes de livraison"
+        deliverySheetView.getLoadRound().addMouseListener(new MenuItemClickListener() {
 
             @Override
-            public void mouseReleased(MouseEvent e) {
+            public void mouseClicked(MouseEvent e) {
+                loadDeliverySheet();
             }
+        });
+        
+        // "exporter l'itinéraire"
+        deliverySheetView.getExportRound().addMouseListener(new MenuItemClickListener() {
 
             @Override
-            public void mouseEntered(MouseEvent e) {
-            }
-
-            @Override
-            public void mouseExited(MouseEvent e) {
+            public void mouseClicked(MouseEvent e) {
+                exportRound();
             }
         });
     }
@@ -115,7 +135,27 @@ public class DeliverySheetController {
             throw new NullPointerException("'view' ne doit pas être nul");
         }
         this.deliverySheetView = view;
-        setupViewListeners();
+        setupNewView();
+    }
+    
+    private abstract class MenuItemClickListener implements MouseListener {
+
+        @Override
+        public void mousePressed(MouseEvent e) {
+        }
+
+        @Override
+        public void mouseReleased(MouseEvent e) {
+        }
+
+        @Override
+        public void mouseEntered(MouseEvent e) {
+        }
+
+        @Override
+        public void mouseExited(MouseEvent e) {
+        }
+        
     }
 
 }
