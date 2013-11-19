@@ -56,7 +56,7 @@ public class DeliverySheetFrame extends JFrame {
                 int ret = fc.showOpenDialog(null);
                 if(ret == JFileChooser.APPROVE_OPTION)
                 {
-                    //loadNetwork(fc.getSelectedFile());
+                    
                 }
             }
 
@@ -86,4 +86,25 @@ public class DeliverySheetFrame extends JFrame {
         
         
     }
+
+    public JMenuItem getLoadRound() {
+        return loadRound;
+    }
+
+    public JMenuItem getLoadMap() {
+        return loadMap;
+    }
+
+    public JMenuItem getExportRound() {
+        return exportRound;
+    }
+
+    public JMenuItem getUndo() {
+        return undo;
+    }
+
+    public JMenuItem getRedo() {
+        return redo;
+    }
+    
 }
