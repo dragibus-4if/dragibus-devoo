@@ -46,8 +46,7 @@ public class RegularGraph implements Graph {
             RoadNode current = open.iterator().next();
             open.remove(current);
             close.add(current);
-            for (RoadSection section : current.getSections()) {
-                RoadNode n = section.getRoadNodeEnd();
+            for (RoadNode n : current.getNodes()) {
                 if (!close.contains(n)) {
                     open.add(n);
                 }
@@ -78,11 +77,13 @@ public class RegularGraph implements Graph {
             }
             open.remove(current);
             close.add(current);
-            for (RoadSection section : current.getSections()) {
-                RoadNode n = section.getRoadNodeEnd();
+            for (RoadNode n : current.getNodes()) {
                 if (!close.contains(n)) {
                     open.add(n);
                 }
+            }
+            for (RoadSection section : current.getSections()) {
+                RoadNode n = section.getRoadNodeEnd();
                 Integer nIndex = null;
                 for(Entry<Integer, RoadNode> e : indexMap.entrySet()) {
                     if(e.getValue().equals(n)) {
