@@ -17,8 +17,7 @@ public class OptiFret {
             @Override
             public void run() {
                 DeliverySheetView view = new DeliverySheetView();
-                DeliverySheetController controller = new DeliverySheetController();
-                controller.setDeliverySheetView(view);
+                DeliverySheetController controller = new DeliverySheetController(view);
                 view.setVisible(true);
             }
         });
