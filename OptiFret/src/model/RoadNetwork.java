@@ -61,4 +61,12 @@ public class RoadNetwork {
         return new ArrayList<>();
     }
 
+    public void setRoot(RoadNode root) {
+        this.root = root;
+    }
+
+    public int getSize() {
+        return getNodes().size();
+    }
+
 }
