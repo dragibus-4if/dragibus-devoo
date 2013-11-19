@@ -2,6 +2,7 @@ package test;
 
 import java.io.FileWriter;
 import java.io.BufferedWriter;
+import java.io.File;
 
 import java.io.IOException;
 import junit.framework.TestCase;
@@ -15,15 +16,29 @@ public class RoadNetworkTest extends TestCase {
         assertNull(RoadNetwork.loadFromXML(null));
 
         // Si le fichier n'existe pas, la fonction retourne Null
-        // Normalement le fichier /4242 n'existe pas
-        assertNull(RoadNetwork.loadFromXML("/4242"));
-
+        // Normalement le fichier C://frthi/f4242 n'existe pas
+        File f4242 = new File("C://frthi/f4242");
+        assertNull(RoadNetwork.loadFromXML(f4242));
+        
         // Si c'est un dossier, la fonction retourne Null
-        assertNull(RoadNetwork.loadFromXML("/"));
+        
+        File temp = null;
+        try{
+            temp = File.createTempFile("temp", Long.toString(System.nanoTime()));
+            if(!(temp.mkdir()))
+            {
+               System.out.println("Test error : could note generate test temporary directory.");
+            }
+        }
+        catch(IOException e){
+            System.out.println("Test error while generating temporary files for test purposes.");
+        }
+        assertNull(RoadNetwork.loadFromXML(temp));
 
         // Si le fichier n'est pas lisible, la fonction retourne Null
         // Normalement le fichier /root ne sont pas lisibles
-        assertNull(RoadNetwork.loadFromXML("/root"));
+        //
+        assertNull(RoadNetwork.loadFromXML(new File("/root")));
     }
 
     private boolean writeInFile(String filename, String content) {
@@ -47,11 +62,11 @@ public class RoadNetworkTest extends TestCase {
 
         // Test d'une fermeture de balise manquante
         writeInFile(filename, "<root>");
-        assertNull(RoadNetwork.loadFromXML(filename));
+        assertNull(RoadNetwork.loadFromXML(new File(filename)));
 
         // Test d'une ouverture de balise manquante
         writeInFile(filename, "<root></balise></root>");
-        assertNull(RoadNetwork.loadFromXML(filename));
+        assertNull(RoadNetwork.loadFromXML(new File(filename)));
 
         // Il n'y a pas tout les cas sur la syntaxe XML. La bibliothèque
         // utilisée doit pouvoir détecter les erreurs. Nous l'utilisons et ces
@@ -66,17 +81,17 @@ public class RoadNetworkTest extends TestCase {
         // Si la balise racine est un élément quelconque (différent de ce qui
         // est attendu), la fonction renvoie null.
         writeInFile(filename, "<root></root>");
-        assertNull(RoadNetwork.loadFromXML(filename));
+        assertNull(RoadNetwork.loadFromXML(new File(filename)));
 
         // Si le document contient un élément non défini, la fonction renvoie
         // null.
         writeInFile(filename, "<road_network><autre></autre></road_network>");
-        assertNull(RoadNetwork.loadFromXML(filename));
+        assertNull(RoadNetwork.loadFromXML(new File(filename)));
 
         // Si c'est la bonne balise racine, la fonction renvoie quelque chose de non
         // null.
         writeInFile(filename, "<road_network></road_network>");
-        RoadNetwork rn = RoadNetwork.loadFromXML(filename);
+        RoadNetwork rn = RoadNetwork.loadFromXML(new File(filename));
         assertNotNull(rn);
         assertEquals(rn.getSize(), 0);
 
