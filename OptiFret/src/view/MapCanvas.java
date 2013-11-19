@@ -4,36 +4,61 @@
  */
 package view;
 
-import java.awt.BasicStroke;
 import java.awt.Canvas;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.List;
+import model.RoadNode;
+import model.RoadSection;
 
 /**
  *
  * @author Sylvain
  */
 public class MapCanvas extends Canvas {
-    public MapCanvas(){
-        super();
-    }
+
+    ArrayList<ArcView> mapArcs;
+    ArrayList<NodeView> mapNodes;
     
+    public MapCanvas(List<RoadNode> nodes) {
+        super();
+        mapArcs = new ArrayList<>();
+        mapNodes = new ArrayList<>();
+
+        if (nodes != null) {
+            for (RoadNode rn : nodes) {
+                if (rn.getNeighbors() != null) {
+                    if(!mapNodes.contains(rn)){
+                        mapNodes.add(new NodeView(rn.getX(),rn.getY()));
+                    }
+                    for (RoadNode neighbor : rn.getNeighbors()) {
+                        ArcView temp = new ArcView(rn.getX(), rn.getY(), neighbor.getX(), neighbor.getY());
+                        if (!mapArcs.contains(temp)) {
+                            mapArcs.add(temp);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     @Override
     public void paint(Graphics g) {
         super.paint(g);
-        ArrayList <ArcView> temp=new ArrayList<ArcView> ();
-        draw(g,temp);
+        draw(g);
     }
-    
-    private void draw(Graphics g,ArrayList<ArcView> arcs) {
-        Graphics2D g2d = (Graphics2D) g;
-        g2d.drawString("Java 2D", 50, 50);
-        g2d.drawOval(10, 10, 20, 20);
-        g2d.setStroke(new BasicStroke(5));
-        g2d.drawLine(0, 0, getWidth(), getHeight());
-        g2d.drawRect(0,0,getWidth()-1,getHeight()-1);
 
+    private void draw(Graphics g) {
+        for (ArcView arc : mapArcs) {
+            arc.draw(g);
+        }
+        for(NodeView node: mapNodes){
+            node.draw(g);
+        }
     }
+
+  
+    
 }
