@@ -19,6 +19,7 @@ public class RoadNetwork {
     }
 
     public RoadNetwork() {
+        root = null;
     }
 
     public RoadNode getRoot() {
@@ -31,6 +32,8 @@ public class RoadNetwork {
     }
     
     public List<RoadNode> getNodes() {
+        if(root == null)
+            return new ArrayList<>();
         Set<RoadNode> open = new HashSet<>();
         Set<RoadNode> close = new HashSet<>();
         List<RoadNode> l = new ArrayList<>();
@@ -39,8 +42,7 @@ public class RoadNetwork {
             RoadNode current = open.iterator().next();
             open.remove(current);
             close.add(current);
-            for (RoadSection section : current.getSections()) {
-                RoadNode n = section.getRoadNodeEnd();
+            for (RoadNode n : current.getNodes()) {
                 if (!close.contains(n)) {
                     open.add(n);
                 }

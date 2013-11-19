@@ -5,6 +5,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 
 import java.io.IOException;
+import java.util.Iterator;
 import junit.framework.TestCase;
 import model.RoadNetwork;
 import model.RoadNode;
@@ -139,5 +140,35 @@ public class RoadNetworkTest extends TestCase {
         // Essaye d'acceder à élément n'existant toujours pas (ou invalide)
         assertNull(net.getNodeById(null));
         assertNull(net.getNodeById(new Long(-1)));
+    }
+    
+    public void testGetNodes() {
+        RoadNetwork net = new RoadNetwork();
+        
+        // Récupère la liste des nodes sans avoir défini une racine.
+        assertNotNull(net.getNodes());
+        assertEquals(net.getNodes().size(), 0);
+        
+        // Ajout d'un noeud dans le graphe puis récupération de ce noeud dans
+        // une liste
+        RoadNode node = new RoadNode(0);
+        net.setRoot(node);
+        assertEquals(net.getNodes().size(), 1);
+        assertEquals(net.getNodes().iterator().next(), net.getRoot());
+        assertEquals(net.getNodes().iterator().next(), node);
+
+        // Ajout d'un noeud comme fils du précédent puis recherche dans le
+        // graphe et vérification que les deux nodes sont dans la liste des
+        // noeuds. Il n'y a pas d'ordre défini dans le parcours.
+        RoadNode node2 = new RoadNode(1);
+        node2.addNeighbor(new RoadSection(node2, node, 0.0, 0.0));
+        assertEquals(net.getNodes().size(), 2);
+        Iterator<RoadNode> it = net.getNodes().iterator();
+        RoadNode n1 = it.next();
+        RoadNode n2 = it.next();
+        assertEquals(it.hasNext(), false);
+        if(!((n1 == node && n2 == node2) || (n1 == node2 && n2 == node))) {
+            fail("Les 2 noeuds ne sont pas trouvés");
+        }
     }
 };
