@@ -17,13 +17,19 @@ public class DeliverySheetController {
     private DeliverySheetModel deliverySheetModel;
     private DeliverySheetView deliverySheetView;
 
-    public DeliverySheetController() {
+    public DeliverySheetController(DeliverySheetView view) {
+        if (view == null) {
+            throw new NullPointerException("'view' ne doit pas être nul");
+        }
+        this.deliverySheetView = view;
+        setupNewView();
     }
 
     private void loadRoadNetwork() {
         JFileChooser fc = new JFileChooser();
         if (fc.showOpenDialog(deliverySheetView) == JFileChooser.APPROVE_OPTION) {
             roadNetwork = RoadNetwork.loadFromXML(fc.getSelectedFile());
+            // TODO update view
         }
     }
 
@@ -31,6 +37,7 @@ public class DeliverySheetController {
         JFileChooser fc = new JFileChooser();
         if (fc.showOpenDialog(deliverySheetView) == JFileChooser.APPROVE_OPTION) {
             deliverySheetModel = DeliverySheetModel.loadFromXML(fc.getSelectedFile());
+            // TODO update view
         }
     }
 
@@ -148,29 +155,6 @@ public class DeliverySheetController {
                 redoLastCommand();
             }
         });
-    }
-
-    public DeliverySheetModel getDeliverySheetModel() {
-        return deliverySheetModel;
-    }
-
-    public DeliverySheetView getDeliverySheetView() {
-        return deliverySheetView;
-    }
-
-    public void setDeliverySheetModel(DeliverySheetModel model) {
-        if (model == null) {
-            throw new NullPointerException("'model' ne doit pas être nul");
-        }
-        this.deliverySheetModel = model;
-    }
-
-    public void setDeliverySheetView(DeliverySheetView view) {
-        if (view == null) {
-            throw new NullPointerException("'view' ne doit pas être nul");
-        }
-        this.deliverySheetView = view;
-        setupNewView();
     }
 
     private abstract class MenuItemClickListener implements MouseListener {
