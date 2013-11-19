@@ -2,7 +2,9 @@ package model;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import tsp.RegularGraph;
 import tsp.SolutionState;
 import tsp.TSP;
@@ -17,6 +19,7 @@ public class RoadNetwork {
     }
 
     public RoadNetwork() {
+        root = null;
     }
 
     public RoadNode getRoot() {
@@ -29,8 +32,24 @@ public class RoadNetwork {
     }
     
     public List<RoadNode> getNodes() {
-        // TODO - implement RoadNetwork.getNodes
-        throw new UnsupportedOperationException();
+        if(root == null)
+            return new ArrayList<>();
+        Set<RoadNode> open = new HashSet<>();
+        Set<RoadNode> close = new HashSet<>();
+        List<RoadNode> l = new ArrayList<>();
+        open.add(root);
+        while (!open.isEmpty()) {
+            RoadNode current = open.iterator().next();
+            open.remove(current);
+            close.add(current);
+            for (RoadNode n : current.getNodes()) {
+                if (!close.contains(n)) {
+                    open.add(n);
+                }
+            }
+            l.add(current);
+        }
+        return l;
     }
     
     public List<RoadNode> makeRoute(List<RoadNode> objectives) {
@@ -42,6 +61,14 @@ public class RoadNetwork {
             return graph.getLsNode(ls);
         }
         return new ArrayList<>();
+    }
+
+    public void setRoot(RoadNode root) {
+        this.root = root;
+    }
+
+    public int getSize() {
+        return getNodes().size();
     }
 
 }
