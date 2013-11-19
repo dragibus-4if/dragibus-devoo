@@ -2,7 +2,6 @@ package optifret;
 
 import controller.DeliverySheetController;
 import java.awt.EventQueue;
-import model.DeliverySheetModel;
 import view.DeliverySheetView;
 
 /**
