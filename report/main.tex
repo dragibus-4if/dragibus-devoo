@@ -358,47 +358,52 @@ Dans cette partie nous abrégerons le terme "cas d'utilisation" par "CdU".
 \section{Diagrammes de séquence}
 \subsection{Charger les demandes de livraison et calculer la feuille de route}
 
-\newgeometry{left=1cm}
-\begin{landscape}
-    \centering
-    \begin{sequencediagram}
-        \newthread{app}{OptiFret}
-        \newinst{lrnListener}{lrnListener: MouseListener}
-        \newinst{ldsListener}{ldsListener: MouseListener}
-        \newinst{dsModel}{:DeliverySheet}
-        \newinst{rnModel}{:RoadNetwork}
-        \newinst{controller}{:Controller}
-        \newinst{view}{:View}
+\begingroup
+\fontsize{4pt}{5pt}\selectfont
+\centering
+\begin{sequencediagram}
+    \newthread{app}{OptiFret}
+    \newinst{lrnListener}{lrnListener: MouseListener}
+    \newinst{ldsListener}{ldsListener: MouseListener}
+    \newinst{dsModel}{:DeliverySheet}
+    \newinst{rnModel}{:RoadNetwork}
+    \newinst{controller}{:Controller}
+    \newinst{view}{:View}
 
-        \begin{sdblock}{}{}
-            \begin{call}{app}{activate()}{lrnListener}{}
-                \begin{call}{lrnListener}{loadRoadNetwork()}{controller}{}
-                    \begin{sdblock}{}{}
-                        \begin{callself}{controller}{selectFile()}{return file}
-                        \end{callself}
-                        \begin{call}{controller}{loadFromXML(file)}{rnModel}{}
-                        \end{call}
-                        \begin{call}{controller}{update()}{view}{}
-                        \end{call}
-                    \end{sdblock}
-                \end{call}
+    \begin{sdblock}{}{}
+        \begin{call}{app}{activate()}{lrnListener}{}
+            \begin{call}{lrnListener}{loadRoadNetwork()}{controller}{}
+                \begin{sdblock}{}{}
+                    \begin{callself}{controller}{selectFile()}{file}
+                    \end{callself}
+                    \begin{call}{controller}{loadFromXML(file)}{rnModel}{}
+                    \end{call}
+                    \begin{call}{controller}{update()}{view}{}
+                    \end{call}
+                \end{sdblock}
             \end{call}
-            \begin{call}{app}{activate()}{ldsListener}{}
-                \begin{call}{ldsListener}{loadDeliverySheet()}{controller}{}
-                    \begin{sdblock}{}{}
-                        \begin{callself}{controller}{selectFile()}{return file}
-                        \end{callself}
-                        \begin{call}{controller}{loadFromXML(file)}{dsModel}{}
-                        \end{call}
-                        \begin{call}{controller}{update()}{view}{}
-                        \end{call}
-                    \end{sdblock}
-                \end{call}
+        \end{call}
+        \begin{call}{app}{activate()}{ldsListener}{}
+            \begin{call}{ldsListener}{loadDeliverySheet()}{controller}{}
+                \begin{sdblock}{}{}
+                    \begin{callself}{controller}{selectFile()}{file}
+                    \end{callself}
+                    \begin{call}{controller}{loadFromXML(file)}{dsModel}{}
+                    \end{call}
+                    \begin{call}{controller}{getDeliveryNodes()}{dsModel}{nodes}
+                    \end{call}
+                    \begin{call}{controller}{makeRoute(nodes)}{rnModel}{route}
+                    \end{call}
+                    \begin{call}{controller}{setNodes(route)}{dsModel}{}
+                    \end{call}
+                    \begin{call}{controller}{update()}{view}{}
+                    \end{call}
+                \end{sdblock}
             \end{call}
-        \end{sdblock}
-    \end{sequencediagram}
-\end{landscape}
-\restoregeometry
+        \end{call}
+    \end{sdblock}
+\end{sequencediagram}
+\endgroup
 
 \subsection{Modifier interactivement la feuille de route}
 {\huge TODO}
