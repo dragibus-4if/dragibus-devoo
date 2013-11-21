@@ -1,0 +1,366 @@
+\documentclass[a4paper, 10pt]{article}
+
+\usepackage[francais]{babel}
+\usepackage[utf8x]{inputenc}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage{xcolor}
+%\usepackage[colorinlistoftodos]{todonotes}
+%\usepackage{pgf-umlsd}
+
+\begin{document}
+
+\title{Projet Dev-OO}
+\author{H4104 -- Dragibus}
+
+\maketitle
+\pagebreak
+
+\tableofcontents
+\pagebreak
+
+%\chapter{Capture des besoins}
+
+\section{Modèle du domaine}
+{\huge TODO}
+
+\section{Cas d'utilisation}
+
+\subsection{Description textuelle des cas d'utilisation}
+
+Description abrégée du cas d'utilisation
+\textbf{Superviser les tournées} \\
+
+L'utilisateur s'est préalablement identifié sur la plateforme OptiFret, et,
+dans le cas d'un Superviseur, la fenêtre de visualisation des feuilles de route
+est la première fenêtre apparente. Il pourra parcourir l'ensemble des feuilles
+de routes depuis une liste déroulante. Pour chaque feuille de route,
+l'utilisateur peut voir la liste des livraisons ordonnée (selon un ordre défini
+par le système relatif au trajet à parcourir), dont les informations sont
+abrégées. Il peut dérouler chaque livraison pour en avoir les informations
+détaillées, puis les enrouler ensuite pour retrouver les informations abrégées.
+
+Il a également accès à differentes informations comme la position GPS du
+livreur ou des inforamtions sur livraisons passées (livraison à l'heure ou en
+retard, problemes eventuels). \\
+
+
+Description abrégée du cas d'utilisation
+\textbf{Modifier feuille de route en cours de livraison} \\
+
+Au cas où un changement de l'ordre des livraisons soit nécessaire, le
+Superviseur doit avoir la possibilité de modifier les feuilles de route en
+temps réel. Cela comprend qu'il peut changer l'ordre des livraisons, ajouter ou
+bien supprimer des livraisons dans une feuille de route précisée. Le
+Superviseur ne pourra modifier la feuille de route que pour les livraisons non
+effectués ni en cours de route. Après chaque modification le système vérifiera
+automatiquement l'intégrité de l'ensemble des livraisons pour cette feuille
+avant de les rendre visible pour le livreur concerné.
+Si l'intégrité des livraisons ne peut pas être garantie ou bien qu'un
+changement de date et d'heure d'autres livraisons est nécessaire, le
+Superviseur est notifié tout de suite par le système et la modification n'est
+pas enregistrée. Une fois que le Superviseur a confirmé la notification, il
+revient à la fenêtre de la modification, sauf que la fenêtre montrera l'état
+initial de la feuille de route.
+A chaque modification de la feuille de route (c'est à dire à chaque
+modification ou suppression d'une livraison), le système recalcule
+automatiquement l'itinéraire. \\
+
+Description abrégée du cas d'utilisation
+\textbf{Modifier feuille de route avant le début de livraison} \\
+
+Si le Superviseur veut supprimer une livraison de l'application OptiFret. Il
+sélectionne la livraison à supprimer à partir d'une liste de livraisons et
+appuie sur le bouton "supprimer". Une boîte de dialogue demande alors de
+confirmer l'action.
+S'il existe une erreur dans les informations d'une livraison ou à la demande du
+client, le Superviseur selectionne une livraison et peut modifier l'adresse, la
+date, l'horaire, le téléphone de contact ou encore l'intitulé de la livraison
+(en dehors du cadre du prototype). Dans le cas d'une modification de la date de
+livraison un calendrier s'affiche et permet de saisir la nouvelle date.
+A chaque modification de la feuille de route (c'est à dire à chaque
+modification ou suppression d'une livraison), le système recalcule
+automatiquement l'itinéraire. \\
+
+Description abrégée du cas d'utilisation
+\textbf{Afficher liste des livraisons} \\
+
+Si le Superviseur en a besoin, il peut aussi commander l'affichage d'une liste
+de toutes les livraisons à partir de la fenêtre de la liste des livraisons par
+zône géographique. En bas de cette fenêtre, il trouve un bouton "Afficher
+toutes les livraisons" qui lui amènera à la liste complète. Une fois affichée,
+le Superviseur a la possibilité de chercher une certaine livraison en utilisant
+"Ctrl+F" et d'en sélectionner une pour la modifier. S'il clique sur le bouton
+"Modifier" de la livraison choisie, le système va lui demander s'il veut
+vraiment modifier cette livraison. La confirmation, par conséquent, lui amènera
+à la vue de la modification. \\
+
+Description abrégée du cas d'utilisation
+\textbf{Contacter client} \\
+
+Dans le cas où la génération des feuilles de route de permet pas de placer la
+livraison à un client à l'heure prévue initialement, le Superviseur contacte le
+client afin de le prévenir et d'obtenir une nouvelle date de livraison. Il
+récupère les informations clients à partir de la visualisation des informations
+de la livraison et peut alors le contacter soit par téléphone, soit par adresse
+électronique. Il peut alors replacer la livraison dans la liste des demandes de
+livraisons après avoir modifié la date et l'heure d'arrivée (cas d'utilisation
+"Modifier livraison"). L'ajout dans la liste des demandes de livraisons se met
+à jour automatiquement par le système OptiFret. \\
+
+\subsection{Diagramme des cas d'utilisation}
+{\huge TODO}
+
+%\chapter{Conception}
+
+\section{Description détaillée des cas d'utilisation}
+
+Dans cette partie nous abrégerons le terme "cas d'utilisation" par "CdU".
+
+En trop : Modif en cours de livraison \\
+- La position du livreur dans la supervision (appelée désormais visualisation)\\
+
+\subsection{Visionner les tournées}
+
+\begin{itemize}[label = \textbullet, font = \color{orange}]
+    \item \underline{Nom du cas d'utilisation} : visionner les tournées
+    \item \underline{Périmètre} : prototype OptiFret
+    \item \underline{Niveau} : but utilisateur
+    \item \underline{Acteur Principal} : Superviseur
+    \item \underline{Parties prenantes et intérêts} :
+        \begin{itemize}[label = \textbullet, font = \color{blue}]
+            \item \underline{Le Superviseur} : il veut pouvoir visualiser
+                l'état detaillé d'une tournée.
+        \end{itemize}
+    \item \underline{Préconditions} : L'utilisateur doit être identifié, le
+        plan et la demande de livraisons chargés.
+    \item \underline{Postconditions} : Néant.
+    \item \underline{Cas Nominal} :
+    \begin{enumerate}
+        \item La fenêtre de supervision s'affiche dès le Superviseur identifié.
+        \item La visualisation d'une tournée s'affiche (détails des livraisons
+            et carte avec position du livreur).
+        \item Le Superviseur peut changer la feuille de route affichée en
+            selectionnant un autre livreur.
+        \item En cliquant sur un bandeau de livraison, le Superviseur a accès
+            au détails concernant la livraison.
+        \item En re-cliquant sur ce bandeau, le Superviseur peut ré-enrouler
+            les détails de livraisons pour les masquer.
+    \end{enumerate}
+    \item \underline{Extensions} :
+    \begin{enumerate}
+        \item Aucune carte n'a été chargée : un message d'erreur s'affiche en
+            lieu et place de la carte.
+        \item Aucune tournée n'est en cours : le menu déroulant est vide.
+    \end{enumerate}
+    \item \underline{Spécifications particulières} :
+    \begin{itemize}[label = \textbullet, font = \color{blue}]
+        \item La carte doit être actualisée fréquemment
+    \end{itemize}
+    \item \underline{Fréquence d'occurence} : très fréquente
+    \item \underline{Divers} : Néant.
+\end{itemize}
+
+\subsection{Modifier une feuille de route avant le début de livraison}
+
+\begin{itemize}[label = \textbullet, font = \color{orange}]
+    \item \underline{Nom du cas d'utilisation} : Modifier une feuille de route
+        avant le début de livraison
+    \item \underline{Périmètre} : prototype OptiFret
+    \item \underline{Niveau} : but utilisateur
+    \item \underline{Acteur Principal} : Superviseur
+    \item \underline{Parties prenantes et intérêts} :
+    \begin{itemize}[label = \textbullet, font = \color{blue}]
+        \item \underline{Le Superviseur} : il veut modifier ou supprimer une
+            livraison
+    \end{itemize}
+    \item \underline{Préconditions} : le Superviseur est identifié et
+        authentifié sur le système, la feuille de route est chargée sur le
+        système, il existe au moins un fichier XML pour une demande de
+        livraison et un fichier pour un plan géographique.
+    \item \underline{Postconditions} : les modifications sont enregistrés en
+        version texte et accessible pour le Livreur concerné
+    \item \underline{Cas Nominal} :
+    \begin{enumerate}
+        \item Le Superviseur se retrouve sur la vue qui affiche les feuilles de
+            routes.
+        \item Dans le menu "Fichier" il clique sur "Charger un plan" ce qui
+            correspond au cas d'utilisation "Charger un plan". Cela sera la
+            seule option dans le menu qui est cliquable pour l'instant. Ceci
+            correspond au CdU "Charger un plan", visible ci-dessous.
+        \item Dans un deuxième temps, il va encore une fois dans le menu
+            "Fichier". Maintenant l'option "Charger une demande" est activée
+            aussi. Le Superviseur clique là-dessus pour charger une demande de
+            livraisons ce qui correspond au CdU "Charger une demande", visible
+            ci-dessous..
+        \item La vue lui affiche maintenant deux listes de livraisons, la
+            première composée de livraisons déjà inclues dans la tournée, la
+            deuxième montrant la demande des livraisons pas encore traitées,
+            ainsi qu'un plan de la zone précisée. En plus, les boutons
+            "Supprimer" (au-dessous de la première liste), "Ajouter"
+            (au-dessous de la deuxième liste) et "Calculer l'itinéraire"
+            (au-dessous du plan) seront activées.
+        \item Maintenant, le Superviseur peut cliquer sur une des livraisons
+            dans n'importe quelle liste pour la faire dérouler et montrer les
+            détails ou bien il peut cliquer sur un des points sur le plan pour
+            faire pareil.
+        \item S'il clique sur un point sur le plan qui est déjà inclu dans le
+            chemin, le bouton "Ajouter" est désactivé, le bouton "Supprimer"
+            reste cliquable.
+        \item S'il choisit un point non-inclu, le bouton "Ajouter" reste activé
+            et le bouton "Supprimer" devient gris et non-cliquable.
+        \item Le Superviseur sélectionne une livraison de la première liste et
+            clique sur le bouton "Supprimer". La livraison dite est viré de la
+            tournée, et du chemin marqué sur le plan.
+        \item Il choisit une livraison de la liste de demande, puis il clique
+            sur le bouton "Ajouter". La livraison est viré de la demande de
+            livraison mais elle se retrouve dans la tournée, donc la première
+            liste.
+        \item Une fois le superviseur satisfait de l'ordre des livraisons de la
+            tournée, il clique sur le bouton "Calculer l'itinéraire", qui
+            correspond au CdU "Calculer l'itinéraire", visible ci-dessous.
+        \item Quand l'itinéraire est bien calculé, les livraisons de la tournée
+            sont marquées d'un code couleur ainsi que les points de livraisons
+            sur le plan:
+        \begin{itemize}
+            \item Blanc pour les livraisons qui entre dans la tournée sans aucun problème.
+            \item Rouge pour celles qui ne peuvent pas être réalisées dans leurs créneaux ou bien qui sont en dehors du temps de travail.
+        \end{itemize}
+        \item En suite, le Superviseur peut recommencer soit à partir de point 2 soit à partir de point 3.
+    \end{enumerate}
+    \item \underline{Extensions} : Néant.
+    \item \underline{Spécifications particulières} : Néant.
+    \item \underline{Fréquence d'occurence} : potentiellement plusieurs fois par jour par feuille de route
+    \item \underline{Divers} : Néant.
+\end{itemize}
+
+\subsection{Charger le plan}
+
+\begin{itemize}[label = \textbullet, font = \color{orange}]
+    \item \underline{Nom du cas d'utilisation} : Charger le plan
+    \item \underline{Périmètre} : prototype OptiFret
+    \item \underline{Niveau} : but utilisateur
+    \item \underline{Acteur Principal} : Superviseur
+    \item \underline{Parties prenantes et intérêts} :
+    \begin{itemize}[label = \textbullet, font = \color{blue}]
+        \item \underline{Le Superviseur} : il veut charger le plan
+    \end{itemize}
+    \item \underline{Préconditions} : le Superviseur est identifié et
+        authentifié sur le système
+    \item \underline{Postconditions} : la carte est chargée en mémoire (ou non,
+        si l'action a été annulée)
+    \item \underline{Cas Nominal} :
+    \begin{enumerate}
+        \item Le Superviseur se retrouve sur la vue qui affiche les feuilles de
+            routes.
+        \item Il sélectionne dans le menu "Fichier" l'action "Charger le plan".
+        \item Une nouvelle fenêtre s'ouvre pour choisir un fichier XML. Tous
+            les autres types de fichiers ne sonts pas choisissables.
+        \item Il sélectionne un fichier XML correspondant à un plan et confirme
+            son choix.
+        \item Le fenêtre se ferme et il retourne sur la vue d'affichage.
+    \end{enumerate}
+    \item \underline{Extensions} :
+    \begin{enumerate}
+        \item Le Superviseur essaye de charger un fichier "invalide"
+            \begin{enumerate}
+                \item Le système refuse le chargement, et affiche un
+                    message d'erreur ("Fichier invalide").
+            \end{enumerate}
+    \end{enumerate}
+    \item \underline{Spécifications particulières} : Néant.
+    \item \underline{Fréquence d'occurence} : potentiellement plusieurs fois
+        par jour
+    \item \underline{Divers} : Néant.
+\end{itemize}
+
+\subsection{Charger une demande de livraison}
+
+\begin{itemize}[label = \textbullet, font = \color{orange}]
+    \item \underline{Nom du cas d'utilisation} : Charger une demande de livraison
+    \item \underline{Périmètre} : prototype OptiFret
+    \item \underline{Niveau} : but utilisateur
+    \item \underline{Acteur Principal} : Superviseur
+    \item \underline{Parties prenantes et intérêts} :
+    \begin{itemize}[label = \textbullet, font = \color{blue}]
+        \item \underline{Le Superviseur} : il veut charger une demande de
+            livraisons.
+    \end{itemize}
+    \item \underline{Préconditions} : le Superviseur est identifié et
+        authentifié sur le système, le plan a été chargé.
+    \item \underline{Postconditions} : les demandes de livraisons sont chargées
+        en mémoire (ou non, si l'action a été annulée)
+    \item \underline{Cas Nominal} :
+    \begin{enumerate}
+        \item Le Superviseur se retrouve sur la vue qui affiche les feuilles de
+            routes.
+        \item Il sélectionne l'action "Charger une demande de livraison" dans
+            le menu "Fichier".
+        \item Une nouvelle fenêtre pour choisir un fichier XML s'ouvre.
+        \item Il sélectionne un fichier XML correspondant à une demande de
+            livraison et confirme l'action, tous les autres types de fichiers
+            ne sont pas choisissable.
+        \item La fenêtre se ferme et il retourne sur la vue d'affichage.
+    \end{enumerate}
+    \item \underline{Extensions} :
+    \begin{enumerate}
+        \item Le Superviseur essaye de charger un fichier "invalide"
+        \begin{enumerate}
+            \item Le système refuse le chargement, et affiche un message
+                d'erreur ("Fichier invalide").
+        \end{enumerate}
+    \end{enumerate}
+    \item \underline{Spécifications particulières} : Néant.
+    \item \underline{Fréquence d'occurence} : potentiellement plusieurs fois
+        par jour
+    \item \underline{Divers} : Néant.
+\end{itemize}
+
+\subsection{Calculer l'intinéraire}
+
+\begin{itemize}[label = \textbullet, font = \color{orange}]
+    \item \underline{Nom du cas d'utilisation} : Calculer l'itinéraire
+    \item \underline{Périmètre} : prototype OptiFret
+    \item \underline{Niveau} : but utilisateur
+    \item \underline{Acteur Principal} : Superviseur
+    \item \underline{Parties prenantes et intérêts} :
+    \begin{itemize}[label = \textbullet, font = \color{blue}]
+        \item \underline{Le Superviseur} : il veut calculer le chemin le plus
+            court entre les livraisons d'une tournée
+    \end{itemize}
+    \item \underline{Préconditions} : Le plan d'une zone géographique a été
+        chargé ainsi que la demande de livraisons.
+    \item \underline{Postconditions} : un chemin a été calculé et les
+        livraisons compris dans la tournée sont marquées d'après le code
+        couleur spécifié dans le CdU "Modifier une feuille de route avant le
+        début de livraison"
+    \item \underline{Cas Nominal} :
+    \begin{enumerate}
+        \item Le Superviseur se trouve sur la vue de la modification d'une
+            tournée avant qu'elle ait été commencé et il a déjà charger un plan
+            et une demande de livraison.
+        \item Il clique sur le bouton "Calculer l'itinéraire".
+        \item Le système lui affiche une barre d'attente pendant le traitement
+            des données.
+        \item Une fois le calcul terminé, la barre d'attente se ferme et le
+            chemin calculé est dessiné sur le plan.
+        \item Les livraisons dans la tournée sont colorées ainsi que les points
+            correspondants et les tronçons sur le plan.
+    \end{enumerate}
+    \item \underline{Extensions} : Néant.
+    \item \underline{Spécifications particulières} : Néant.
+    \item \underline{Fréquence d'occurence} : Potentiellement plusieurs fois
+        pendant la modification d'une feuille de route.
+    \item \underline{Divers} : Néant.
+\end{itemize}
+
+\section{Diagramme de séquence : saisir les demandes de livraison et calculer la feuille de route}
+{\huge TODO}
+
+%\begin{sequencediagram}
+    %\newthread{name}{:Thread}
+%\end{sequencediagram}
+
+
+\end{document}
