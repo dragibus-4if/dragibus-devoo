@@ -6,8 +6,10 @@
 \usepackage{enumitem}
 \usepackage{graphicx}
 \usepackage{xcolor}
-%\usepackage[colorinlistoftodos]{todonotes}
-%\usepackage{pgf-umlsd}
+\usepackage{tikz}
+\usetikzlibrary{arrows, shadows}
+\usepackage[underline=true, rounded corners=false]{pgf-umlsd}
+
 
 \begin{document}
 
@@ -355,12 +357,21 @@ En trop : Modif en cours de livraison \\
     \item \underline{Divers} : Néant.
 \end{itemize}
 
-\section{Diagramme de séquence : saisir les demandes de livraison et calculer la feuille de route}
+\section{Diagrammes de séquence}
+\subsection{Charger les demandes de livraison et calculer la feuille de route}
+
+\begin{sequencediagram}
+    \newthread{user}{utilisateur}
+    \newinst{loadRoundListener}{:MouseListener}
+    \newinst{controller}{:DeliverySheetController}
+
+    \begin{call}{user}{pressed()}{loadRoundListener}{}
+        \begin{call}{loadRoundListener}{loadRound()}{controller}{}
+        \end{call}
+    \end{call}
+\end{sequencediagram}
+
+\subsection{Modifier interactivement la feuille de route}
 {\huge TODO}
-
-%\begin{sequencediagram}
-    %\newthread{name}{:Thread}
-%\end{sequencediagram}
-
 
 \end{document}
