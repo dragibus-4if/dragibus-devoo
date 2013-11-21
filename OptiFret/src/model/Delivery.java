@@ -1,12 +1,18 @@
 package model;
 
-class Delivery {
+public class Delivery {
 
     private Long id;
-    private String phoneNumber;
-    private Client client;
+    private Long address;
     private TimeSlot timeSlot;
-    private DeliveryPoint deliveryPoint;
+    private Client client;
+
+    public Delivery() {
+    }
+
+    public Delivery(long id) {
+        this(new Long(id));
+    }
 
     public Delivery(Long id) {
         this.id = id;
@@ -16,20 +22,12 @@ class Delivery {
         return id;
     }
 
-    public String getPhoneNumber() {
-        return phoneNumber;
+    public Long getAddress() {
+        return address;
     }
 
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
-
-    public Client getClient() {
-        return client;
-    }
-
-    public void setClient(Client client) {
-        this.client = client;
+    public void setAddress(Long address) {
+        this.address = address;
     }
 
     public TimeSlot getTimeSlot() {
@@ -40,11 +38,11 @@ class Delivery {
         this.timeSlot = timeSlot;
     }
 
-    public DeliveryPoint getDeliveryPoint() {
-        return deliveryPoint;
+    public Client getClient() {
+        return client;
     }
 
-    public void setDeliveryPoint(DeliveryPoint deliveryPoint) {
-        this.deliveryPoint = deliveryPoint;
+    public void setClient(Client client) {
+        this.client = client;
     }
 }

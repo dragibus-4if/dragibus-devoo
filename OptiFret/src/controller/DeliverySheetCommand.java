@@ -1,6 +1,8 @@
 package controller;
 
-interface DeliverySheetCommand {
-    public void execute();
-    public void undo();
+public interface DeliverySheetCommand {
+
+    void execute();
+
+    void undo();
 }

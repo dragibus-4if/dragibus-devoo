@@ -1,10 +1,10 @@
 package model;
 
 public class DeliveryEmployee {
-    private Long id;
 
+    private Long id;
+    
     public DeliveryEmployee() {
-        this.id = new Long(-1);
     }
 
     public DeliveryEmployee(Long id) {
@@ -12,6 +12,11 @@ public class DeliveryEmployee {
     }
 
     public Long getId() {
-        return id;
+        return this.id;
     }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
 }
