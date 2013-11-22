@@ -8,11 +8,14 @@ package test;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
@@ -100,12 +103,20 @@ public class DeliverySheetModelTest extends TestCase {
         // Test avec une sheet vide
         String result = "";
         StringWriter sw = new StringWriter();
-        sheet.export(sw);
+        try {
+            sheet.export(sw);
+        } catch (IOException ex) {
+            Logger.getLogger(DeliverySheetModelTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
         assertEquals(result, sw.toString());
         
         // Appel avec un null
         try {
-            sheet.export(null);
+            try {
+                sheet.export(null);
+            } catch (IOException ex) {
+                Logger.getLogger(DeliverySheetModelTest.class.getName()).log(Level.SEVERE, null, ex);
+            }
             fail("Appel de export avec un paramètre null");
         }
         catch(NullPointerException e) {
@@ -134,7 +145,11 @@ public class DeliverySheetModelTest extends TestCase {
         
         String result = ""; // TODO
         StringWriter sw = new StringWriter();
-        sheet.export(sw);
+        try {
+            sheet.export(sw);
+        } catch (IOException ex) {
+            Logger.getLogger(DeliverySheetModelTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
         assertEquals(result, sw.toString());
     }
     
@@ -144,9 +159,9 @@ public class DeliverySheetModelTest extends TestCase {
         path.add(new RoadNode(0));
         path.add(new RoadNode(1));
         path.add(new RoadNode(2));
-        path.add(new RoadNode(1));
+        path.add(path.get(1));
         path.add(new RoadNode(3));
-        path.add(new RoadNode(1));
+        path.add(path.get(1));
         path.add(new RoadNode(4));
         path.add(path.get(0));
         path.get(0).addNeighbor(path.get(1), 1, 1);
@@ -171,7 +186,11 @@ public class DeliverySheetModelTest extends TestCase {
         
         String result = ""; // TODO
         StringWriter sw = new StringWriter();
-        sheet.export(sw);
+        try {
+            sheet.export(sw);
+        } catch (IOException ex) {
+            Logger.getLogger(DeliverySheetModelTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
         assertEquals(result, sw.toString());
     }
     
@@ -188,10 +207,14 @@ public class DeliverySheetModelTest extends TestCase {
                 new TimeSlot(new Date(), new Long(0)), new Client()));
         
         try {
-            sheet.export(new StringWriter());
+            try {
+                sheet.export(new StringWriter());
+            } catch (IOException ex) {
+                Logger.getLogger(DeliverySheetModelTest.class.getName()).log(Level.SEVERE, null, ex);
+            }
             fail("Livraison en dehors du chemin");
         }
-        catch() {
+        catch(RuntimeException e) {
         }
     }
     
@@ -207,7 +230,11 @@ public class DeliverySheetModelTest extends TestCase {
         
         String result = ""; // TODO
         StringWriter sw = new StringWriter();
-        sheet.export(sw);
+        try {
+            sheet.export(sw);
+        } catch (IOException ex) {
+            Logger.getLogger(DeliverySheetModelTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
         assertEquals(result, sw.toString());
     }
     
@@ -218,10 +245,14 @@ public class DeliverySheetModelTest extends TestCase {
         sheet.getDeliveryRound().setPath(path);
         
         try {
-            sheet.export(new StringWriter());
+            try {
+                sheet.export(new StringWriter());
+            } catch (IOException ex) {
+                Logger.getLogger(DeliverySheetModelTest.class.getName()).log(Level.SEVERE, null, ex);
+            }
             fail(); // TODO
         }
-        catch() {
+        catch(RuntimeException e) {
         }
     }
     
@@ -233,10 +264,14 @@ public class DeliverySheetModelTest extends TestCase {
         sheet.getDeliveryRound().setPath(path);
         
         try {
-            sheet.export(new StringWriter());
+            try {
+                sheet.export(new StringWriter());
+            } catch (IOException ex) {
+                Logger.getLogger(DeliverySheetModelTest.class.getName()).log(Level.SEVERE, null, ex);
+            }
             fail(); // TODO
         }
-        catch() {
+        catch(RuntimeException e) {
         }
     }
 }
