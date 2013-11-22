@@ -72,7 +72,7 @@ public class RoadNetwork {
 
         for (int i = 0; i < nodes.getLength(); i++) {
             Node m = nodes.item(i);
-            if (m.getNodeType() == Node.ELEMENT_NODE) {
+            if (m.getNodeType() != Node.ELEMENT_NODE) {
                 throw new Exception(
                         "Erreur roadNetwork.loadFromXML : \n"
                         + "Erreur syntaxique"
@@ -141,7 +141,7 @@ public class RoadNetwork {
                 Node roadSectionNode = roadSections.item(j);
 
                 // noeud non defini (n'est pas TronconSortant)
-                if (roadSectionNode.getNodeName().equals("TronconSortant")) {
+                if (!roadSectionNode.getNodeName().equals("TronconSortant")) {
                     throw new Exception(
                             "Erreur roadNetwork.loadFromXML : \n"
                             + "Erreur syntaxique :\n"
