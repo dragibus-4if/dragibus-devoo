@@ -37,7 +37,7 @@ public class DeliveryMap extends Canvas {
                 mapNodes.add(tempNode);
             }
             for (RoadNode neighbor : rn.getNeighbors()) {
-                ArcView temp = new ArcView(rn.getX(), rn.getY(), neighbor.getX(), neighbor.getY());
+                ArcView temp = new ArcView(rn.getX(), rn.getY(), neighbor.getX(), neighbor.getY(),1);
                 if (!mapArcs.contains(temp)) {
                     mapArcs.add(temp);
                 }
