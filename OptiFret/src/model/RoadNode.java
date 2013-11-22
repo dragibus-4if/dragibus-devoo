@@ -96,5 +96,9 @@ public class RoadNode {
             return id.equals(other.id);
         }
     }
+    
+    public String toString(){ //to remove later
+        return ( this.id.toString());
+    }
 
 }
