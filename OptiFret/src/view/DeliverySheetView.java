@@ -9,118 +9,91 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
-import javax.swing.DefaultListModel;
-import javax.swing.JFileChooser;
-import javax.swing.JList;
+import javax.swing.JFrame;
 import javax.swing.JMenu;
+import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
-import javax.swing.ListModel;
-import model.RoadNode;
-import model.RoadSection;
+import javax.swing.JScrollBar;
+import javax.swing.KeyStroke;
 
-public class DeliverySheetView extends JPanel {
 
-    MapCanvas mapCanvas;
-    DeliveryList deliveryList;
-              
-    public DefaultListModel getPlannedList() {
-            return deliveryList.getPlanned();
-    }
+/**
+ *
+ * @author jmcomets
+ */
+public class DeliverySheetView extends JFrame {
 
-    public DefaultListModel getNotPlannedList() {
-            return deliveryList.getNotPlanned();
-    }
-    
+    private JMenuBar bar = new JMenuBar();
     private JMenu menuFile, menuEdit;
-    private JMenuItem loadRound, loadMap, exportRound, undo, redo;
-    private JFileChooser fc = new JFileChooser();
-
+    private JMenuItem loadRound;
+    private JMenuItem loadMap;
+    private JMenuItem exportRound;
+    private JMenuItem undo;
+    private JMenuItem redo;
+    private DeliverySheetFrame deliverySheetFrame;
+    private DeliveryCollapsiblePane test;
+    
     public DeliverySheetView() {
-        
+        super("Optifret");
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
         setSize(800, 600);
-        setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
-        add(makeBothDeliveryLists(), BorderLayout.WEST);
-        add(makeDeliveryMap(), BorderLayout.EAST);        
-        // TODO remove this test data
-        deliveryList.getPlanned().addElement("Serge le Lama");
-        deliveryList.getPlanned().addElement("Petit papa Noël");
-        deliveryList.getPlanned().addElement("Justine Bi-beurre");
-        deliveryList.getNotPlanned().addElement("Toto");
-        deliveryList.getNotPlanned().addElement("Martine");
-    }
-
-    private Component makeBothDeliveryLists() {
-        JPanel panel = new JPanel();
-        deliveryList=new DeliveryList();
-        panel.setPreferredSize(new Dimension(150, getHeight()));
-        panel.setLayout(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.weightx = 1;
-        gbc.fill = GridBagConstraints.BOTH;
-        gbc.gridwidth = GridBagConstraints.REMAINDER;
-        int padding = 3;
-        gbc.insets.set(padding, padding, padding, padding);
-        gbc.weighty = 0.7;
-        panel.add(makeDeliveryList(deliveryList.getPlanned()), gbc);
-        gbc.weighty = 0.3;
-        panel.add(makeDeliveryList(deliveryList.getNotPlanned()), gbc);
+        Container cont = getContentPane();
+        setLayout(new BoxLayout(cont, BoxLayout.X_AXIS));
+        deliverySheetFrame = new DeliverySheetFrame();
+        add(deliverySheetFrame, BorderLayout.CENTER);
         
-        return panel;
+        //TEST TEST TEST
+        JScrollBar contentTest = new JScrollBar();
+        test = new DeliveryCollapsiblePane();
+        //contentTest.add(test);
+        //contentTest.setVisible(true);
+        test.setVisible(true);
+        add(test, BorderLayout.CENTER);
+        //contentTest.add(test, BoxLayout.LINE_AXIS);
+        makeMenu();
+        setJMenuBar(bar);
     }
 
-    private JList makeDeliveryList(ListModel model) {
-        JList list = new JList(model);
-        list.setBorder(BorderFactory.createEtchedBorder());
-        return list;
+    private void makeMenu() {
+        menuFile = new JMenu("Fichier");
+        loadRound = new JMenuItem("Charger une tournée");
+        loadMap = new JMenuItem("Charger un plan");
+        exportRound = new JMenuItem("Exporter une tournée");
+        menuFile.add(loadMap);
+        menuFile.add(loadRound);
+        menuFile.add(exportRound);
+        bar.add(menuFile);
+
+        menuEdit = new JMenu("Edition");
+        undo = new JMenuItem("Undo");
+        undo.setAccelerator(KeyStroke.getKeyStroke('Z', KeyEvent.CTRL_DOWN_MASK));
+        redo = new JMenuItem("Redo");
+        redo.setAccelerator(KeyStroke.getKeyStroke('Z', KeyEvent.CTRL_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK));
+        menuEdit.add(undo);
+        menuEdit.add(redo);
+        bar.add(menuEdit);
+
     }
 
-       //Test Method 
-    private List<RoadNode> generateTestNetwork(){
-        List<RoadNode> temp=new ArrayList<>();
-      //  for(int i = 0;i<10;i++){
-            RoadNode rnTemp=new RoadNode(1);
-            rnTemp.setX(10);
-            rnTemp.setY(10);
-            RoadNode rnTemp2=new RoadNode(2);
-            rnTemp2.setX(60);
-            rnTemp2.setY(60);
-            RoadSection sec=new RoadSection(rnTemp, rnTemp2, 1, 10);
-       
-            RoadNode rnTemp3=new RoadNode(3);
-            rnTemp3.setX(0);
-            rnTemp3.setY(20);
-            RoadNode rnTemp4=new RoadNode(4);
-            rnTemp4.setX(20);
-            rnTemp4.setY(60);
-            RoadSection sec2=new RoadSection(rnTemp3, rnTemp4, 1, 10);
-            RoadSection sec3=new RoadSection(rnTemp2, rnTemp4, 1, 10);
-            RoadSection sec4=new RoadSection(rnTemp4, rnTemp2, 1, 10);
-
-            rnTemp.addNeighbor(sec);
-            rnTemp2.addNeighbor(sec3);
-            rnTemp3.addNeighbor(sec2);
-            rnTemp4.addNeighbor(sec4);
-
-            temp.add(rnTemp);
-            temp.add(rnTemp2);
-            temp.add(rnTemp3);
-            temp.add(rnTemp4);
-            
-            
-      //  }
-        return temp;
+    public JMenuItem getLoadRound() {
+        return loadRound;
     }
-    
-    private Component makeDeliveryMap() {
-        JPanel panel = new JPanel();
-        panel.setPreferredSize(new Dimension(650, getHeight()));
-        mapCanvas=new MapCanvas(generateTestNetwork());
-        mapCanvas.setBounds(0,0,650,getHeight());
-        panel.add(mapCanvas);
-        return panel;
+
+    public JMenuItem getLoadMap() {
+        return loadMap;
     }
-    
-    
-  
+
+    public JMenuItem getExportRound() {
+        return exportRound;
+    }
+
+    public JMenuItem getUndo() {
+        return undo;
+    }
+
+    public JMenuItem getRedo() {
+        return redo;
+    }
+
 }
