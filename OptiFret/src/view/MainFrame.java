@@ -1,12 +1,7 @@
-/*
- */
 package view;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Component;
-import java.awt.Container;
-import java.awt.Dimension;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,9 +10,8 @@ import static javax.swing.JFrame.EXIT_ON_CLOSE;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import javax.swing.JPanel;
-import javax.swing.JScrollBar;
 import javax.swing.KeyStroke;
+import model.Delivery;
 import model.RoadNode;
 import model.RoadSection;
 
@@ -36,7 +30,6 @@ public class MainFrame extends JFrame {
     private JMenuItem redo;
     private DeliveryMap deliveryMap;
     private DeliveryList deliveryList;
-    private DeliveryCollapsiblePane deliveryCollapsiblePane;
 
     public MainFrame() {
         super("Optifret");
@@ -53,15 +46,6 @@ public class MainFrame extends JFrame {
 
         // Delivery list
         add(makeDeliveryList(), BorderLayout.WEST);
-
-        //TEST TEST TEST
-        JScrollBar scrollbar = new JScrollBar();
-        deliveryCollapsiblePane = new DeliveryCollapsiblePane();
-        //contentTest.add(test);
-        //contentTest.setVisible(true);
-        deliveryCollapsiblePane.setVisible(true);
-        add(deliveryCollapsiblePane, BorderLayout.WEST);
-        //contentTest.add(test, BoxLayout.LINE_AXIS);
     }
 
     private JMenuBar makeMenu() {
@@ -145,12 +129,22 @@ public class MainFrame extends JFrame {
          return deliveryMap;
     }
 
+    private Component makeDeliveryList() {
+        deliveryList = new DeliveryList();
+        List<Delivery> deliveries = new ArrayList<>();
+        for (int i = 0; i < 1337; i++) {
+            deliveries.add(new Delivery(i));
+        }
+        System.out.println(deliveries);
+        deliveryList.update(deliveries);
+        return deliveryList;
+    }
+
     public DeliveryMap getDeliveryMap() {
         return deliveryMap;
     }
 
-    private Component makeDeliveryList() {
-        deliveryList = new DeliveryList();
+    public DeliveryList getDeliveryList() {
         return deliveryList;
     }
 }
