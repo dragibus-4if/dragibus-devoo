@@ -51,6 +51,16 @@ public class ArcView {
         return sameSame;
     }
 
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 41 * hash + this.x1;
+        hash = 41 * hash + this.y1;
+        hash = 41 * hash + this.x2;
+        hash = 41 * hash + this.y2;
+        return hash;
+    }
+
     public void draw(Graphics g) {
         Graphics2D g2d = (Graphics2D) g;
         g2d.setStroke(myStroke);

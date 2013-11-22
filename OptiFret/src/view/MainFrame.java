@@ -3,17 +3,19 @@
 package view;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.Dimension;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.BoxLayout;
 import javax.swing.JFrame;
 import static javax.swing.JFrame.EXIT_ON_CLOSE;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 import javax.swing.KeyStroke;
 import model.RoadNode;
@@ -39,18 +41,15 @@ public class MainFrame extends JFrame {
         super("Optifret");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setSize(800, 600);
-        Container cont = getContentPane();
-        setLayout(new BoxLayout(cont, BoxLayout.X_AXIS));
-        deliveryMap = new DeliveryMap();
-        add(deliveryMap, BorderLayout.EAST);
-
+        setLayout(new BorderLayout());
+        add(makeDeliveryMap(),BorderLayout.CENTER);
         //TEST TEST TEST
         JScrollBar scrollbar = new JScrollBar();
         deliveryCollapsiblePane = new DeliveryCollapsiblePane();
         //contentTest.add(test);
         //contentTest.setVisible(true);
         deliveryCollapsiblePane.setVisible(true);
-        add(deliveryCollapsiblePane, BorderLayout.CENTER);
+        add(deliveryCollapsiblePane, BorderLayout.WEST);
         //contentTest.add(test, BoxLayout.LINE_AXIS);
         makeMenu();
         setJMenuBar(bar);
@@ -129,13 +128,10 @@ public class MainFrame extends JFrame {
         return temp;
     }
 
-    private Component makeDeliveryMap() {
-        /*JPanel panel = new JPanel();
-         panel.setPreferredSize(new Dimension(650, getHeight()));
-         mapCanvas = new MapCanvas(generateTestNetwork());
-         mapCanvas.setBounds(0, 0, 650, getHeight());
-         panel.add(mapCanvas);
-         return panel;*/
-        return null;
+    private Component makeDeliveryMap() {  
+         deliveryMap = new DeliveryMap();
+         deliveryMap.setNodes(generateTestNetwork());
+         deliveryMap.setVisible(true);
+         return deliveryMap;
     }
 }
