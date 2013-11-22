@@ -3,12 +3,36 @@ package model;
 import java.util.Date;
 
 public class TimeSlot {
+
     private Date begin;
     private Long duration;
 
     public TimeSlot(Date begin, Long duration) {
+        if (begin == null) {
+            throw new NullPointerException("'begin' ne doit pas être nul");
+        }
         this.begin = begin;
+
+        if (duration == null) {
+            throw new NullPointerException("'duration' ne doit pas être nul");
+        } else if (duration < 0) {
+            throw new IllegalArgumentException("'duration' ne doit pas être négatif");
+        }
         this.duration = duration;
+    }
+
+    public TimeSlot(Date begin, Date end) {
+        if (begin == null) {
+            throw new NullPointerException("'begin' ne doit pas être nul");
+        }
+        this.begin = begin;
+
+        if (end == null) {
+            throw new NullPointerException("'end' ne doit pas être nul");
+        } else if (end.before(begin)) {
+            throw new IllegalArgumentException("'end' doit être avant 'begin'");
+        }
+        this.duration = new Long(end.getTime() - begin.getTime());
     }
 
     public Date getBegin() {
@@ -16,6 +40,9 @@ public class TimeSlot {
     }
 
     public void setBegin(Date begin) {
+        if (begin == null) {
+            throw new NullPointerException("'begin' ne doit pas être nul");
+        }
         this.begin = begin;
     }
 
@@ -24,10 +51,16 @@ public class TimeSlot {
     }
 
     public void setDuration(Long duration) {
+        if (duration < 0) {
+            throw new IllegalArgumentException("'duration' ne doit pas être négatif");
+        }
         this.duration = duration;
     }
 
     public Date getEnd() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Date end = (Date) begin.clone();
+        end.setTime(begin.getTime() + duration);
+        return end;
     }
+
 }
