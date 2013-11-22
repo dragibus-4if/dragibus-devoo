@@ -109,27 +109,33 @@ public class MainFrame extends JFrame {
     private List<RoadNode> generateTestNetwork() {
         List<RoadNode> temp = new ArrayList<>();
         RoadNode rnTemp = new RoadNode(1);
-        rnTemp.setX(10);
-        rnTemp.setY(10);
+        rnTemp.setX(100);
+        rnTemp.setY(100);
         RoadNode rnTemp2 = new RoadNode(2);
-        rnTemp2.setX(60);
-        rnTemp2.setY(60);
+        rnTemp2.setX(160);
+        rnTemp2.setY(180);
         RoadSection sec = new RoadSection(rnTemp, rnTemp2, 1, 10);
 
         RoadNode rnTemp3 = new RoadNode(3);
-        rnTemp3.setX(0);
-        rnTemp3.setY(20);
+        rnTemp3.setX(200);
+        rnTemp3.setY(400);
         RoadNode rnTemp4 = new RoadNode(4);
-        rnTemp4.setX(20);
-        rnTemp4.setY(60);
+        rnTemp4.setX(600);
+        rnTemp4.setY(450);
         RoadSection sec2 = new RoadSection(rnTemp3, rnTemp4, 1, 10);
         RoadSection sec3 = new RoadSection(rnTemp2, rnTemp4, 1, 10);
         RoadSection sec4 = new RoadSection(rnTemp4, rnTemp2, 1, 10);
+        RoadSection sec5 = new RoadSection(rnTemp4, rnTemp3, 1, 10);
+        RoadSection sec6 = new RoadSection(rnTemp4, rnTemp, 1, 10);
 
+        
         rnTemp.addNeighbor(sec);
         rnTemp2.addNeighbor(sec3);
         rnTemp3.addNeighbor(sec2);
         rnTemp4.addNeighbor(sec4);
+        rnTemp4.addNeighbor(sec5);
+        rnTemp4.addNeighbor(sec6);
+        rnTemp4.addNeighbor(sec6);
 
         temp.add(rnTemp);
         temp.add(rnTemp2);
@@ -140,7 +146,9 @@ public class MainFrame extends JFrame {
 
     private Component makeDeliveryMap() {  
          deliveryMap = new DeliveryMap();
-         deliveryMap.update(generateTestNetwork());
+         ArrayList<RoadNode> temp=(ArrayList<RoadNode>)generateTestNetwork();
+         deliveryMap.updateNetwork(temp);
+         deliveryMap.updateDeliveryNodes(temp);
          deliveryMap.setVisible(true);
          return deliveryMap;
     }

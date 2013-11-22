@@ -4,6 +4,8 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.EmptyStackException;
 import java.util.Stack;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JFileChooser;
 import model.DeliverySheetModel;
 import model.RoadNetwork;
@@ -28,8 +30,12 @@ public class MainController {
     private void loadRoadNetwork() {
         JFileChooser fc = new JFileChooser();
         if (fc.showOpenDialog(mainFrame) == JFileChooser.APPROVE_OPTION) {
-            roadNetwork = RoadNetwork.loadFromXML(fc.getSelectedFile());
-            // TODO update view
+            try {
+                roadNetwork = RoadNetwork.loadFromXML(fc.getSelectedFile());
+                // TODO update view
+            } catch (Exception ex) {
+                Logger.getLogger(MainController.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }
 

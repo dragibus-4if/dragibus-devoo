@@ -17,20 +17,16 @@ public class ArcView {
 
     private static final int STROKE = 2;
     private static final int ARR_SIZE = 6;
-    private static final int NB_LINES_MAX= 5;
-     
+    private static final int NB_LINES_MAX = 5;
     private int x1;
     private int y1;
     private int x2;
     private int y2;
-    
-    
     private int nbLines;
-    
     BasicStroke myStroke;
 
     public ArcView(int x1, int y1, int x2, int y2, int nbLines) {
-        this.nbLines=nbLines;
+        this.nbLines = nbLines;
         this.myStroke = new BasicStroke(STROKE);
         float vx = x2 - x1;
         float vy = y2 - y1;
@@ -57,6 +53,10 @@ public class ArcView {
         return sameSame;
     }
 
+    public void incrementNbLines(){
+        nbLines++;
+    }
+    
     @Override
     public int hashCode() {
         int hash = 3;
@@ -82,13 +82,13 @@ public class ArcView {
         at.concatenate(AffineTransform.getRotateInstance(angle));
         g.transform(at);
         g.drawLine(0, 0, len, 0);
-        g.fillPolygon(new int[]{len, len - ARR_SIZE, len - ARR_SIZE, len},
-                new int[]{0, -ARR_SIZE, ARR_SIZE, 0}, 4);
-        if(nbLines>0){
-            for(int i =0;i<nbLines-1;i++){
-                g.translate(-ARR_SIZE, 0);
+        if (nbLines > 0) {
+
+            for (int i = 0; i < nbLines ; i++) {
                 g.fillPolygon(new int[]{len, len - ARR_SIZE, len - ARR_SIZE, len},
-                new int[]{0, -ARR_SIZE, ARR_SIZE, 0}, 4);
+                        new int[]{0, -ARR_SIZE, ARR_SIZE, 0}, 4);
+                g.translate(-ARR_SIZE, 0);
+
             }
         }
     }

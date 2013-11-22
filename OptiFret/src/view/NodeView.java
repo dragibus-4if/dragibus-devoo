@@ -9,6 +9,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.Ellipse2D;
+import java.lang.ref.WeakReference;
 
 /**
  *
@@ -20,24 +21,37 @@ public class NodeView {
     private static final int STROKE = 2;
     private int x1;
     private int y1;
-    private BasicStroke myStroke;
+    private final BasicStroke myStroke= new BasicStroke(STROKE);;
     private Ellipse2D circle;
-    private Color cBasic = new Color(100, 100, 100);
-    private Color cSelectedBasic = new Color(200, 200, 0);
+    private final Color cBasic = new Color(100, 100, 100);
+    private final Color cSelectedBasic = new Color(200, 200, 0);
+    
+    private final Color cBasicDel = new Color(255, 100, 100);
+    private final Color cSelectedBasicDel = new Color(200, 200, 0);
+    
     private boolean selected = false;
+    private WeakReference<DeliveryMap> parent;
 
-    public NodeView(int x1, int y1) {
-        this.myStroke = new BasicStroke(STROKE);
+    public enum MODE {
+        CLASSIC, DELIVERY
+    };
+    
+    private MODE mode;
+
+
+    public NodeView(int x1, int y1, WeakReference<DeliveryMap> ref, MODE mode) {
         this.x1 = x1;
         this.y1 = y1;
         this.circle = new Ellipse2D.Double((float) x1, (float) y1, (float) DIAMETER, (float) DIAMETER);
+        this.mode=mode;
+        parent = ref;
     }
 
     @Override
     public boolean equals(Object object) {
         boolean sameSame = false;
 
-        if (object != null && object instanceof ArcView) {
+        if (object != null && object instanceof NodeView) {
             if (this.x1 == ((NodeView) object).x1 && this.y1 == ((NodeView) object).y1) {
                 sameSame = true;
             }
@@ -58,12 +72,26 @@ public class NodeView {
         Graphics2D g2d = (Graphics2D) g;
         g2d.setStroke(myStroke);
         g2d.translate(-DIAMETER / 2, -DIAMETER / 2);
-        if (selected) {
-            g2d.setColor(cSelectedBasic);
-            g2d.fill(circle);
-        } else {
-            g2d.setColor(cBasic);
+        switch (mode) {
+            case CLASSIC:
+                if (selected) {
+                    g2d.setColor(cSelectedBasic);
+                    g2d.fill(circle);
+                } else {
+                    g2d.setColor(cBasic);
+                }
+                break;
+            case DELIVERY:
+                 if (selected) {
+                    g2d.setColor(cSelectedBasicDel);
+                    g2d.fill(circle);
+                } else {
+                    g2d.setColor(cBasicDel);
+                }
+                break;
         }
+
+
         g2d.draw(circle);
 
         g2d.translate(DIAMETER / 2, DIAMETER / 2);
@@ -98,13 +126,29 @@ public class NodeView {
     }
 
     void onMouseDown(int x, int y) {
-        if (circle.contains(x + DIAMETER / 2, y + DIAMETER / 2)) {
+        if (circle.contains(x + DIAMETER / 2, y + DIAMETER / 2) && (parent.get() != null)) {
             selected = true;
+            if (parent.get().getSelectedNode() != null) {
+                parent.get().getSelectedNode().clear();
+            }
+            parent.get().setSelectedNode(new WeakReference<>(this));
         } else {
             selected = false;
+            if (parent.get().getSelectedNode() != null) {
+                parent.get().getSelectedNode().clear();
+            }
         }
     }
 
     void onMouseUp(int x, int y) {
+    }
+    
+    
+    public MODE getMode() {
+        return mode;
+    }
+
+    public void setMode(MODE mode) {
+        this.mode = mode;
     }
 }
