@@ -8,7 +8,7 @@ import org.jdesktop.swingx.VerticalLayout;
 
 public class DeliveryList extends JScrollPane {
 
-    private JPanel panel;
+    private final JPanel panel;
     
     public DeliveryList() {
         panel = new JPanel(new VerticalLayout());
