@@ -25,7 +25,7 @@ import model.RoadSection;
  */
 public class MainFrame extends JFrame {
 
-    private JMenuBar bar = new JMenuBar();
+    private JMenuBar bar;
     private JMenu menuFile, menuEdit;
     private JMenuItem loadRound;
     private JMenuItem loadMap;
@@ -33,6 +33,7 @@ public class MainFrame extends JFrame {
     private JMenuItem undo;
     private JMenuItem redo;
     private DeliveryMap deliveryMap;
+    private DeliveryList deliveryList;
     private DeliveryCollapsiblePane deliveryCollapsiblePane;
 
     public MainFrame() {
@@ -41,8 +42,16 @@ public class MainFrame extends JFrame {
         setSize(800, 600);
         Container cont = getContentPane();
         setLayout(new BoxLayout(cont, BoxLayout.X_AXIS));
+        
+        // Menu
+        setJMenuBar(makeMenu());
+        
+        // Delivery map
         deliveryMap = new DeliveryMap();
         add(deliveryMap, BorderLayout.EAST);
+
+        // Delivery list
+        add(makeDeliveryList(), BorderLayout.WEST);
 
         //TEST TEST TEST
         JScrollBar scrollbar = new JScrollBar();
@@ -52,11 +61,10 @@ public class MainFrame extends JFrame {
         deliveryCollapsiblePane.setVisible(true);
         add(deliveryCollapsiblePane, BorderLayout.CENTER);
         //contentTest.add(test, BoxLayout.LINE_AXIS);
-        makeMenu();
-        setJMenuBar(bar);
     }
 
-    private void makeMenu() {
+    private JMenuBar makeMenu() {
+        bar = new JMenuBar();
         menuFile = new JMenu("Fichier");
         loadRound = new JMenuItem("Charger une tournée");
         loadMap = new JMenuItem("Charger un plan");
@@ -74,7 +82,7 @@ public class MainFrame extends JFrame {
         menuEdit.add(undo);
         menuEdit.add(redo);
         bar.add(menuEdit);
-
+        return bar;
     }
 
     public JMenuItem getLoadRound() {
@@ -137,5 +145,14 @@ public class MainFrame extends JFrame {
          panel.add(mapCanvas);
          return panel;*/
         return null;
+    }
+
+    public DeliveryMap getDeliveryMap() {
+        return deliveryMap;
+    }
+
+    private Component makeDeliveryList() {
+        deliveryList = new DeliveryList();
+        return deliveryList;
     }
 }

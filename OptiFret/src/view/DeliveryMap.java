@@ -23,7 +23,7 @@ public class DeliveryMap extends Canvas {
         mapNodes = new ArrayList<>();
     }
 
-    public void setNodes(List<RoadNode> nodes) {
+    public void update(List<RoadNode> nodes) {
         if (nodes != null) {
             return;
         }
