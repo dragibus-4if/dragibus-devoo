@@ -140,11 +140,11 @@ public class MainFrame extends JFrame {
         return temp;
     }
 
-    private Component makeDeliveryMap() {
-        deliveryMap = new DeliveryMap();
-        deliveryMap.update(generateTestNetwork());
-        deliveryMap.setVisible(true);
-        return deliveryMap;
+    private Component makeDeliveryMap() {  
+         deliveryMap = new DeliveryMap();
+         deliveryMap.setNodes(generateTestNetwork());
+         deliveryMap.setVisible(true);
+         return deliveryMap;
     }
 
     public DeliveryMap getDeliveryMap() {
