@@ -137,7 +137,7 @@ public class MainFrame extends JFrame {
             deliveries.add(new Delivery(i));
         }
         System.out.println(deliveries);
-        deliveryList.update(deliveries);
+        deliveryList.setDeliveries(deliveries);
         return deliveryList;
     }
 

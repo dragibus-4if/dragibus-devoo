@@ -5,8 +5,10 @@ import java.awt.event.MouseListener;
 import java.util.EmptyStackException;
 import java.util.Stack;
 import javax.swing.JFileChooser;
+import model.DeliveryRound;
 import model.DeliverySheetModel;
 import model.RoadNetwork;
+import view.DeliveryMap;
 import view.MainFrame;
 
 public class MainController {
@@ -30,7 +32,7 @@ public class MainController {
         if (fc.showOpenDialog(mainFrame) == JFileChooser.APPROVE_OPTION) {
             try {
                 roadNetwork = RoadNetwork.loadFromXML(fc.getSelectedFile());
-                mainFrame.getDeliveryMap().update(roadNetwork.getNodes());
+                //mainFrame.getDeliveryMap().setAllNodes(roadNetwork.getNodes());
             } catch (Exception e) {
                 mainFrame.showErrorMessage(e.getMessage());
             }
@@ -40,8 +42,14 @@ public class MainController {
     private void loadDeliverySheet() {
         JFileChooser fc = new JFileChooser();
         if (fc.showOpenDialog(mainFrame) == JFileChooser.APPROVE_OPTION) {
-            deliverySheetModel = DeliverySheetModel.loadFromXML(fc.getSelectedFile());
-            // TODO update view
+            try {
+                deliverySheetModel = DeliverySheetModel.loadFromXML(fc.getSelectedFile());
+                DeliveryRound dr = deliverySheetModel.getDeliveryRound();
+                mainFrame.getDeliveryList().setDeliveries(dr.getDeliveries());
+                //mainFrame.getDeliveryMap().setRouteNodes(roadNetwork.makeRoute());
+            } catch (Exception e) {
+                mainFrame.showErrorMessage(e.getMessage());
+            }
         }
     }
 
