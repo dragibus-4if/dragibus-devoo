@@ -4,10 +4,6 @@
  */
 package test;
 
-import java.io.FileWriter;
-import java.io.BufferedWriter;
-
-import java.io.IOException;
 import junit.framework.TestCase;
 
 import java.util.ArrayList;

@@ -1,0 +1,99 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+package test;
+
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.StringReader;
+import java.io.StringWriter;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNull;
+import junit.framework.TestCase;
+import model.DeliveryEmployee;
+import model.DeliverySheetModel;
+
+public class DeliverySheetModelTest extends TestCase {
+    public void testFile() {
+        // Si le filename est null, la fonction retourne null.
+        assertNull(DeliverySheetModel.loadFromXML(null));
+        
+        try {
+            // Si c'est un dossier, la fonction retourne Null
+            assertNull(DeliverySheetModel.loadFromXML(new FileReader("/")));
+        } catch (FileNotFoundException ex) {
+        }
+        
+        try {
+            // Si le fichier n'est pas lisible, la fonction retourne Null
+            // Normalement le fichier /root ne sont pas lisibles
+            assertNull(DeliverySheetModel.loadFromXML(new FileReader("/root")));
+        } catch (FileNotFoundException ex) {
+        }
+    }
+
+    public void testXMLSyntax() {
+        // Test d'une fermeture de balise manquante
+        assertNull(DeliverySheetModel.loadFromXML(new StringReader("<root>")));
+
+        // Test d'une ouverture de balise manquante
+        assertNull(DeliverySheetModel.loadFromXML(new StringReader("<root></balise></root>")));
+
+        // Il n'y a pas tout les cas sur la syntaxe XML. La bibliothèque
+        // utilisée doit pouvoir détecter les erreurs. Nous l'utilisons et ces
+        // quelques tests permettent de montrer qu'on capte que la bibliothèque
+        // a détecté une erreur.
+    }
+
+    public void testXMLSemantic() {
+        // Si la balise racine est un élément quelconque (différent de ce qui
+        // est attendu), la fonction renvoie null.
+        String s1 = "<root></root>";
+        assertNull(DeliverySheetModel.loadFromXML(new StringReader(s1)));
+
+        // Si le document contient un élément non défini, la fonction renvoie
+        // null.
+        String s2 = "<road_network><autre></autre></road_network>";
+        assertNull(DeliverySheetModel.loadFromXML(new StringReader(s2)));
+
+        // Si c'est la bonne balise racine, la fonction renvoie quelque chose de non
+        // null.
+        String s3 = "<road_network></road_network>";
+        DeliverySheetModel rn = DeliverySheetModel.loadFromXML(new StringReader(s3));
+        assertNotNull(rn);
+        assertNotNull(rn.getDeliveryEmployee());
+        assertNotNull(rn.getDeliveryRound());
+
+        // TODO tests sur l'intégrité du document
+        // Voir le format des xmls à lire pour vérifier ça
+    }
+    
+    public void testSetDeliveryEmployee() {
+        DeliverySheetModel sheet = new DeliverySheetModel();
+        // Test avec un paramètre null
+        try {
+            sheet.setDeliveryEmployee(null);
+            fail("Set un employé avec un null");
+        } catch (NullPointerException e) {
+        }
+        
+        // Vérifie l'égalité entre le getter/setter
+        DeliveryEmployee e = new DeliveryEmployee();
+        sheet.setDeliveryEmployee(e);
+        assertSame(sheet.getDeliveryEmployee(), e);
+    }
+    
+    public void testExportToText() {
+        DeliverySheetModel sheet = new DeliverySheetModel();
+        
+        // Test avec une sheet vide
+        String result = "";
+        StringWriter sw = new StringWriter();
+        sheet.exportToText(sw);
+        assertEquals(result, sw.toString());
+    }
+}
