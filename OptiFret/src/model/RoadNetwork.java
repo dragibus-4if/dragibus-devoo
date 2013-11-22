@@ -2,6 +2,7 @@ package model;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -17,6 +18,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import tsp.RegularGraph;
 import tsp.SolutionState;
@@ -27,15 +29,15 @@ public class RoadNetwork {
     private RoadNode root;
 
     //TODO : check integrity of roadnetwork ( correspondance id des roadnodes des 
-    public static RoadNetwork loadFromXML(File file) throws Exception {
-        if (file == null) {
+    public static RoadNetwork loadFromXML(Reader input) throws Exception {
+        if (input == null) {
             throw new NullPointerException("Fichier chargé null");
         }
         HashSet<RoadNode> roadNodes = new HashSet<>();
         Element documentRoot = null;
         try {
             DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-            Document document = builder.parse(file);
+            Document document = builder.parse(new InputSource(input));
             documentRoot = document.getDocumentElement();
         } catch (ParserConfigurationException pce) {
             System.out.println("Erreur de configuration du parseur DOM");
@@ -193,6 +195,8 @@ public class RoadNetwork {
     }
 
     public List<RoadNode> getNodes() {
+        if(this.root == null)
+            return new ArrayList<>();
         ArrayList<RoadNode> checked = new ArrayList<>();
         Collection<RoadNode> n = this.getRoot().getNeighbors();
         checked.add(this.getRoot());
