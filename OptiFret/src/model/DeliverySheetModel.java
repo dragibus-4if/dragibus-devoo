@@ -39,15 +39,14 @@ public class DeliverySheetModel {
                 
                 if (rs.getRoadNodeEnd() == liv) {
                     output.write("Prendre la rue ");
-                    output.write(rs.getRoadName()
-                            +"\n");
+                    output.write(rs.getRoadName() + "\n");
                     break;
                 }
                 
                 
             }                
             
-            if(liv.getId() == delv.get(index_delv).getAddress()) {
+            if(liv.getId().equals(delv.get(index_delv).getAddress())) {
                 output.write("\n\nArrivée à la livraison : \n");
                 output.write(liv.getId().intValue() + ".");
                 output.write(((RoadSection)secI.next()).getRoadName());
