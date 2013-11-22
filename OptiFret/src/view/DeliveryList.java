@@ -9,6 +9,7 @@ import org.jdesktop.swingx.VerticalLayout;
 public class DeliveryList extends JScrollPane {
 
     private final JPanel panel;
+    private DeliveryCollapsiblePane selected;
     
     public DeliveryList() {
         panel = new JPanel(new VerticalLayout());
@@ -21,9 +22,18 @@ public class DeliveryList extends JScrollPane {
         }
         panel.removeAll();
         for (Delivery d : deliveries) {
-            DeliveryCollapsiblePane dcp = new DeliveryCollapsiblePane(d);
+            DeliveryCollapsiblePane dcp = new DeliveryCollapsiblePane(d,this);
             dcp.toggle();
             panel.add(dcp);
         }
     }
+
+    public DeliveryCollapsiblePane getSelected() {
+        return selected;
+    }
+
+    public void setSelected(DeliveryCollapsiblePane selected) {
+        this.selected = selected;
+    }
+    
 }

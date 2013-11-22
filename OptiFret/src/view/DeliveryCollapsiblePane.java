@@ -1,6 +1,7 @@
 package view;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
@@ -31,9 +32,12 @@ public class DeliveryCollapsiblePane extends JPanel {
     private JXImageView arrow;
     private Image arrowUp;
     private Image arrowDown;
-    public DeliveryCollapsiblePane(Delivery delivery) {
+    private DeliveryList parent;
+    
+    public DeliveryCollapsiblePane(Delivery delivery,DeliveryList parent) {
+        this.parent = parent;
         this.delivery = delivery;
-
+        
         // Labels
         idDeliveryLabel.setText("Livraison : " + delivery.getId());
         Client client = delivery.getClient();
@@ -87,7 +91,7 @@ public class DeliveryCollapsiblePane extends JPanel {
 
             @Override
             public void mouseClicked(MouseEvent e) {
-                
+                select();
             }
 
             @Override
@@ -139,5 +143,28 @@ public class DeliveryCollapsiblePane extends JPanel {
         });
         
         return minimal;
+    }
+    public void select()
+    {
+        minimal.setBackground(Color.gray);
+        
+        if(parent.getSelected()!=null)
+        {
+            parent.getSelected().unselect();
+        }
+        
+        if(parent.getSelected()!=this)
+        {
+            parent.setSelected(this);
+        }
+        else
+        {
+            parent.setSelected(null);
+        }
+        
+    }
+    public void unselect()
+    {
+        minimal.setBackground(Color.white);
     }
 }
