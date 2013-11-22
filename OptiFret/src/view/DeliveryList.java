@@ -9,12 +9,12 @@ import org.jdesktop.swingx.VerticalLayout;
 public class DeliveryList extends JScrollPane {
 
     private final JPanel panel;
-    
+
     public DeliveryList() {
         panel = new JPanel(new VerticalLayout());
         getViewport().add(panel);
     }
-    
+
     public void setDeliveries(List<Delivery> deliveries) {
         if (deliveries == null) {
             return;

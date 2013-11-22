@@ -19,7 +19,7 @@ public class TimeSlotTest extends TestCase {
         assertEquals(t.getDuration(), new Long(0));
         assertEquals(t.getBegin().getTime(), d.getTime());
         assertEquals(t.getEnd().getTime(), t.getBegin().getTime());
-        
+
         // Test des cas invalides
         try {
             new TimeSlot(new Date(), new Long(-1));
@@ -50,7 +50,7 @@ public class TimeSlotTest extends TestCase {
         assertEquals(t.getDuration(), new Long(0));
         assertEquals(t.getBegin(), new Date());
         assertEquals(t.getEnd(), t.getBegin());
-        
+
         // Test des cas invalides
         try {
             new TimeSlot(new Date(1), new Date(0));

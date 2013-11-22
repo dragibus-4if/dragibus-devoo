@@ -3,7 +3,7 @@ package model;
 public class DeliveryEmployee {
 
     private Long id;
-    
+
     public DeliveryEmployee() {
     }
 

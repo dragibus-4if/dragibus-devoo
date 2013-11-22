@@ -8,7 +8,6 @@ import javax.swing.JFileChooser;
 import model.DeliveryRound;
 import model.DeliverySheetModel;
 import model.RoadNetwork;
-import view.DeliveryMap;
 import view.MainFrame;
 
 public class MainController {
@@ -32,6 +31,7 @@ public class MainController {
         if (fc.showOpenDialog(mainFrame) == JFileChooser.APPROVE_OPTION) {
             try {
                 roadNetwork = RoadNetwork.loadFromXML(fc.getSelectedFile());
+                System.out.println(roadNetwork);
                 //mainFrame.getDeliveryMap().setAllNodes(roadNetwork.getNodes());
             } catch (Exception e) {
                 mainFrame.showErrorMessage(e.getMessage());

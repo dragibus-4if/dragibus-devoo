@@ -31,6 +31,7 @@ public class DeliveryCollapsiblePane extends JPanel {
     private JXImageView arrow;
     private Image arrowUp;
     private Image arrowDown;
+
     public DeliveryCollapsiblePane(Delivery delivery) {
         this.delivery = delivery;
 
@@ -69,25 +70,25 @@ public class DeliveryCollapsiblePane extends JPanel {
     }
 
     private JPanel makeMinimal() {
-        
+
         java.awt.Toolkit toolkit = java.awt.Toolkit.getDefaultToolkit();
-        
+
         minimal.setBackground(Color.white);
         minimal.setLayout(new FlowLayout(FlowLayout.LEFT));
-        
-        arrow= new JXImageView();
+
+        arrow = new JXImageView();
         arrowDown = toolkit.getImage("src/flechedown.jpg");
-        arrowUp= toolkit.getImage("src/flecheup.jpg");
-        
+        arrowUp = toolkit.getImage("src/flecheup.jpg");
+
         arrow.setImage(arrowDown);
-        
+
         minimal.add(idDeliveryLabel);
         minimal.add(arrow);
         minimal.addMouseListener(new MouseListener() {
 
             @Override
             public void mouseClicked(MouseEvent e) {
-                
+
             }
 
             @Override
@@ -111,12 +112,9 @@ public class DeliveryCollapsiblePane extends JPanel {
             @Override
             public void mouseClicked(MouseEvent e) {
                 toggle(e);
-                if(arrow.getImage()==arrowDown)
-                {
-                arrow.setImage(arrowUp);
-                }
-                else
-                {
+                if (arrow.getImage() == arrowDown) {
+                    arrow.setImage(arrowUp);
+                } else {
                     arrow.setImage(arrowDown);
                 }
             }
@@ -137,7 +135,7 @@ public class DeliveryCollapsiblePane extends JPanel {
             public void mouseExited(MouseEvent e) {
             }
         });
-        
+
         return minimal;
     }
 }

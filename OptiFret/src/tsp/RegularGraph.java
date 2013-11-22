@@ -54,7 +54,7 @@ public class RegularGraph implements Graph {
             indexMap.put(index, current);
             index++;
         }
-        
+
         open = new HashSet<>();
         open.add(net.getRoot());
         close = new HashSet<>();
@@ -63,14 +63,14 @@ public class RegularGraph implements Graph {
         ArrayList<ArrayList<Integer>> succ = new ArrayList<>();
         double min = Double.MAX_VALUE;
         double max = 0;
-        for(int i = 0 ; i < size ; i++) {
+        for (int i = 0; i < size; i++) {
             succ.add(new ArrayList<Integer>());
         }
         while (!open.isEmpty()) {
             RoadNode current = open.iterator().next();
             Integer currentIndex = null;
-            for(Entry<Integer, RoadNode> e : indexMap.entrySet()) {
-                if(e.getValue().equals(current)) {
+            for (Entry<Integer, RoadNode> e : indexMap.entrySet()) {
+                if (e.getValue().equals(current)) {
                     currentIndex = e.getKey();
                     break;
                 }
@@ -85,18 +85,20 @@ public class RegularGraph implements Graph {
             for (RoadSection section : current.getSections()) {
                 RoadNode n = section.getRoadNodeEnd();
                 Integer nIndex = null;
-                for(Entry<Integer, RoadNode> e : indexMap.entrySet()) {
-                    if(e.getValue().equals(n)) {
+                for (Entry<Integer, RoadNode> e : indexMap.entrySet()) {
+                    if (e.getValue().equals(n)) {
                         nIndex = e.getKey();
                         break;
                     }
                 }
                 succ.get(currentIndex).add(new Integer(nIndex));
                 costs[currentIndex][nIndex] = new Double(section.getCost()).intValue();
-                if(section.getCost() < min)
+                if (section.getCost() < min) {
                     min = (double) section.getCost();
-                if(section.getCost() > max)
+                }
+                if (section.getCost() > max) {
                     max = (double) section.getCost();
+                }
             }
         }
 
@@ -113,10 +115,10 @@ public class RegularGraph implements Graph {
         this.succ = succ;
         this.index2Node = index2Node;
     }
-    
+
     public List<RoadNode> getLsNode(int[] indexes) {
         List<RoadNode> l = new ArrayList<>();
-        for(int i : indexes) {
+        for (int i : indexes) {
             l.add(index2Node.get(new Integer(i)));
         }
         return l;
