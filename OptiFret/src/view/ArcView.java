@@ -22,9 +22,12 @@ public class ArcView {
     private int y1;
     private int x2;
     private int y2;
+    
+    private int nbLines;
+    
     BasicStroke myStroke;
 
-    public ArcView(int x1, int y1, int x2, int y2) {
+    public ArcView(int x1, int y1, int x2, int y2, int nbLines) {
         this.myStroke = new BasicStroke(STROKE);
         float vx = x2 - x1;
         float vy = y2 - y1;
@@ -49,6 +52,16 @@ public class ArcView {
             }
         }
         return sameSame;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 41 * hash + this.x1;
+        hash = 41 * hash + this.y1;
+        hash = 41 * hash + this.x2;
+        hash = 41 * hash + this.y2;
+        return hash;
     }
 
     public void draw(Graphics g) {
