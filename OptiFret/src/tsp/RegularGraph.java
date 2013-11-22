@@ -61,8 +61,8 @@ public class RegularGraph implements Graph {
         Integer size = index;
         int[][] costs = new int[size.intValue()][size.intValue()];
         ArrayList<ArrayList<Integer>> succ = new ArrayList<>();
-        int min = Integer.MAX_VALUE;
-        int max = 0;
+        double min = Double.MAX_VALUE;
+        double max = 0;
         for(int i = 0 ; i < size ; i++) {
             succ.add(new ArrayList<Integer>());
         }
@@ -92,15 +92,15 @@ public class RegularGraph implements Graph {
                     }
                 }
                 succ.get(currentIndex).add(new Integer(nIndex));
-                costs[currentIndex][nIndex] = (int)section.getCost();
+                costs[currentIndex][nIndex] = new Double(section.getCost()).intValue();
                 if(section.getCost() < min)
-                    min = (int) section.getCost();
+                    min = (double) section.getCost();
                 if(section.getCost() > max)
-                    max = (int) section.getCost();
+                    max = (double) section.getCost();
             }
         }
 
-        return new RegularGraph(indexMap.size(), max, min, costs, succ, indexMap);
+        return new RegularGraph(indexMap.size(), new Double(max).intValue(), new Double(min).intValue(), costs, succ, indexMap);
     }
 
     public RegularGraph(int nbVertices, int maxArcCost, int minArcCost,
