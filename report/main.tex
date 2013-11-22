@@ -1,15 +1,18 @@
-\documentclass[a4paper, 10pt]{article}
+\documentclass[a4paper]{article}
 
+\usepackage[left=2.75cm, right=2.75cm]{geometry}
 \usepackage[francais]{babel}
 \usepackage[utf8x]{inputenc}
 \usepackage{hyperref}
 \usepackage{enumitem}
 \usepackage{graphicx}
 \usepackage{xcolor}
+\usepackage{pdflscape}
+
+% pgf-umlsd
 \usepackage{tikz}
 \usetikzlibrary{arrows, shadows}
 \usepackage[underline=true, rounded corners=false]{pgf-umlsd}
-
 
 \begin{document}
 
@@ -114,14 +117,9 @@ livraisons après avoir modifié la date et l'heure d'arrivée (cas d'utilisatio
 \subsection{Diagramme des cas d'utilisation}
 {\huge TODO}
 
-%\chapter{Conception}
-
 \section{Description détaillée des cas d'utilisation}
 
 Dans cette partie nous abrégerons le terme "cas d'utilisation" par "CdU".
-
-En trop : Modif en cours de livraison \\
-- La position du livreur dans la supervision (appelée désormais visualisation)\\
 
 \subsection{Visionner les tournées}
 
@@ -360,16 +358,52 @@ En trop : Modif en cours de livraison \\
 \section{Diagrammes de séquence}
 \subsection{Charger les demandes de livraison et calculer la feuille de route}
 
+\begingroup
+\fontsize{4pt}{5pt}\selectfont
+\centering
 \begin{sequencediagram}
-    \newthread{user}{utilisateur}
-    \newinst{loadRoundListener}{:MouseListener}
-    \newinst{controller}{:DeliverySheetController}
+    \newthread{app}{OptiFret}
+    \newinst{lrnListener}{lrnListener: MouseListener}
+    \newinst{ldsListener}{ldsListener: MouseListener}
+    \newinst{dsModel}{:DeliverySheet}
+    \newinst{rnModel}{:RoadNetwork}
+    \newinst{controller}{:Controller}
+    \newinst{view}{:View}
 
-    \begin{call}{user}{pressed()}{loadRoundListener}{}
-        \begin{call}{loadRoundListener}{loadRound()}{controller}{}
+    \begin{sdblock}{}{}
+        \begin{call}{app}{activate()}{lrnListener}{}
+            \begin{call}{lrnListener}{loadRoadNetwork()}{controller}{}
+                \begin{sdblock}{}{}
+                    \begin{callself}{controller}{selectFile()}{file}
+                    \end{callself}
+                    \begin{call}{controller}{loadFromXML(file)}{rnModel}{}
+                    \end{call}
+                    \begin{call}{controller}{update()}{view}{}
+                    \end{call}
+                \end{sdblock}
+            \end{call}
         \end{call}
-    \end{call}
+        \begin{call}{app}{activate()}{ldsListener}{}
+            \begin{call}{ldsListener}{loadDeliverySheet()}{controller}{}
+                \begin{sdblock}{}{}
+                    \begin{callself}{controller}{selectFile()}{file}
+                    \end{callself}
+                    \begin{call}{controller}{loadFromXML(file)}{dsModel}{}
+                    \end{call}
+                    \begin{call}{controller}{getDeliveryNodes()}{dsModel}{nodes}
+                    \end{call}
+                    \begin{call}{controller}{makeRoute(nodes)}{rnModel}{route}
+                    \end{call}
+                    \begin{call}{controller}{setNodes(route)}{dsModel}{}
+                    \end{call}
+                    \begin{call}{controller}{update()}{view}{}
+                    \end{call}
+                \end{sdblock}
+            \end{call}
+        \end{call}
+    \end{sdblock}
 \end{sequencediagram}
+\endgroup
 
 \subsection{Modifier interactivement la feuille de route}
 {\huge TODO}
