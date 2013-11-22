@@ -13,19 +13,35 @@ import model.RoadSection;
 
 public class RoadNetworkTest extends TestCase {
 
-    public void testFile() {
-        // Si le filename est null, la fonction retourne null.
-        assertNull(RoadNetwork.loadFromXML(null));
+    public void testFile() throws Exception {
+        // Si le filename est null, la fonction renvoie un objet vide.
+        RoadNetwork expected = new RoadNetwork();
+        assertEquals ( expected , RoadNetwork.loadFromXML(null));
 
         // Si le fichier n'existe pas, la fonction retourne Null
-        // Normalement le fichier /4242 n'existe pas
-        assertNull(RoadNetwork.loadFromXML(new File("/4242")));
 
-        // Si c'est un dossier, la fonction retourne Null
-        assertNull(RoadNetwork.loadFromXML(new File("/")));
+        // Normalement le fichier C://frthi/f4242 n'existe pas
+        File f4242 = new File("C://frthi/f4242");
+        assertEquals( expected , RoadNetwork.loadFromXML(f4242) );
+        
+        // Si c'est un dossier, la fonction retourne Nulla
+        
+        File temp = null;
+        try{
+            temp = File.createTempFile("temp", Long.toString(System.nanoTime()));
+            if(!(temp.mkdir()))
+            {
+               System.out.println("Test error : could note generate test temporary directory.");
+            }
+        }
+        catch(IOException e){
+            System.out.println("Test error while generating temporary files for test purposes.");
+        }
+        assertNull(RoadNetwork.loadFromXML(temp));
 
         // Si le fichier n'est pas lisible, la fonction retourne Null
         // Normalement le fichier /root ne sont pas lisibles
+        //
         assertNull(RoadNetwork.loadFromXML(new File("/root")));
     }
 
@@ -107,7 +123,7 @@ public class RoadNetworkTest extends TestCase {
         // taille augmente de 1
         node.addNeighbor(new RoadSection(node, new RoadNode(1234), 0.0, 0.0));
         assertEquals(net.getSize(), 3);
-
+        
         // Ajout d'un noeud directement depuis le getter
         net.getRoot().addNeighbor(new RoadSection(net.getRoot(), new RoadNode(9876), 0.0, 0.0));
         assertEquals(net.getSize(), 4);
