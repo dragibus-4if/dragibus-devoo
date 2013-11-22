@@ -64,6 +64,10 @@ public class RoadNode {
         addNeighbor(new RoadSection(this, section, speed, length));
     }
     
+    public void addNeighbor(RoadNode section, double speed, double length, String roadName) {
+        addNeighbor(new RoadSection(this, section, speed, length, roadName));
+    }
+    
     public void addNeighbor(RoadSection section) {
         if (section == null) {
             throw new NullPointerException("'section' ne doit pas être nul");

@@ -8,6 +8,11 @@ public class RoadSection {
     private final RoadNode roadNodeBegin;
     private final RoadNode roadNodeEnd;
 
+    public RoadSection(RoadNode roadNodeBegin, RoadNode roadNodeEnd, double speed, double length, String roadName) {
+        this(roadNodeBegin, roadNodeEnd, speed, length);
+        this.roadName = roadName;
+    }
+    
     public RoadSection(RoadNode roadNodeBegin, RoadNode roadNodeEnd, double speed, double length) {
         if (roadNodeBegin == null) {
             throw new NullPointerException("'roadNodeBegin' ne doit pas être nul");

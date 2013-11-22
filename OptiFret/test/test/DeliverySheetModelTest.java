@@ -131,10 +131,10 @@ public class DeliverySheetModelTest extends TestCase {
         path.add(new RoadNode(2));
         path.add(new RoadNode(3));
         path.add(path.get(0));
-        path.get(0).addNeighbor(path.get(1), 1, 1);
-        path.get(1).addNeighbor(path.get(2), 1, 1);
-        path.get(2).addNeighbor(path.get(3), 1, 1);
-        path.get(3).addNeighbor(path.get(0), 1, 1);
+        path.get(0).addNeighbor(path.get(1), 1, 1, "R1");
+        path.get(1).addNeighbor(path.get(2), 1, 1, "R2");
+        path.get(2).addNeighbor(path.get(3), 1, 1, "R3");
+        path.get(3).addNeighbor(path.get(0), 1, 1, "R4");
         
         DeliverySheetModel sheet = new DeliverySheetModel();
         sheet.getDeliveryRound().setPath(path);
@@ -164,14 +164,14 @@ public class DeliverySheetModelTest extends TestCase {
         path.add(path.get(1));
         path.add(new RoadNode(4));
         path.add(path.get(0));
-        path.get(0).addNeighbor(path.get(1), 1, 1);
-        path.get(1).addNeighbor(path.get(2), 1, 1);
-        path.get(2).addNeighbor(path.get(1), 1, 1);
-        path.get(1).addNeighbor(path.get(3), 1, 1);
-        path.get(3).addNeighbor(path.get(1), 1, 1);
-        path.get(1).addNeighbor(path.get(4), 1, 1);
-        path.get(4).addNeighbor(path.get(1), 1, 1);
-        path.get(4).addNeighbor(path.get(0), 1, 1);
+        path.get(0).addNeighbor(path.get(1), 1, 1, "R1");
+        path.get(1).addNeighbor(path.get(2), 1, 1, "R2");
+        path.get(2).addNeighbor(path.get(1), 1, 1, "R2");
+        path.get(1).addNeighbor(path.get(3), 1, 1, "R3");
+        path.get(3).addNeighbor(path.get(1), 1, 1, "R3");
+        path.get(1).addNeighbor(path.get(4), 1, 1, "R4");
+        path.get(4).addNeighbor(path.get(1), 1, 1, "R4");
+        path.get(4).addNeighbor(path.get(0), 1, 1, "R5");
         
         DeliverySheetModel sheet = new DeliverySheetModel();
         sheet.getDeliveryRound().setPath(path);
@@ -199,7 +199,7 @@ public class DeliverySheetModelTest extends TestCase {
         List<RoadNode> path = new ArrayList<>();
         path.add(new RoadNode(0));
         path.add(path.get(0));
-        path.get(0).addNeighbor(path.get(0), 1, 1);
+        path.get(0).addNeighbor(path.get(0), 1, 1, "R");
         
         DeliverySheetModel sheet = new DeliverySheetModel();
         sheet.getDeliveryRound().setPath(path);
@@ -223,7 +223,7 @@ public class DeliverySheetModelTest extends TestCase {
         List<RoadNode> path = new ArrayList<>();
         path.add(new RoadNode(0));
         path.add(path.get(0));
-        path.get(0).addNeighbor(path.get(0), 1, 1);
+        path.get(0).addNeighbor(path.get(0), 1, 1, "R");
         
         DeliverySheetModel sheet = new DeliverySheetModel();
         sheet.getDeliveryRound().setPath(path);
