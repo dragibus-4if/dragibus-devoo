@@ -55,6 +55,15 @@ public class DeliveryCollapsiblePane extends JPanel {
         return extend;
     }
 
+    public void toggle() {
+        toggle(new MouseEvent(this, 0, 0, 0, 0, 0, 0, false, 0));
+    }
+
+    private void toggle(MouseEvent e) {
+        extend.getActionMap().get("toggle")
+                .actionPerformed(new ActionEvent(e, WIDTH, TOOL_TIP_TEXT_KEY));
+    }
+
     private JPanel makeMinimal() {
 
         minimal.setBackground(Color.white);
@@ -65,9 +74,7 @@ public class DeliveryCollapsiblePane extends JPanel {
 
             @Override
             public void mouseClicked(MouseEvent e) {
-
-                extend.getActionMap().get("toggle")
-                        .actionPerformed(new ActionEvent(e, WIDTH, TOOL_TIP_TEXT_KEY));
+                toggle(e);
             }
 
             @Override
