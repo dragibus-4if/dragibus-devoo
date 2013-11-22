@@ -8,9 +8,6 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Shape;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.awt.geom.Ellipse2D;
 
 /**
@@ -27,6 +24,7 @@ public class NodeView {
     private Ellipse2D circle;
     private Color cBasic = new Color(100, 100, 100);
     private Color cSelectedBasic = new Color(200, 200, 0);
+    
     private boolean selected = false;
 
     public NodeView(int x1, int y1) {
@@ -47,6 +45,14 @@ public class NodeView {
         }
 
         return sameSame;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 47 * hash + this.x1;
+        hash = 47 * hash + this.y1;
+        return hash;
     }
 
     public void draw(Graphics g) {
@@ -83,7 +89,7 @@ public class NodeView {
         return circle;
     }
 
-    public void setSelected(boolean selected) {
+    public void setSelection(boolean selected) {
         this.selected = selected;
     }
 

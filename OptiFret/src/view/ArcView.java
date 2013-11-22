@@ -22,9 +22,12 @@ public class ArcView {
     private int y1;
     private int x2;
     private int y2;
+    
+    private int nbLines;
+    
     BasicStroke myStroke;
 
-    public ArcView(int x1, int y1, int x2, int y2) {
+    public ArcView(int x1, int y1, int x2, int y2, int nbLines) {
         this.myStroke = new BasicStroke(STROKE);
         float vx = x2 - x1;
         float vy = y2 - y1;
