@@ -134,7 +134,7 @@ public class MainFrame extends JFrame {
         deliveryList = new DeliveryList();
         List<Delivery> deliveries = new ArrayList<>();
         for (int i = 0; i < 1337; i++) {
-            deliveries.add(new Delivery(i));
+            deliveries.add(new Delivery(Long.MIN_VALUE, Long.MIN_VALUE, null, new Client(Long.MIN_VALUE, "truc", "machin", "bidule")));
         }
         System.out.println(deliveries);
         deliveryList.update(deliveries);

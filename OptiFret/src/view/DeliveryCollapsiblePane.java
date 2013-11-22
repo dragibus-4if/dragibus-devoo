@@ -2,6 +2,7 @@ package view;
 
 import java.awt.Color;
 import java.awt.FlowLayout;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -10,6 +11,7 @@ import javax.swing.JPanel;
 import model.Client;
 import model.Delivery;
 import org.jdesktop.swingx.JXCollapsiblePane;
+import org.jdesktop.swingx.JXImageView;
 import org.jdesktop.swingx.VerticalLayout;
 
 /**
@@ -26,7 +28,9 @@ public class DeliveryCollapsiblePane extends JPanel {
     private JLabel clientAdressLabel = new JLabel();
     private JLabel clientPhoneNumLabel = new JLabel();
     private JLabel clientNameLabel = new JLabel();
-
+    private JXImageView arrow;
+    private Image arrowUp;
+    private Image arrowDown;
     public DeliveryCollapsiblePane(Delivery delivery) {
         this.delivery = delivery;
 
@@ -65,16 +69,25 @@ public class DeliveryCollapsiblePane extends JPanel {
     }
 
     private JPanel makeMinimal() {
-
+        
+        java.awt.Toolkit toolkit = java.awt.Toolkit.getDefaultToolkit();
+        
         minimal.setBackground(Color.white);
         minimal.setLayout(new FlowLayout(FlowLayout.LEFT));
+        
+        arrow= new JXImageView();
+        arrowDown = toolkit.getImage("src/flechedown.jpg");
+        arrowUp= toolkit.getImage("src/flecheup.jpg");
+        
+        arrow.setImage(arrowDown);
+        
         minimal.add(idDeliveryLabel);
-
+        minimal.add(arrow);
         minimal.addMouseListener(new MouseListener() {
 
             @Override
             public void mouseClicked(MouseEvent e) {
-                toggle(e);
+                
             }
 
             @Override
@@ -93,10 +106,38 @@ public class DeliveryCollapsiblePane extends JPanel {
             public void mouseExited(MouseEvent e) {
             }
         });
+        arrow.addMouseListener(new MouseListener() {
 
-        setLayout(new VerticalLayout());
-        add(minimal);
-        add(extend);
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                toggle(e);
+                if(arrow.getImage()==arrowDown)
+                {
+                arrow.setImage(arrowUp);
+                }
+                else
+                {
+                    arrow.setImage(arrowDown);
+                }
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+            }
+        });
+        
         return minimal;
     }
 }
