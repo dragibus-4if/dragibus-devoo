@@ -7,7 +7,11 @@ public class Client {
     private String address;
     private String name;
 
-    public Client() {
+    public Client(Long id, String phoneNum, String address, String name) {
+        this.id = id;
+        this.phoneNum = phoneNum;
+        this.address = address;
+        this.name = name;
     }
 
     public Client(long id) {
