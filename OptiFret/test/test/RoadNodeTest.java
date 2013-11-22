@@ -41,7 +41,7 @@ public class RoadNodeTest extends TestCase {
         }
         assertEquals(node1.getNeighbors().size(), 0);
         assertEquals(node1.getNodes().size(), 0);
-        
+
         // Ajout d'un voisin et vérification que la taille est à 1
         // Test de la symétrie
         RoadNode node2 = new RoadNode(0);

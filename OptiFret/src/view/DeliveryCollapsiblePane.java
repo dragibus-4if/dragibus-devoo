@@ -1,7 +1,9 @@
 package view;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.FlowLayout;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -10,6 +12,7 @@ import javax.swing.JPanel;
 import model.Client;
 import model.Delivery;
 import org.jdesktop.swingx.JXCollapsiblePane;
+import org.jdesktop.swingx.JXImageView;
 import org.jdesktop.swingx.VerticalLayout;
 
 /**
@@ -26,8 +29,14 @@ public class DeliveryCollapsiblePane extends JPanel {
     private JLabel clientAdressLabel = new JLabel();
     private JLabel clientPhoneNumLabel = new JLabel();
     private JLabel clientNameLabel = new JLabel();
+    private JXImageView arrow;
+    private Image arrowUp;
+    private Image arrowDown;
 
-    public DeliveryCollapsiblePane(Delivery delivery) {
+    private DeliveryList parent;
+
+    public DeliveryCollapsiblePane(Delivery delivery, DeliveryList parent) {
+        this.parent = parent;
         this.delivery = delivery;
 
         // Labels
@@ -55,26 +64,54 @@ public class DeliveryCollapsiblePane extends JPanel {
         return extend;
     }
 
-    public void toggle() {
-        toggle(new MouseEvent(this, 0, 0, 0, 0, 0, 0, false, 0));
-    }
-
-    private void toggle(MouseEvent e) {
-        extend.getActionMap().get("toggle")
-                .actionPerformed(new ActionEvent(e, WIDTH, TOOL_TIP_TEXT_KEY));
-    }
-
     private JPanel makeMinimal() {
+
+        java.awt.Toolkit toolkit = java.awt.Toolkit.getDefaultToolkit();
 
         minimal.setBackground(Color.white);
         minimal.setLayout(new FlowLayout(FlowLayout.LEFT));
-        minimal.add(idDeliveryLabel);
 
+        arrow = new JXImageView();
+        arrowDown = toolkit.getImage("src/flechedown.jpg");
+        arrowUp = toolkit.getImage("src/flecheup.jpg");
+
+        arrow.setImage(arrowDown);
+
+        minimal.add(idDeliveryLabel);
+        minimal.add(arrow);
         minimal.addMouseListener(new MouseListener() {
 
             @Override
             public void mouseClicked(MouseEvent e) {
+                select();
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+            }
+        });
+        arrow.addMouseListener(new MouseListener() {
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
                 toggle(e);
+                if (arrow.getImage() == arrowDown) {
+                    arrow.setImage(arrowUp);
+                } else {
+                    arrow.setImage(arrowDown);
+                }
             }
 
             @Override
@@ -94,9 +131,34 @@ public class DeliveryCollapsiblePane extends JPanel {
             }
         });
 
-        setLayout(new VerticalLayout());
-        add(minimal);
-        add(extend);
         return minimal;
+    }
+
+    public void toggle() {
+        toggle(new MouseEvent(this, 0, 0, 0, 0, 0, 0, false, 0));
+    }
+
+    private void toggle(MouseEvent e) {
+        extend.getActionMap().get("toggle")
+                .actionPerformed(new ActionEvent(e, WIDTH, TOOL_TIP_TEXT_KEY));
+    }
+
+    public void select() {
+        minimal.setBackground(Color.gray);
+
+        if (parent.getSelected() != null) {
+            parent.getSelected().unselect();
+        }
+
+        if (parent.getSelected() != this) {
+            parent.setSelected(this);
+        } else {
+            parent.setSelected(null);
+        }
+
+    }
+
+    public void unselect() {
+        minimal.setBackground(Color.white);
     }
 }

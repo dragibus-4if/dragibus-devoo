@@ -5,16 +5,17 @@ import java.awt.event.MouseListener;
 import java.util.EmptyStackException;
 import java.util.Stack;
 import javax.swing.JFileChooser;
-import model.DeliverySheetModel;
+import model.DeliveryRound;
+import model.DeliverySheet;
 import model.RoadNetwork;
 import view.MainFrame;
 
 public class MainController {
 
-    private Stack<DeliverySheetCommand> history = new Stack<>();
-    private Stack<DeliverySheetCommand> redoneHistory = new Stack<>();
+    private Stack<Command> history = new Stack<>();
+    private Stack<Command> redoneHistory = new Stack<>();
     private RoadNetwork roadNetwork;
-    private DeliverySheetModel deliverySheetModel;
+    private DeliverySheet deliverySheetModel;
     private MainFrame mainFrame;
 
     public MainController(MainFrame frame) {
@@ -28,16 +29,27 @@ public class MainController {
     private void loadRoadNetwork() {
         JFileChooser fc = new JFileChooser();
         if (fc.showOpenDialog(mainFrame) == JFileChooser.APPROVE_OPTION) {
-            roadNetwork = RoadNetwork.loadFromXML(fc.getSelectedFile());
-            // TODO update view
+            try {
+                roadNetwork = RoadNetwork.loadFromXML(fc.getSelectedFile());
+                System.out.println(roadNetwork);
+                //mainFrame.getDeliveryMap().setAllNodes(roadNetwork.getNodes());
+            } catch (Exception e) {
+                mainFrame.showErrorMessage(e.getMessage());
+            }
         }
     }
 
     private void loadDeliverySheet() {
         JFileChooser fc = new JFileChooser();
         if (fc.showOpenDialog(mainFrame) == JFileChooser.APPROVE_OPTION) {
-            deliverySheetModel = DeliverySheetModel.loadFromXML(fc.getSelectedFile());
-            // TODO update view
+            try {
+                deliverySheetModel = DeliverySheet.loadFromXML(fc.getSelectedFile());
+                DeliveryRound dr = deliverySheetModel.getDeliveryRound();
+                mainFrame.getDeliveryList().setDeliveries(dr.getDeliveries());
+                //mainFrame.getDeliveryMap().setRouteNodes(roadNetwork.makeRoute());
+            } catch (Exception e) {
+                mainFrame.showErrorMessage(e.getMessage());
+            }
         }
     }
 
@@ -81,7 +93,7 @@ public class MainController {
      *
      * @param cmd
      */
-    private void executeCommand(DeliverySheetCommand cmd) {
+    private void executeCommand(Command cmd) {
         cmd.execute();
         history.add(cmd);
         redoneHistory.clear();
@@ -95,7 +107,7 @@ public class MainController {
      *
      * @param cmd
      */
-    private void undoCommand(DeliverySheetCommand cmd) {
+    private void undoCommand(Command cmd) {
         cmd.undo();
         redoneHistory.add(cmd);
     }
