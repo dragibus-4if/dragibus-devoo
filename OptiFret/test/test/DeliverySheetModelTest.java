@@ -10,12 +10,19 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
 import junit.framework.TestCase;
+import model.Client;
+import model.Delivery;
 import model.DeliveryEmployee;
 import model.DeliverySheetModel;
+import model.RoadNode;
+import model.TimeSlot;
 
 public class DeliverySheetModelTest extends TestCase {
     public void testFile() {
@@ -87,13 +94,149 @@ public class DeliverySheetModelTest extends TestCase {
         assertSame(sheet.getDeliveryEmployee(), e);
     }
     
-    public void testExportToText() {
+    public void testExportEmpty() {
         DeliverySheetModel sheet = new DeliverySheetModel();
         
         // Test avec une sheet vide
         String result = "";
         StringWriter sw = new StringWriter();
-        sheet.exportToText(sw);
+        sheet.export(sw);
         assertEquals(result, sw.toString());
+        
+        // Appel avec un null
+        try {
+            sheet.export(null);
+            fail("Appel de export avec un paramètre null");
+        }
+        catch(NullPointerException e) {
+        }
+    }
+    
+    public void testExportBasic() {
+        // Création d'un chemin basique
+        List<RoadNode> path = new ArrayList<>();
+        path.add(new RoadNode(0));
+        path.add(new RoadNode(1));
+        path.add(new RoadNode(2));
+        path.add(new RoadNode(3));
+        path.add(path.get(0));
+        path.get(0).addNeighbor(path.get(1), 1, 1);
+        path.get(1).addNeighbor(path.get(2), 1, 1);
+        path.get(2).addNeighbor(path.get(3), 1, 1);
+        path.get(3).addNeighbor(path.get(0), 1, 1);
+        
+        DeliverySheetModel sheet = new DeliverySheetModel();
+        sheet.getDeliveryRound().setPath(path);
+        sheet.getDeliveryRound().addDelivery(new Delivery(new Long(0), new Long(1),
+                new TimeSlot(new Date(), new Long(0)), new Client()));
+        sheet.getDeliveryRound().addDelivery(new Delivery(new Long(1), new Long(3),
+                new TimeSlot(new Date(), new Long(0)), new Client()));
+        
+        String result = ""; // TODO
+        StringWriter sw = new StringWriter();
+        sheet.export(sw);
+        assertEquals(result, sw.toString());
+    }
+    
+    public void testExportCross() {
+        // Création d'un chemin basique
+        List<RoadNode> path = new ArrayList<>();
+        path.add(new RoadNode(0));
+        path.add(new RoadNode(1));
+        path.add(new RoadNode(2));
+        path.add(new RoadNode(1));
+        path.add(new RoadNode(3));
+        path.add(new RoadNode(1));
+        path.add(new RoadNode(4));
+        path.add(path.get(0));
+        path.get(0).addNeighbor(path.get(1), 1, 1);
+        path.get(1).addNeighbor(path.get(2), 1, 1);
+        path.get(2).addNeighbor(path.get(1), 1, 1);
+        path.get(1).addNeighbor(path.get(3), 1, 1);
+        path.get(3).addNeighbor(path.get(1), 1, 1);
+        path.get(1).addNeighbor(path.get(4), 1, 1);
+        path.get(4).addNeighbor(path.get(1), 1, 1);
+        path.get(4).addNeighbor(path.get(0), 1, 1);
+        
+        DeliverySheetModel sheet = new DeliverySheetModel();
+        sheet.getDeliveryRound().setPath(path);
+        sheet.getDeliveryRound().addDelivery(new Delivery(new Long(0), new Long(1),
+                new TimeSlot(new Date(), new Long(0)), new Client()));
+        sheet.getDeliveryRound().addDelivery(new Delivery(new Long(1), new Long(2),
+                new TimeSlot(new Date(), new Long(0)), new Client()));
+        sheet.getDeliveryRound().addDelivery(new Delivery(new Long(2), new Long(3),
+                new TimeSlot(new Date(), new Long(0)), new Client()));
+        sheet.getDeliveryRound().addDelivery(new Delivery(new Long(3), new Long(4),
+                new TimeSlot(new Date(), new Long(0)), new Client()));
+        
+        String result = ""; // TODO
+        StringWriter sw = new StringWriter();
+        sheet.export(sw);
+        assertEquals(result, sw.toString());
+    }
+    
+    public void testExportDeliveryOutPath() {
+        // Création d'un chemin basique
+        List<RoadNode> path = new ArrayList<>();
+        path.add(new RoadNode(0));
+        path.add(path.get(0));
+        path.get(0).addNeighbor(path.get(0), 1, 1);
+        
+        DeliverySheetModel sheet = new DeliverySheetModel();
+        sheet.getDeliveryRound().setPath(path);
+        sheet.getDeliveryRound().addDelivery(new Delivery(new Long(0), new Long(1),
+                new TimeSlot(new Date(), new Long(0)), new Client()));
+        
+        try {
+            sheet.export(new StringWriter());
+            fail("Livraison en dehors du chemin");
+        }
+        catch() {
+        }
+    }
+    
+    public void testExportWithoutDelivery() {
+        // Création d'un chemin basique
+        List<RoadNode> path = new ArrayList<>();
+        path.add(new RoadNode(0));
+        path.add(path.get(0));
+        path.get(0).addNeighbor(path.get(0), 1, 1);
+        
+        DeliverySheetModel sheet = new DeliverySheetModel();
+        sheet.getDeliveryRound().setPath(path);
+        
+        String result = ""; // TODO
+        StringWriter sw = new StringWriter();
+        sheet.export(sw);
+        assertEquals(result, sw.toString());
+    }
+    
+    public void testExportEmptyPath() {
+        // Création d'un chemin basique
+        List<RoadNode> path = new ArrayList<>();
+        DeliverySheetModel sheet = new DeliverySheetModel();
+        sheet.getDeliveryRound().setPath(path);
+        
+        try {
+            sheet.export(new StringWriter());
+            fail(); // TODO
+        }
+        catch() {
+        }
+    }
+    
+    public void testExportNoPath() {
+        // Création d'un chemin basique
+        List<RoadNode> path = new ArrayList<>();
+        path.add(new RoadNode(0));
+        DeliverySheetModel sheet = new DeliverySheetModel();
+        sheet.getDeliveryRound().setPath(path);
+        
+        try {
+            sheet.export(new StringWriter());
+            fail(); // TODO
+        }
+        catch() {
+        }
     }
 }
