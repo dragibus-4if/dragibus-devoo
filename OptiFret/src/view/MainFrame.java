@@ -12,6 +12,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import static javax.swing.JOptionPane.showMessageDialog;
 import javax.swing.KeyStroke;
+import model.Client;
 import model.Delivery;
 import model.RoadNode;
 import model.RoadSection;
