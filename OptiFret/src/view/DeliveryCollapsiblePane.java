@@ -1,6 +1,7 @@
 package view;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
@@ -32,7 +33,10 @@ public class DeliveryCollapsiblePane extends JPanel {
     private Image arrowUp;
     private Image arrowDown;
 
-    public DeliveryCollapsiblePane(Delivery delivery) {
+    private DeliveryList parent;
+
+    public DeliveryCollapsiblePane(Delivery delivery, DeliveryList parent) {
+        this.parent = parent;
         this.delivery = delivery;
 
         // Labels
@@ -60,15 +64,6 @@ public class DeliveryCollapsiblePane extends JPanel {
         return extend;
     }
 
-    public void toggle() {
-        toggle(new MouseEvent(this, 0, 0, 0, 0, 0, 0, false, 0));
-    }
-
-    private void toggle(MouseEvent e) {
-        extend.getActionMap().get("toggle")
-                .actionPerformed(new ActionEvent(e, WIDTH, TOOL_TIP_TEXT_KEY));
-    }
-
     private JPanel makeMinimal() {
 
         java.awt.Toolkit toolkit = java.awt.Toolkit.getDefaultToolkit();
@@ -88,7 +83,7 @@ public class DeliveryCollapsiblePane extends JPanel {
 
             @Override
             public void mouseClicked(MouseEvent e) {
-
+                select();
             }
 
             @Override
@@ -137,5 +132,33 @@ public class DeliveryCollapsiblePane extends JPanel {
         });
 
         return minimal;
+    }
+
+    public void toggle() {
+        toggle(new MouseEvent(this, 0, 0, 0, 0, 0, 0, false, 0));
+    }
+
+    private void toggle(MouseEvent e) {
+        extend.getActionMap().get("toggle")
+                .actionPerformed(new ActionEvent(e, WIDTH, TOOL_TIP_TEXT_KEY));
+    }
+
+    public void select() {
+        minimal.setBackground(Color.gray);
+
+        if (parent.getSelected() != null) {
+            parent.getSelected().unselect();
+        }
+
+        if (parent.getSelected() != this) {
+            parent.setSelected(this);
+        } else {
+            parent.setSelected(null);
+        }
+
+    }
+
+    public void unselect() {
+        minimal.setBackground(Color.white);
     }
 }
