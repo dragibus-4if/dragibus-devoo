@@ -69,8 +69,8 @@ public class RegularGraphTest extends TestCase{
          RoadNode node1 = new RoadNode(1);
          
          RoadNode node2 = new RoadNode(2);
-         node1.addNeighbor(new RoadSection(node1, node2, 88, 1));
-         node2.addNeighbor(new RoadSection(node2, node1, 14, 1));
+         node1.addNeighbor(new RoadSection(node1, node2, 1, 88));
+         node2.addNeighbor(new RoadSection(node2, node1, 1, 14));
          
          netCB.setRoot(node1);
          
@@ -83,9 +83,9 @@ public class RegularGraphTest extends TestCase{
          ArrayList<ArrayList<Integer>> succCB = 
                  new ArrayList<>();
          ArrayList<Integer> e1 = new ArrayList<>();
-         e1.add(2);
+         e1.add(1);
          ArrayList<Integer> e2 = new ArrayList<>();
-         e2.add(1);
+         e2.add(0);
          succCB.add(e1);
          succCB.add(e2);
          Map<Integer, RoadNode> treeCB = new TreeMap<>();
@@ -93,18 +93,24 @@ public class RegularGraphTest extends TestCase{
          treeCB.put(2, node2);
          
          
-         RegularGraph graphCB = new RegularGraph(2, 88, 0, costCB, succCB, 
+         RegularGraph graphCB = new RegularGraph(2, 88, 14, costCB, succCB, 
                  treeCB);
          RegularGraph graphGCB = RegularGraph.loadFromRoadNetwork(netCB);
          assertEquals(graphCB.getNbVertices(),graphGCB.getNbVertices() );
          assertEquals(graphCB.getMaxArcCost(),graphGCB.getMaxArcCost());
          assertEquals(graphCB.getMinArcCost(),graphGCB.getMinArcCost());
-         assertEquals(graphCB.getCost(),graphGCB.getCost());
-         assertEquals(graphCB.getSucc(0),graphGCB.getSucc(0));
-         assertEquals(graphCB.getSucc(1),graphGCB.getSucc(1));
-         
-         
-         
+         assertEquals(graphCB.getCost()[0][0],graphGCB.getCost()[0][0]);
+         assertEquals(graphCB.getCost()[0][1],graphGCB.getCost()[0][1]);
+         assertEquals(graphCB.getCost()[1][0],graphGCB.getCost()[1][0]);
+         assertEquals(graphCB.getCost()[1][1],graphGCB.getCost()[1][1]);
+         assertEquals(graphCB.getSucc(0).length,graphGCB.getSucc(0).length);
+         assertEquals(graphCB.getSucc(1).length,graphGCB.getSucc(1).length);
+         for(int i = 0 ; i < graphCB.getSucc(0).length ; i++) {
+             assertEquals(graphCB.getSucc(0)[i], graphGCB.getSucc(0)[i]);
+         }
+         for(int i = 0 ; i < graphCB.getSucc(1).length ; i++) {
+             assertEquals(graphCB.getSucc(1)[i], graphGCB.getSucc(1)[i]);
+         }
     }
     
 }
