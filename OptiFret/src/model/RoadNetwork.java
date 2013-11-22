@@ -1,6 +1,6 @@
 package model;
 
-import java.io.File;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -13,7 +13,7 @@ public class RoadNetwork {
 
     private RoadNode root;
     
-    public static RoadNetwork loadFromXML(File file) {
+    public static RoadNetwork loadFromXML(Reader input) {
         // TODO - implement RoadNetwork.loadFromXml
         throw new UnsupportedOperationException();
     }
