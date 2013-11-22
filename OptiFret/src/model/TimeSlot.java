@@ -63,4 +63,9 @@ public class TimeSlot {
         return end;
     }
 
+    @Override
+    public String toString() {
+        return "TimeSlot{" + "begin=" + begin + ", duration=" + duration + '}';
+    }
+
 }

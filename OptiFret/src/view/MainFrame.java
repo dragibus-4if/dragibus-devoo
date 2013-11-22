@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import javax.swing.JFrame;
 import static javax.swing.JFrame.EXIT_ON_CLOSE;
@@ -16,6 +17,7 @@ import model.Client;
 import model.Delivery;
 import model.RoadNode;
 import model.RoadSection;
+import model.TimeSlot;
 
 /**
  *
@@ -37,16 +39,9 @@ public class MainFrame extends JFrame {
         super("Optifret");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setSize(800, 600);
-
         setLayout(new BorderLayout());
-
-        // Menu
         setJMenuBar(makeMenu());
-
-        // Delivery map
         add(makeDeliveryMap(), BorderLayout.CENTER);
-
-        // Delivery list
         add(makeDeliveryList(), BorderLayout.WEST);
     }
 
@@ -72,26 +67,20 @@ public class MainFrame extends JFrame {
         return bar;
     }
 
-    public JMenuItem getLoadRound() {
-        return loadRound;
+    private Component makeDeliveryMap() {
+        deliveryMap = new DeliveryMap();
+        deliveryMap.update(generateTestNetwork());
+        deliveryMap.setVisible(true);
+        return deliveryMap;
     }
 
-    public JMenuItem getLoadMap() {
-        return loadMap;
+    private Component makeDeliveryList() {
+        deliveryList = new DeliveryList();
+        deliveryList.setDeliveries(generateDeliveries());
+        return deliveryList;
     }
 
-    public JMenuItem getExportRound() {
-        return exportRound;
-    }
-
-    public JMenuItem getUndo() {
-        return undo;
-    }
-
-    public JMenuItem getRedo() {
-        return redo;
-    }
-
+    // TODO remove this method
     private List<RoadNode> generateTestNetwork() {
         List<RoadNode> temp = new ArrayList<>();
         RoadNode rnTemp = new RoadNode(1);
@@ -124,22 +113,36 @@ public class MainFrame extends JFrame {
         return temp;
     }
 
-    private Component makeDeliveryMap() {  
-         deliveryMap = new DeliveryMap();
-         deliveryMap.update(generateTestNetwork());
-         deliveryMap.setVisible(true);
-         return deliveryMap;
+    // TODO remove this method
+    private List<Delivery> generateDeliveries() {
+        List<Delivery> deliveries = new ArrayList<>();
+        for (int i = 0; i < 100; i++) {
+            int t = i / 24;
+            deliveries.add(new Delivery((long) i, (long) (Math.random() * 100),
+                    new TimeSlot(new Date(t), (long) 3600000),
+                    new Client((long) i, "truc", "machin", "bidule")));
+        }
+        return deliveries;
     }
 
-    private Component makeDeliveryList() {
-        deliveryList = new DeliveryList();
-        List<Delivery> deliveries = new ArrayList<>();
-        for (int i = 0; i < 1337; i++) {
-            deliveries.add(new Delivery(Long.MIN_VALUE, Long.MIN_VALUE, null, new Client(Long.MIN_VALUE, "truc", "machin", "bidule")));
-        }
-        System.out.println(deliveries);
-        deliveryList.setDeliveries(deliveries);
-        return deliveryList;
+    public JMenuItem getLoadRound() {
+        return loadRound;
+    }
+
+    public JMenuItem getLoadMap() {
+        return loadMap;
+    }
+
+    public JMenuItem getExportRound() {
+        return exportRound;
+    }
+
+    public JMenuItem getUndo() {
+        return undo;
+    }
+
+    public JMenuItem getRedo() {
+        return redo;
     }
 
     public DeliveryMap getDeliveryMap() {

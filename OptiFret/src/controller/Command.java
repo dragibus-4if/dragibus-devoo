@@ -1,6 +1,6 @@
 package controller;
 
-public interface DeliverySheetCommand {
+public interface Command {
 
     void execute();
 

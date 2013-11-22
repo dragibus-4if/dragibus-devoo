@@ -48,7 +48,7 @@ public class TSP {
         next = new int[n];
         Solver solver = new Solver();
 
-		// Create variables
+        // Create variables
         // xNext[i] = vertex visited after i
         IntVar[] xNext = new IntVar[n];
         for (int i = 0; i < n; i++) {

@@ -52,4 +52,9 @@ public class Delivery {
     public void setClient(Client client) {
         this.client = client;
     }
+
+    @Override
+    public String toString() {
+        return "Delivery{" + "id=" + id + ", address=" + address + ", timeSlot=" + timeSlot + ", client=" + client + '}';
+    }
 }

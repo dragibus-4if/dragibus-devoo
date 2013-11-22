@@ -29,7 +29,7 @@ public class RoadNetwork {
     //TODO : check integrity of roadnetwork ( correspondance id des roadnodes des 
     public static RoadNetwork loadFromXML(File file) throws Exception {
         if (file == null) {
-            throw new NullPointerException("Fichier chargé null");
+            throw new NullPointerException("Fichier chargé nul");
         }
         HashSet<RoadNode> roadNodes = new HashSet<>();
         Element documentRoot = null;
@@ -40,15 +40,15 @@ public class RoadNetwork {
         } catch (ParserConfigurationException pce) {
             System.out.println("Erreur de configuration du parseur DOM");
             System.out.println("lors de l'appel a fabrique.newDocumentBuilder();");
-            throw new Exception(pce);
+            throw (Exception) pce;
         } catch (SAXException se) {
             System.out.println("Erreur lors du parsing du document");
             System.out.println("lors de l'appel a construteur.parse(xml)");
-            throw new Exception(se);
+            throw (Exception) se;
         } catch (IOException ioe) {
             System.out.println("Erreur d'entree/sortie");
             System.out.println("lors de l'appel a construteur.parse(xml)");
-            throw new Exception(ioe);
+            throw (Exception) ioe;
         }
 
         // Element racine different de "Reseau" (erreur de syntaxe)
