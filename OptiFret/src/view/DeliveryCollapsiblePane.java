@@ -1,6 +1,5 @@
 package view;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
@@ -8,6 +7,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import model.Client;
 import model.Delivery;
 import org.jdesktop.swingx.JXCollapsiblePane;
 import org.jdesktop.swingx.VerticalLayout;
@@ -18,15 +18,49 @@ import org.jdesktop.swingx.VerticalLayout;
  */
 public class DeliveryCollapsiblePane extends JPanel {
 
-    public DeliveryCollapsiblePane(Delivery delivery) {
+    private Delivery delivery;
 
-        JPanel minimal = new JPanel();
+    private JPanel minimal = new JPanel();
+    private JXCollapsiblePane extend = new JXCollapsiblePane();
+    private JLabel idDeliveryLabel = new JLabel();
+    private JLabel clientAdressLabel = new JLabel();
+    private JLabel clientPhoneNumLabel = new JLabel();
+    private JLabel clientNameLabel = new JLabel();
+
+    public DeliveryCollapsiblePane(Delivery delivery) {
+        this.delivery = delivery;
+
+        // Labels
+        idDeliveryLabel.setText("Livraison : " + delivery.getId());
+        Client client = delivery.getClient();
+        if (client != null) {
+            clientPhoneNumLabel.setText("Téléphone du client : " + client.getPhoneNum());
+            clientNameLabel.setText("Client : " + client.getName());
+            clientAdressLabel.setText("Adresse :" + client.getAddress());
+        }
+
+        setLayout(new VerticalLayout());
+        add(makeMinimal());
+        add(makeExtend());
+        validate();
+    }
+
+    private JXCollapsiblePane makeExtend() {
+        extend.setLayout(new FlowLayout());
+
+        extend.add(clientAdressLabel);
+        extend.add(clientNameLabel);
+        extend.add(clientPhoneNumLabel);
+
+        return extend;
+    }
+
+    private JPanel makeMinimal() {
+
         minimal.setBackground(Color.white);
         minimal.setLayout(new FlowLayout(FlowLayout.LEFT));
-        minimal.add(new JLabel("Livraison : " + delivery.getId()));
-        
-        final JXCollapsiblePane extend = new JXCollapsiblePane();
-        
+        minimal.add(idDeliveryLabel);
+
         minimal.addMouseListener(new MouseListener() {
 
             @Override
@@ -56,6 +90,6 @@ public class DeliveryCollapsiblePane extends JPanel {
         setLayout(new VerticalLayout());
         add(minimal);
         add(extend);
-        validate();
+        return minimal;
     }
 }
