@@ -20,7 +20,7 @@ public class RoadNode {
     public RoadNode(Long id) {
         if (id == null) {
             throw new NullPointerException("'id' ne doit pas être nul");
-        }
+        } 
         this.id = id;
     }
 

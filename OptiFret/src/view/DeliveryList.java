@@ -1,22 +1,23 @@
 package view;
 
-import javax.swing.DefaultListModel;
+import java.util.List;
+import javax.swing.JScrollPane;
+import javax.swing.JViewport;
+import model.Delivery;
 
-public class DeliveryList {
-    private DefaultListModel notPlanned ;
-
-    
-    private DefaultListModel planned ;
+public class DeliveryList extends JScrollPane {
     
     public DeliveryList() {
-            notPlanned= new DefaultListModel();
-            planned= new DefaultListModel();
     }
-    public DefaultListModel getNotPlanned() {
-            return notPlanned;
-    }
-
-        public DefaultListModel getPlanned() {
-            return planned;
+    
+    public void update(List<Delivery> deliveries) {
+        if (deliveries == null) {
+            return;
+        }
+        JViewport vp = getViewport();
+        vp.removeAll();
+        for (Delivery d : deliveries) {
+            //vp.add(new DeliveryCollapsiblePane(d));
+        }
     }
 }
