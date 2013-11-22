@@ -11,14 +11,15 @@ import model.RoadNode;
 
 public class RoadNetworkTest extends TestCase {
 
-    public void testFile() {
-        // Si le filename est null, la fonction retourne null.
-        assertNull(RoadNetwork.loadFromXML(null));
+    public void testFile() throws Exception {
+        // Si le filename est null, la fonction renvoie un objet vide.
+        RoadNetwork expected = new RoadNetwork();
+        assertEquals ( expected , RoadNetwork.loadFromXML(null));
 
         // Si le fichier n'existe pas, la fonction retourne Null
         // Normalement le fichier C://frthi/f4242 n'existe pas
         File f4242 = new File("C://frthi/f4242");
-        assertNull(RoadNetwork.loadFromXML(f4242));
+        assertEquals( expected , RoadNetwork.loadFromXML(f4242) );
         
         // Si c'est un dossier, la fonction retourne Nulla
         
