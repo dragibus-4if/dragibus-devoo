@@ -4,11 +4,10 @@
  */
 package test;
 
-import junit.framework.TestCase;
-
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.TreeMap;
+import junit.framework.TestCase;
 import model.RoadNetwork;
 import model.RoadNode;
 import model.RoadSection;
