@@ -7,27 +7,27 @@ import java.util.Stack;
 import javax.swing.JFileChooser;
 import model.DeliverySheetModel;
 import model.RoadNetwork;
-import view.DeliverySheetView;
+import view.MainFrame;
 
-public class DeliverySheetController {
+public class MainController {
 
     private Stack<DeliverySheetCommand> history = new Stack<>();
     private Stack<DeliverySheetCommand> redoneHistory = new Stack<>();
     private RoadNetwork roadNetwork;
     private DeliverySheetModel deliverySheetModel;
-    private DeliverySheetView deliverySheetView;
+    private MainFrame mainFrame;
 
-    public DeliverySheetController(DeliverySheetView view) {
-        if (view == null) {
+    public MainController(MainFrame frame) {
+        if (frame == null) {
             throw new NullPointerException("'view' ne doit pas être nul");
         }
-        this.deliverySheetView = view;
+        this.mainFrame = frame;
         setupNewView();
     }
 
     private void loadRoadNetwork() {
         JFileChooser fc = new JFileChooser();
-        if (fc.showOpenDialog(deliverySheetView) == JFileChooser.APPROVE_OPTION) {
+        if (fc.showOpenDialog(mainFrame) == JFileChooser.APPROVE_OPTION) {
             roadNetwork = RoadNetwork.loadFromXML(fc.getSelectedFile());
             // TODO update view
         }
@@ -35,7 +35,7 @@ public class DeliverySheetController {
 
     private void loadDeliverySheet() {
         JFileChooser fc = new JFileChooser();
-        if (fc.showOpenDialog(deliverySheetView) == JFileChooser.APPROVE_OPTION) {
+        if (fc.showOpenDialog(mainFrame) == JFileChooser.APPROVE_OPTION) {
             deliverySheetModel = DeliverySheetModel.loadFromXML(fc.getSelectedFile());
             // TODO update view
         }
@@ -48,28 +48,28 @@ public class DeliverySheetController {
     /**
      * Permet d'annuler la dernière commande et de l'ajouter à l'historique des
      * "redo".
-     * 
+     *
      * @throws EmptyStackException
      */
     private void undoLastCommand() throws EmptyStackException {
         undoCommand(history.pop());
-        deliverySheetView.getRedo().setEnabled(true);
+        mainFrame.getRedo().setEnabled(true);
         if (history.size() == 0) {
-            deliverySheetView.getUndo().setEnabled(false);
+            mainFrame.getUndo().setEnabled(false);
         }
     }
 
     /**
      * Permet de refaire la dernière commande annulée et de l'ajouter à
      * l'historique des "undo".
-     * 
+     *
      * @throws EmptyStackException
      */
     private void redoLastCommand() throws EmptyStackException {
         executeCommand(redoneHistory.pop());
-        deliverySheetView.getUndo().setEnabled(true);
+        mainFrame.getUndo().setEnabled(true);
         if (redoneHistory.size() == 0) {
-            deliverySheetView.getRedo().setEnabled(false);
+            mainFrame.getRedo().setEnabled(false);
         }
     }
 
@@ -103,8 +103,8 @@ public class DeliverySheetController {
     private void setupNewView() {
         // Historique
         history.clear();
-        deliverySheetView.getUndo().setEnabled(false);
-        deliverySheetView.getRedo().setEnabled(false);
+        mainFrame.getUndo().setEnabled(false);
+        mainFrame.getRedo().setEnabled(false);
 
         // Listeners
         setupViewListeners();
@@ -112,7 +112,7 @@ public class DeliverySheetController {
 
     private void setupViewListeners() {
         // "charger la carte"
-        deliverySheetView.getLoadMap().addMouseListener(new MenuItemClickListener() {
+        mainFrame.getLoadMap().addMouseListener(new MenuItemClickListener() {
 
             @Override
             public void mousePressed(MouseEvent e) {
@@ -121,7 +121,7 @@ public class DeliverySheetController {
         });
 
         // "charger des demandes de livraison"
-        deliverySheetView.getLoadRound().addMouseListener(new MenuItemClickListener() {
+        mainFrame.getLoadRound().addMouseListener(new MenuItemClickListener() {
 
             @Override
             public void mousePressed(MouseEvent e) {
@@ -130,7 +130,7 @@ public class DeliverySheetController {
         });
 
         // "exporter l'itinéraire"
-        deliverySheetView.getExportRound().addMouseListener(new MenuItemClickListener() {
+        mainFrame.getExportRound().addMouseListener(new MenuItemClickListener() {
 
             @Override
             public void mousePressed(MouseEvent e) {
@@ -139,7 +139,7 @@ public class DeliverySheetController {
         });
 
         // "undo"
-        deliverySheetView.getUndo().addMouseListener(new MenuItemClickListener() {
+        mainFrame.getUndo().addMouseListener(new MenuItemClickListener() {
 
             @Override
             public void mousePressed(MouseEvent e) {
@@ -148,7 +148,7 @@ public class DeliverySheetController {
         });
 
         // "redo"
-        deliverySheetView.getRedo().addMouseListener(new MenuItemClickListener() {
+        mainFrame.getRedo().addMouseListener(new MenuItemClickListener() {
 
             @Override
             public void mousePressed(MouseEvent e) {

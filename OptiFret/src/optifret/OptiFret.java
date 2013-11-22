@@ -1,8 +1,8 @@
 package optifret;
 
-import controller.DeliverySheetController;
+import controller.MainController;
 import java.awt.EventQueue;
-import view.DeliverySheetView;
+import view.MainFrame;
 
 /**
  * @author jmcomets
@@ -16,9 +16,9 @@ public class OptiFret {
         EventQueue.invokeLater(new Runnable() {
             @Override
             public void run() {
-                DeliverySheetView view = new DeliverySheetView();
-                DeliverySheetController controller = new DeliverySheetController(view);
-                view.setVisible(true);
+                MainFrame frame = new MainFrame();
+                MainController controller = new MainController(frame);
+                frame.setVisible(true);
             }
         });
     }
