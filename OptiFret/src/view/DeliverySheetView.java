@@ -8,8 +8,8 @@ import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import javax.swing.JPanel;
 import javax.swing.JScrollBar;
+import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
 
 
@@ -27,7 +27,6 @@ public class DeliverySheetView extends JFrame {
     private JMenuItem undo;
     private JMenuItem redo;
     private DeliverySheetFrame deliverySheetFrame;
-    private DeliveryCollapsiblePane test;
     
     public DeliverySheetView() {
         super("Optifret");
@@ -37,17 +36,10 @@ public class DeliverySheetView extends JFrame {
         setLayout(new BoxLayout(cont, BoxLayout.X_AXIS));
         deliverySheetFrame = new DeliverySheetFrame();
         add(deliverySheetFrame, BorderLayout.CENTER);
-        
-        //TEST TEST TEST
-        JScrollBar contentTest = new JScrollBar();
-        test = new DeliveryCollapsiblePane();
-        //contentTest.add(test);
-        //contentTest.setVisible(true);
-        test.setVisible(true);
-        add(test, BorderLayout.CENTER);
-        //contentTest.add(test, BoxLayout.LINE_AXIS);
+                
         makeMenu();
         setJMenuBar(bar);
+        
     }
 
     private void makeMenu() {
