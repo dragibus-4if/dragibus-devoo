@@ -9,8 +9,6 @@ public class DeliveryRound {
     private List<RoadNode> path;
 
     public DeliveryRound() {
-        // TODO - implement DeliveryRound.DeliveryRound
-        throw new UnsupportedOperationException();
     }
 
     public List<Delivery> getDeliveries() {
