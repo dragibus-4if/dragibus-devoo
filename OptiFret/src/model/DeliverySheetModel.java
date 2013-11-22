@@ -18,50 +18,47 @@ public class DeliverySheetModel {
     }
 
     public void export(Writer output) throws IOException {
+        if(output == null)
+            throw new NullPointerException();
         
         List<Delivery> delv = deliveryRound.getDeliveries(); 
         List<RoadNode> path = deliveryRound.getPath();
+        
+        if(path == null)
+            return;
 
-        int index_delv = 1;
+        int index_delv = 0;
         RoadNode old = null;
         
-        for (RoadNode  liv : path) {
+        for(RoadNode liv : path) {
             if(old == null) {
                 old = liv;
                 continue;
             }
-            //Prochaine livraison à effectuer
             Iterator secI = old.getSections().iterator();
-            
-            while (secI.hasNext()) {
-                
-                RoadSection rs = (RoadSection)secI.next();
-                
-                if (rs.getRoadNodeEnd() == liv) {
+            RoadSection rs = null;
+            while(secI.hasNext()) {
+                rs = (RoadSection)secI.next();
+                if(rs.getRoadNodeEnd() == liv) {
                     output.write("Prendre la rue ");
                     output.write(rs.getRoadName() + "\n");
                     break;
                 }
-                
-                
-            }                
-            
-            if(liv.getId().equals(delv.get(index_delv).getAddress())) {
-                output.write("\n\nArrivée à la livraison : \n");
-                output.write(liv.getId().intValue() + ".");
-                output.write(((RoadSection)secI.next()).getRoadName());
-
-                //Passage au point de livraison suivant
-                output.write("\n***\n");
-                
+            }
+            if(rs == null)
+                throw new RuntimeException();
+            if(index_delv < delv.size() && liv.getId().equals(delv.get(index_delv).getAddress())) {
+                output.write("Arrivée à la livraison : ");
+                output.write(rs.getRoadName());
+                output.write("\n\n***\n\n");
                 index_delv++;
             }
-            
-         old = liv;
+            old = liv;
         }
-        
+        if(index_delv != delv.size()) { // On est pas passé par toutes les livraisons
+            throw new RuntimeException();
+        }
         output.flush();
-
     }
     
     public DeliverySheetModel() {
@@ -76,6 +73,8 @@ public class DeliverySheetModel {
     }
 
     public void setDeliveryEmployee(DeliveryEmployee deliveryEmployee) {
+        if(deliveryEmployee == null)
+            throw new NullPointerException();
         this.deliveryEmployee = deliveryEmployee;
     }
 }
