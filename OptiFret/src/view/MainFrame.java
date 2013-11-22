@@ -51,10 +51,8 @@ public class MainFrame extends JFrame {
         // Delivery map
         add(makeDeliveryMap(), BorderLayout.CENTER);
 
-
         // Delivery list
         add(makeDeliveryList(), BorderLayout.WEST);
-        // Delivery Map
 
         //TEST TEST TEST
         JScrollBar scrollbar = new JScrollBar();
@@ -142,7 +140,7 @@ public class MainFrame extends JFrame {
 
     private Component makeDeliveryMap() {  
          deliveryMap = new DeliveryMap();
-         deliveryMap.setNodes(generateTestNetwork());
+         deliveryMap.update(generateTestNetwork());
          deliveryMap.setVisible(true);
          return deliveryMap;
     }
