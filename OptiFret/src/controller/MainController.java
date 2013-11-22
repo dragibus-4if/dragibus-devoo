@@ -6,16 +6,16 @@ import java.util.EmptyStackException;
 import java.util.Stack;
 import javax.swing.JFileChooser;
 import model.DeliveryRound;
-import model.DeliverySheetModel;
+import model.DeliverySheet;
 import model.RoadNetwork;
 import view.MainFrame;
 
 public class MainController {
 
-    private Stack<DeliverySheetCommand> history = new Stack<>();
-    private Stack<DeliverySheetCommand> redoneHistory = new Stack<>();
+    private Stack<Command> history = new Stack<>();
+    private Stack<Command> redoneHistory = new Stack<>();
     private RoadNetwork roadNetwork;
-    private DeliverySheetModel deliverySheetModel;
+    private DeliverySheet deliverySheetModel;
     private MainFrame mainFrame;
 
     public MainController(MainFrame frame) {
@@ -43,7 +43,7 @@ public class MainController {
         JFileChooser fc = new JFileChooser();
         if (fc.showOpenDialog(mainFrame) == JFileChooser.APPROVE_OPTION) {
             try {
-                deliverySheetModel = DeliverySheetModel.loadFromXML(fc.getSelectedFile());
+                deliverySheetModel = DeliverySheet.loadFromXML(fc.getSelectedFile());
                 DeliveryRound dr = deliverySheetModel.getDeliveryRound();
                 mainFrame.getDeliveryList().setDeliveries(dr.getDeliveries());
                 //mainFrame.getDeliveryMap().setRouteNodes(roadNetwork.makeRoute());
@@ -93,7 +93,7 @@ public class MainController {
      *
      * @param cmd
      */
-    private void executeCommand(DeliverySheetCommand cmd) {
+    private void executeCommand(Command cmd) {
         cmd.execute();
         history.add(cmd);
         redoneHistory.clear();
@@ -107,7 +107,7 @@ public class MainController {
      *
      * @param cmd
      */
-    private void undoCommand(DeliverySheetCommand cmd) {
+    private void undoCommand(Command cmd) {
         cmd.undo();
         redoneHistory.add(cmd);
     }

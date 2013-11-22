@@ -2,17 +2,17 @@ package model;
 
 import java.io.File;
 
-public class DeliverySheetModel {
+public class DeliverySheet {
 
     private DeliveryRound deliveryRound = new DeliveryRound();
     private DeliveryEmployee deliveryEmployee = new DeliveryEmployee();
 
-    public static DeliverySheetModel loadFromXML(File file) {
-        // TODO - implement DeliverySheetModel.loadFromXML
+    public static DeliverySheet loadFromXML(File file) {
+        // TODO - implement DeliverySheet.loadFromXML
         throw new UnsupportedOperationException();
     }
 
-    public DeliverySheetModel() {
+    public DeliverySheet() {
     }
 
     public DeliveryRound getDeliveryRound() {
