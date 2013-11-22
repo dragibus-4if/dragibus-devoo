@@ -28,8 +28,12 @@ public class MainController {
     private void loadRoadNetwork() {
         JFileChooser fc = new JFileChooser();
         if (fc.showOpenDialog(mainFrame) == JFileChooser.APPROVE_OPTION) {
-            roadNetwork = RoadNetwork.loadFromXML(fc.getSelectedFile());
-            // TODO update view
+            try {
+                roadNetwork = RoadNetwork.loadFromXML(fc.getSelectedFile());
+                mainFrame.getDeliveryMap().update(roadNetwork.getNodes());
+            } catch (Exception e) {
+                mainFrame.showErrorMessage(e.getMessage());
+            }
         }
     }
 
