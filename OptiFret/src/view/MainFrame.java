@@ -18,6 +18,8 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 import javax.swing.KeyStroke;
+import model.Client;
+import model.Delivery;
 import model.RoadNode;
 import model.RoadSection;
 
@@ -56,7 +58,7 @@ public class MainFrame extends JFrame {
 
         //TEST TEST TEST
         JScrollBar scrollbar = new JScrollBar();
-        deliveryCollapsiblePane = new DeliveryCollapsiblePane();
+        deliveryCollapsiblePane = new DeliveryCollapsiblePane(new Delivery(Long.MIN_VALUE, Long.MIN_VALUE, null, new Client(Long.MIN_VALUE, "0698836388", "adresseeeee00000000000000", "toto le haric0t")));
         //contentTest.add(test);
         //contentTest.setVisible(true);
         deliveryCollapsiblePane.setVisible(true);
