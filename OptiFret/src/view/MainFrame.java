@@ -44,9 +44,7 @@ public class MainFrame extends JFrame {
         setJMenuBar(makeMenu());
         add(makeDeliveryMap(), BorderLayout.CENTER);
         add(makeDeliveryList(), BorderLayout.WEST);
-        
-        pack();
-
+        deliveryList.setPreferredSize(new Dimension(deliveryList.getPreferredSize().width, deliveryMap.getMaxY()+20));
 
     }
 

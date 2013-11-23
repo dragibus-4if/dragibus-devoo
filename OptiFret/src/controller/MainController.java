@@ -4,17 +4,19 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.EmptyStackException;
 import java.util.Stack;
 import javax.swing.JFileChooser;
-import model.Delivery;
 import model.DeliveryRound;
 import model.DeliverySheet;
 import model.RoadNetwork;
+import view.DeliveryMap;
+import view.Listener;
 import view.MainFrame;
+import view.MyChangeEvent;
+import view.DeliveryList;
 
-public class MainController {
+public class MainController implements Listener {
 
     private Stack<DeliverySheetCommand> history = new Stack<>();
     private Stack<DeliverySheetCommand> redoneHistory = new Stack<>();
@@ -28,8 +30,14 @@ public class MainController {
         }
         this.mainFrame = frame;
         setupNewView();
+        setupListeners();
     }
-
+    
+    public void setupListeners(){
+        mainFrame.getDeliveryMap().addListener(this);
+        mainFrame.getDeliveryList().addListener(this);
+    }
+    
     private void loadRoadNetwork() {
         JFileChooser fc = new JFileChooser();
         fc.setDialogTitle(mainFrame.getLoadMap().getText());
@@ -37,9 +45,9 @@ public class MainController {
             try {
                 roadNetwork = RoadNetwork.loadFromXML(new FileReader(fc.getSelectedFile()));
                 mainFrame.getLoadRound().setEnabled(true);
-                mainFrame.getDeliveryMap().clearMap();
                 mainFrame.getDeliveryMap().updateNetwork(roadNetwork.getNodes());
-                mainFrame.getDeliveryList().setDeliveries(new ArrayList<Delivery>());
+               // mainFrame.getDeliveryList().setDeliveries(new ArrayList<Delivery>());
+                mainFrame.pack();
                 mainFrame.repaint();
             } catch (IOException e) {
                 mainFrame.showErrorMessage(e.getMessage());
@@ -183,6 +191,24 @@ public class MainController {
         });
     }
 
+    @Override
+    public void changeEventReceived(MyChangeEvent evt) {
+        if(evt.getSource() instanceof DeliveryMap){
+            onMapNodeSelected(((DeliveryMap)(evt.getSource())));
+        } 
+        else if (evt.getSource() instanceof DeliveryList){
+            onListDeliverySelected( ( (DeliveryList)(evt.getSource())));
+        }
+    }
+    
+    public void onMapNodeSelected(DeliveryMap map){
+        mainFrame.getDeliveryList().setSelectionById(map.getSelectedNode().get().getAddress());
+    }
+
+    private void onListDeliverySelected(DeliveryList deliveryList) {
+        mainFrame.getDeliveryMap().setSelectedNodeById(deliveryList.getSelected().getDelivery().getAddress());
+    }
+    
     private abstract class MenuItemClickListener implements MouseListener {
 
         /**

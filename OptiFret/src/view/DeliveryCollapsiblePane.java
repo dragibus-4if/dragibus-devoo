@@ -23,8 +23,8 @@ public class DeliveryCollapsiblePane extends JPanel {
 
     private static final Color MINIMAL_BG_COLOR = Color.white;
     private static final Color MINIMAL_BG_OVER_COLOR = new Color(240, 240, 240);
-    private static final Color MINIMAL_BG_SELECT_COLOR = new Color(200, 200, 200);
-    private static final Color MINIMAL_BG_UNCOLLAPSED_COLOR = new Color(180, 180, 180);
+    private static final Color MINIMAL_BG_SELECT_COLOR = new Color(180, 180, 180);
+    private static final Color MINIMAL_BG_UNCOLLAPSED_COLOR = new Color(200, 200, 200); 
     private Delivery delivery;
     private JPanel minimal = new JPanel();
     private JXCollapsiblePane extend = new JXCollapsiblePane();

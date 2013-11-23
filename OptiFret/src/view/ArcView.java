@@ -5,8 +5,11 @@
 package view;
 
 import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
 
 /**
@@ -17,13 +20,13 @@ public class ArcView {
 
     private static final int STROKE = 2;
     private static final int ARR_SIZE = 6;
-    private static final int NB_LINES_MAX = 5;
     private int x1;
     private int y1;
     private int x2;
     private int y2;
     private int nbLines;
     BasicStroke myStroke;
+    GradientPaint redtowhite = new GradientPaint(0, 0, Color.RED, 100, 0, Color.WHITE);
 
     public ArcView(int x1, int y1, int x2, int y2, int nbLines) {
         this.nbLines = nbLines;
@@ -53,10 +56,10 @@ public class ArcView {
         return sameSame;
     }
 
-    public void incrementNbLines(){
+    public void incrementNbLines() {
         nbLines++;
     }
-    
+
     @Override
     public int hashCode() {
         int hash = 3;
@@ -69,22 +72,35 @@ public class ArcView {
 
     public void draw(Graphics g) {
         Graphics2D g2d = (Graphics2D) g;
-        g2d.setStroke(myStroke);
         drawArrow(g2d, x1, y1, x2, y2);
     }
 
     void drawArrow(Graphics g1, int x1, int y1, int x2, int y2) {
         Graphics2D g = (Graphics2D) g1.create();
+        g.setRenderingHint(
+                RenderingHints.KEY_ANTIALIASING,
+                RenderingHints.VALUE_ANTIALIAS_ON);
+        g.setRenderingHint(
+                RenderingHints.KEY_TEXT_ANTIALIASING,
+                RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+        g.setRenderingHint(
+                RenderingHints.KEY_FRACTIONALMETRICS,
+                RenderingHints.VALUE_FRACTIONALMETRICS_ON);
         double dx = x2 - x1, dy = y2 - y1;
         double angle = Math.atan2(dy, dx);
         int len = (int) Math.sqrt(dx * dx + dy * dy);
         AffineTransform at = AffineTransform.getTranslateInstance(x1, y1);
         at.concatenate(AffineTransform.getRotateInstance(angle));
         g.transform(at);
+        g.setStroke(myStroke);
+        g.setColor(new Color(255, 255, 255));
         g.drawLine(0, 0, len, 0);
-        if (nbLines > 0) {
+        g.setColor(new Color(0, 0, 0));
+        g.drawLine(1, -2, len - 1, -2);
+        g.drawLine(1, 2, len - 1, 2);
 
-            for (int i = 0; i < nbLines ; i++) {
+        if (nbLines > 0) {
+            for (int i = 0; i < nbLines; i++) {
                 g.fillPolygon(new int[]{len, len - ARR_SIZE, len - ARR_SIZE, len},
                         new int[]{0, -ARR_SIZE, ARR_SIZE, 0}, 4);
                 g.translate(-ARR_SIZE, 0);
