@@ -2,12 +2,13 @@ package controller;
 
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.EmptyStackException;
 import java.util.Stack;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JFileChooser;
-import model.DeliverySheetModel;
+import model.DeliveryRound;
+import model.DeliverySheet;
 import model.RoadNetwork;
 import view.MainFrame;
 
@@ -16,7 +17,7 @@ public class MainController {
     private Stack<DeliverySheetCommand> history = new Stack<>();
     private Stack<DeliverySheetCommand> redoneHistory = new Stack<>();
     private RoadNetwork roadNetwork;
-    private DeliverySheetModel deliverySheetModel;
+    private DeliverySheet deliverySheetModel;
     private MainFrame mainFrame;
 
     public MainController(MainFrame frame) {
@@ -31,10 +32,11 @@ public class MainController {
         JFileChooser fc = new JFileChooser();
         if (fc.showOpenDialog(mainFrame) == JFileChooser.APPROVE_OPTION) {
             try {
-                roadNetwork = RoadNetwork.loadFromXML(fc.getSelectedFile());
-                // TODO update view
-            } catch (Exception ex) {
-                Logger.getLogger(MainController.class.getName()).log(Level.SEVERE, null, ex);
+                roadNetwork = RoadNetwork.loadFromXML(new FileReader(fc.getSelectedFile()));
+                mainFrame.getLoadRound().setEnabled(true);
+                //mainFrame.getDeliveryMap().setAllNodes(roadNetwork.getNodes());
+            } catch (IOException e) {
+                mainFrame.showErrorMessage(e.getMessage());
             }
         }
     }
@@ -42,8 +44,15 @@ public class MainController {
     private void loadDeliverySheet() {
         JFileChooser fc = new JFileChooser();
         if (fc.showOpenDialog(mainFrame) == JFileChooser.APPROVE_OPTION) {
-            deliverySheetModel = DeliverySheetModel.loadFromXML(fc.getSelectedFile());
-            // TODO update view
+            try {
+                deliverySheetModel = DeliverySheet.loadFromXML(new FileReader(fc.getSelectedFile()));
+                DeliveryRound dr = deliverySheetModel.getDeliveryRound();
+                mainFrame.getDeliveryList().setDeliveries(dr.getDeliveries());
+                mainFrame.getExportRound().setEnabled(true);
+                //mainFrame.getDeliveryMap().setRouteNodes(roadNetwork.makeRoute());
+            } catch (IOException e) {
+                mainFrame.showErrorMessage(e.getMessage());
+            }
         }
     }
 
@@ -111,6 +120,8 @@ public class MainController {
         history.clear();
         mainFrame.getUndo().setEnabled(false);
         mainFrame.getRedo().setEnabled(false);
+        mainFrame.getLoadRound().setEnabled(false);
+        mainFrame.getExportRound().setEnabled(false);
 
         // Listeners
         setupViewListeners();
@@ -121,7 +132,7 @@ public class MainController {
         mainFrame.getLoadMap().addMouseListener(new MenuItemClickListener() {
 
             @Override
-            public void mousePressed(MouseEvent e) {
+            public void click() {
                 loadRoadNetwork();
             }
         });
@@ -130,7 +141,7 @@ public class MainController {
         mainFrame.getLoadRound().addMouseListener(new MenuItemClickListener() {
 
             @Override
-            public void mousePressed(MouseEvent e) {
+            public void click() {
                 loadDeliverySheet();
             }
         });
@@ -139,7 +150,7 @@ public class MainController {
         mainFrame.getExportRound().addMouseListener(new MenuItemClickListener() {
 
             @Override
-            public void mousePressed(MouseEvent e) {
+            public void click() {
                 exportRound();
             }
         });
@@ -148,7 +159,7 @@ public class MainController {
         mainFrame.getUndo().addMouseListener(new MenuItemClickListener() {
 
             @Override
-            public void mousePressed(MouseEvent e) {
+            public void click() {
                 undoLastCommand();
             }
         });
@@ -157,7 +168,7 @@ public class MainController {
         mainFrame.getRedo().addMouseListener(new MenuItemClickListener() {
 
             @Override
-            public void mousePressed(MouseEvent e) {
+            public void click() {
                 redoLastCommand();
             }
         });
@@ -165,8 +176,18 @@ public class MainController {
 
     private abstract class MenuItemClickListener implements MouseListener {
 
+        /**
+         * Méthode abstraite correspondant au click sur un item du menu
+         */
+        public abstract void click();
+
         @Override
         public void mouseClicked(MouseEvent e) {
+        }
+
+        @Override
+        public void mousePressed(MouseEvent e) {
+            click();
         }
 
         @Override

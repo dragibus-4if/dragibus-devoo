@@ -96,5 +96,16 @@ public class RoadNode {
             return id.equals(other.id);
         }
     }
+    
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("RoadNode ")
+                .append(this.getId())
+                .append(" with coordinates x = ")
+                .append(this.getX())
+                .append(" and y = ")
+                .append(this.getY());
+        return sb.toString();
+    }
 
 }
