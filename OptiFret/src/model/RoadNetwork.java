@@ -143,7 +143,7 @@ public class RoadNetwork {
                 Node roadSectionNode = roadSections.item(j);
 
                 // noeud non defini (n'est pas TronconSortant)
-                if (roadSectionNode.getNodeName().equals("TronconSortant")) {
+                if (!roadSectionNode.getNodeName().equals("TronconSortant")) {
                     throw new Exception(
                             "Erreur roadNetwork.loadFromXML : \n"
                             + "Erreur syntaxique :\n"

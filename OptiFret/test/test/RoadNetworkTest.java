@@ -45,11 +45,6 @@ public class RoadNetworkTest extends TestCase {
             
             // Test d'une ouverture de balise manquante
             assertNull(RoadNetwork.loadFromXML(new StringReader("<root></balise></root>")));
-            
-            // Il n'y a pas tout les cas sur la syntaxe XML. La bibliothèque
-            // utilisée doit pouvoir détecter les erreurs. Nous l'utilisons et ces
-            // a détecté une erreur.
-            // a détecté une erreur.
         } catch (Exception ex) {
             Logger.getLogger(RoadNetworkTest.class.getName()).log(Level.SEVERE, null, ex);
             fail(ex.getMessage());
