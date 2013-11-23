@@ -43,10 +43,10 @@ public class MainFrame extends JFrame {
         setJMenuBar(makeMenu());
         add(makeDeliveryMap(), BorderLayout.CENTER);
         add(makeDeliveryList(), BorderLayout.WEST);
-        
 
-        
-        
+
+
+
     }
 
     private JMenuBar makeMenu() {
@@ -73,7 +73,9 @@ public class MainFrame extends JFrame {
 
     private Component makeDeliveryMap() {
         deliveryMap = new DeliveryMap();
-        deliveryMap.updateNetwork(generateTestNetwork());
+        List<RoadNode> temp = generateTestNetwork();
+        deliveryMap.updateNetwork(temp);
+        deliveryMap.updateDeliveryNodes(temp);
         deliveryMap.setVisible(true);
         return deliveryMap;
     }
@@ -81,7 +83,7 @@ public class MainFrame extends JFrame {
     private Component makeDeliveryList() {
         deliveryList = new DeliveryList();
         deliveryList.setDeliveries(generateDeliveries());
-        
+
         return deliveryList;
     }
 
@@ -95,29 +97,36 @@ public class MainFrame extends JFrame {
         rnTemp2.setX(60);
         rnTemp2.setY(60);
         RoadSection sec = new RoadSection(rnTemp, rnTemp2, 1, 10);
+        RoadSection sec2 = new RoadSection(rnTemp, rnTemp2, 1, 10);
+        RoadSection sec3 = new RoadSection(rnTemp, rnTemp2, 1, 10);
 
-        RoadNode rnTemp3 = new RoadNode(3);
-        rnTemp3.setX(0);
-        rnTemp3.setY(20);
-        RoadNode rnTemp4 = new RoadNode(4);
-        rnTemp4.setX(20);
-        rnTemp4.setY(60);
-        RoadSection sec2 = new RoadSection(rnTemp3, rnTemp4, 1, 10);
-        RoadSection sec3 = new RoadSection(rnTemp2, rnTemp4, 1, 10);
-        RoadSection sec4 = new RoadSection(rnTemp4, rnTemp2, 1, 10);
 
+//
+//        RoadNode rnTemp3 = new RoadNode(3);
+//        rnTemp3.setX(0);
+//        rnTemp3.setY(20);
+//        RoadNode rnTemp4 = new RoadNode(4);
+//        rnTemp4.setX(20);
+//        rnTemp4.setY(60);
+//        RoadSection sec2 = new RoadSection(rnTemp3, rnTemp4, 1, 10);
+//        RoadSection sec3 = new RoadSection(rnTemp2, rnTemp4, 1, 10);
+//        RoadSection sec4 = new RoadSection(rnTemp4, rnTemp2, 1, 10);
+//
         rnTemp.addNeighbor(sec);
-        rnTemp2.addNeighbor(sec3);
-        rnTemp3.addNeighbor(sec2);
-        rnTemp4.addNeighbor(sec4);
+        rnTemp.addNeighbor(sec2);
+        rnTemp.addNeighbor(sec3);
 
+//        rnTemp2.addNeighbor(sec3);
+//        rnTemp3.addNeighbor(sec2);
+//        rnTemp4.addNeighbor(sec4);
+//
         temp.add(rnTemp);
         temp.add(rnTemp2);
-        temp.add(rnTemp3);
-        temp.add(rnTemp4);
+//        temp.add(rnTemp3);
+//        temp.add(rnTemp4);
         return temp;
     }
-    
+
     // TODO remove this method
     private List<Delivery> generateDeliveries() {
         List<Delivery> deliveries = new ArrayList<>();
