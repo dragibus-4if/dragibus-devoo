@@ -21,8 +21,8 @@ import view.DeliveryList;
 
 public class MainController implements Listener {
 
-    private Stack<Command> history = new Stack<>();
-    private Stack<Command> redoneHistory = new Stack<>();
+    private final Stack<Command> history = new Stack<>();
+    private final Stack<Command> redoneHistory = new Stack<>();
     private RoadNetwork roadNetwork;
     private DeliverySheet deliverySheetModel;
     private MainFrame mainFrame;
