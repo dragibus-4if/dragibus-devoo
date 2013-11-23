@@ -25,6 +25,8 @@ public class NodeView {
     private int x1;
     private int y1;
     private Long address;
+
+   
     private final BasicStroke myStroke = new BasicStroke(STROKE);
     private final BasicStroke myStrokeEnlight = new BasicStroke(STROKE_ENLIGHT);
     private Ellipse2D circle;
@@ -178,5 +180,9 @@ public class NodeView {
 
     public void setMode(MODE mode) {
         this.mode = mode;
+    }
+    
+     public Long getAddress() {
+        return address;
     }
 }

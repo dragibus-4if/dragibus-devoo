@@ -202,11 +202,11 @@ public class MainController implements Listener {
     }
     
     public void onMapNodeSelected(DeliveryMap map){
-        
+        mainFrame.getDeliveryList().setSelectionById(map.getSelectedNode().get().getAddress());
     }
 
     private void onListDeliverySelected(DeliveryList deliveryList) {
-        
+        mainFrame.getDeliveryMap().setSelectedNodeById(deliveryList.getSelected().getDelivery().getAddress());
     }
     
     private abstract class MenuItemClickListener implements MouseListener {
