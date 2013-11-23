@@ -29,57 +29,77 @@ import model.TimeSlot;
 public class DeliverySheetModelTest extends TestCase {
 
     public void testFile() {
-        // Si le filename est null, la fonction retourne null.
-        assertNull(DeliverySheet.loadFromXML(null));
+        try {
+            assertNull(DeliverySheet.loadFromXML(null));
+            throw new IOException();
+        } catch(NullPointerException e) {
+        } catch (IOException e) {
+            fail("loadFromXML(null) doit causer une NullPointerException");
+        }
 
         try {
-            // Si c'est un dossier, la fonction retourne Null
             assertNull(DeliverySheet.loadFromXML(new FileReader("/")));
-        } catch (FileNotFoundException ex) {
+            fail("loadFromXML(dossier) doit causer une exception");
+        } catch (IOException e) {
         }
 
         try {
             // Si le fichier n'est pas lisible, la fonction retourne Null
             // Normalement le fichier /root ne sont pas lisibles
             assertNull(DeliverySheet.loadFromXML(new FileReader("/root")));
-        } catch (FileNotFoundException ex) {
+        } catch (IOException e) {
         }
     }
 
     public void testXMLSyntax() {
-        // Test d'une fermeture de balise manquante
-        assertNull(DeliverySheet.loadFromXML(new StringReader("<root>")));
-
-        // Test d'une ouverture de balise manquante
-        assertNull(DeliverySheet.loadFromXML(new StringReader("<root></balise></root>")));
-
-        // Il n'y a pas tout les cas sur la syntaxe XML. La bibliothèque
-        // utilisée doit pouvoir détecter les erreurs. Nous l'utilisons et ces
-        // quelques tests permettent de montrer qu'on capte que la bibliothèque
-        // a détecté une erreur.
+        try {
+            // Test d'une fermeture de balise manquante
+            assertNull(DeliverySheet.loadFromXML(new StringReader("<root>")));
+        } catch (IOException e) {
+        }
+        
+        try {
+            // Test d'une ouverture de balise manquante
+            assertNull(DeliverySheet.loadFromXML(new StringReader("<root></balise></root>")));
+            
+            // Il n'y a pas tout les cas sur la syntaxe XML. La bibliothèque
+            // utilisée doit pouvoir détecter les erreurs. Nous l'utilisons et ces
+            // quelques tests permettent de montrer qu'on capte que la bibliothèque
+            // a détecté une erreur.
+        } catch (IOException e) {
+        }
     }
 
     public void testXMLSemantic() {
         // Si la balise racine est un élément quelconque (différent de ce qui
-        // est attendu), la fonction renvoie null.
+        // est attendu), la fonction cause une exception
         String s1 = "<root></root>";
-        assertNull(DeliverySheet.loadFromXML(new StringReader(s1)));
+        try {
+            assertNull(DeliverySheet.loadFromXML(new StringReader(s1)));
+            fail("Syntaxe invalide");
+        } catch (IOException ex) {
+        }
 
         // Si le document contient un élément non défini, la fonction renvoie
         // null.
         String s2 = "<road_network><autre></autre></road_network>";
-        assertNull(DeliverySheet.loadFromXML(new StringReader(s2)));
+        try {
+            assertNull(DeliverySheet.loadFromXML(new StringReader(s2)));
+            fail("Syntaxe invalide");
+        } catch (IOException ex) {
+        }
 
         // Si c'est la bonne balise racine, la fonction renvoie quelque chose de non
         // null.
         String s3 = "<road_network></road_network>";
-        DeliverySheet rn = DeliverySheet.loadFromXML(new StringReader(s3));
+        DeliverySheet rn = null;
+        try {
+            rn = DeliverySheet.loadFromXML(new StringReader(s3));
+        } catch (IOException ex) {
+        }
         assertNotNull(rn);
         assertNotNull(rn.getDeliveryEmployee());
         assertNotNull(rn.getDeliveryRound());
-
-        // TODO tests sur l'intégrité du document
-        // Voir le format des xmls à lire pour vérifier ça
     }
 
     public void testSetDeliveryEmployee() {
