@@ -3,7 +3,6 @@ package controller;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.EmptyStackException;
 import java.util.Stack;
@@ -15,8 +14,8 @@ import view.MainFrame;
 
 public class MainController {
 
-    private Stack<Command> history = new Stack<>();
-    private Stack<Command> redoneHistory = new Stack<>();
+    private Stack<DeliverySheetCommand> history = new Stack<>();
+    private Stack<DeliverySheetCommand> redoneHistory = new Stack<>();
     private RoadNetwork roadNetwork;
     private DeliverySheet deliverySheetModel;
     private MainFrame mainFrame;
@@ -58,14 +57,7 @@ public class MainController {
     }
 
     private void exportRound() {
-        JFileChooser fc = new JFileChooser();
-        if (fc.showSaveDialog(mainFrame) == JFileChooser.APPROVE_OPTION) {
-            try {
-                deliverySheetModel.export(new FileWriter(fc.getSelectedFile()));
-            } catch (IOException e) {
-                mainFrame.showErrorMessage(e.getMessage());
-            }
-        }
+        // TODO save as dialog
     }
 
     /**
@@ -104,7 +96,7 @@ public class MainController {
      *
      * @param cmd
      */
-    private void executeCommand(Command cmd) {
+    private void executeCommand(DeliverySheetCommand cmd) {
         cmd.execute();
         history.add(cmd);
         redoneHistory.clear();
@@ -118,7 +110,7 @@ public class MainController {
      *
      * @param cmd
      */
-    private void undoCommand(Command cmd) {
+    private void undoCommand(DeliverySheetCommand cmd) {
         cmd.undo();
         redoneHistory.add(cmd);
     }

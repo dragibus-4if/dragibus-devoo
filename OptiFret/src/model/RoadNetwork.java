@@ -1,14 +1,13 @@
 package model;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
-import java.util.Collection;
-
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-
+import java.util.Set;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -26,8 +25,7 @@ import tsp.TSP;
 public class RoadNetwork {
 
     private RoadNode root;
-
-    //TODO : check integrity of roadnetwork ( correspondance id des roadnodes des
+    
     public static RoadNetwork loadFromXML(Reader input) throws IOException {
         if (input == null) {
             throw new NullPointerException("Fichier chargé null");
@@ -187,35 +185,44 @@ public class RoadNetwork {
     }
 
     public RoadNetwork() {
+        root = null;
     }
 
     public RoadNode getRoot() {
         return root;
     }
-
-    public List<RoadNode> getNodes() {
-        if(this.root == null)
-            return new ArrayList<>();
-        ArrayList<RoadNode> checked = new ArrayList<>();
-        Collection<RoadNode> n = this.getRoot().getNeighbors();
-        checked.add(this.getRoot());
-        Iterator<RoadNode> it = n.iterator();
-        while (it.hasNext()) {
-            RoadNode r = it.next();
-            if (!checked.contains(r)) {
-                n.addAll(r.getNeighbors());
-                checked.add(r);
-                it = n.iterator();
-            }
-        }
-        return checked;
+    
+    public RoadNode getNodeById(Long id) {
+        // TODO - implement RoadNetwork.getNodeById
+        throw new UnsupportedOperationException();
     }
-
+    
+    public List<RoadNode> getNodes() {
+        if(root == null)
+            return new ArrayList<>();
+        Set<RoadNode> open = new HashSet<>();
+        Set<RoadNode> close = new HashSet<>();
+        List<RoadNode> l = new ArrayList<>();
+        open.add(root);
+        while (!open.isEmpty()) {
+            RoadNode current = open.iterator().next();
+            open.remove(current);
+            close.add(current);
+            for (RoadNode n : current.getNodes()) {
+                if (!close.contains(n)) {
+                    open.add(n);
+                }
+            }
+            l.add(current);
+        }
+        return l;
+    }
+    
     public List<RoadNode> makeRoute(List<RoadNode> objectives) {
         RegularGraph graph = RegularGraph.loadFromRoadNetwork(this);
         TSP tsp = new TSP(graph);
         SolutionState s = tsp.solve(1000000, 100000);
-        if (s == SolutionState.OPTIMAL_SOLUTION_FOUND || s == SolutionState.SOLUTION_FOUND) {
+        if(s == SolutionState.OPTIMAL_SOLUTION_FOUND || s == SolutionState.SOLUTION_FOUND) {
             int[] ls = tsp.getNext();
             return graph.getLsNode(ls);
         }
@@ -229,4 +236,5 @@ public class RoadNetwork {
     public int getSize() {
         return getNodes().size();
     }
+
 }

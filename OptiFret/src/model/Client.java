@@ -7,11 +7,7 @@ public class Client {
     private String address;
     private String name;
 
-    public Client(Long id, String phoneNum, String address, String name) {
-        this.id = id;
-        this.phoneNum = phoneNum;
-        this.address = address;
-        this.name = name;
+    public Client() {
     }
 
     public Client(long id) {
@@ -54,9 +50,15 @@ public class Client {
         this.name = name;
     }
 
-    @Override
     public String toString() {
-        return "Client{" + "id=" + id + ", phoneNum=" + phoneNum + ", address=" + address + ", name=" + name + '}';
-    }
+        StringBuilder sb = new StringBuilder();
+        sb.append("Client ")
+                .append(this.getId())
+                .append(" " + this.getName())
+                .append(", phone : " + this.getPhoneNum())
+                .append(", adresse : ")
+                .append(this.getAddress());
+        return sb.toString();
+    } 
 
 }

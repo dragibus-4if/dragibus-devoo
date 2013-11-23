@@ -62,10 +62,14 @@ public class TimeSlot {
         end.setTime(begin.getTime() + duration);
         return end;
     }
-
-    @Override
+    
     public String toString() {
-        return "TimeSlot{" + "begin=" + begin + ", duration=" + duration + '}';
+        StringBuilder sb = new StringBuilder();
+            sb.append("TimeSlot: de ")
+                    .append(this.getBegin().toString())
+                    .append(" à ")
+                    .append(this.getEnd().toString());
+            return sb.toString();
     }
 
 }
