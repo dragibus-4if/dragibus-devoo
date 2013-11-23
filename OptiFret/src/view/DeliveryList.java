@@ -1,6 +1,8 @@
 package view;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -12,12 +14,12 @@ public class DeliveryList extends JScrollPane {
     private final JPanel panel;
     private DeliveryCollapsiblePane selected;
     private final CopyOnWriteArrayList<Listener> listeners;
-
+    private Map<Long,DeliveryCollapsiblePane> panelList;
     public DeliveryList() {
         selected = null;
 
         this.listeners = new CopyOnWriteArrayList<>();
-
+        this.panelList= new LinkedHashMap<>();
         panel = new JPanel(new VerticalLayout());
         getViewport().add(panel);
         validate();
@@ -33,8 +35,8 @@ public class DeliveryList extends JScrollPane {
         for (Delivery d : deliveries) {
             DeliveryCollapsiblePane dcp = new DeliveryCollapsiblePane(d, this);
             dcp.toggle();
+            panelList.put(d.getAddress(), dcp);
             panel.add(dcp);
-
         }
         repaint();
 
@@ -50,13 +52,8 @@ public class DeliveryList extends JScrollPane {
 
     }
     public void setSelectionById(long id){
-        for(DeliveryCollapsiblePane d : (DeliveryCollapsiblePane[])panel.getComponents()){
-            if( d.getDelivery().getAddress() == id)
-            {
-                this.setSelected(d);
-                d.select();
-            }
-        }
+        panelList.get(id).select();
+      
     }
     public void addListener(Listener l) {
         this.listeners.add(l);
