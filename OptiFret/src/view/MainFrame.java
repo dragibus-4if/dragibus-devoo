@@ -1,11 +1,10 @@
-/*
- */
 package view;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import javax.swing.JFrame;
 import static javax.swing.JFrame.EXIT_ON_CLOSE;
@@ -13,10 +12,12 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import static javax.swing.JOptionPane.showMessageDialog;
-import javax.swing.JScrollBar;
 import javax.swing.KeyStroke;
+import model.Client;
+import model.Delivery;
 import model.RoadNode;
 import model.RoadSection;
+import model.TimeSlot;
 
 /**
  *
@@ -33,32 +34,19 @@ public class MainFrame extends JFrame {
     private JMenuItem redo;
     private DeliveryMap deliveryMap;
     private DeliveryList deliveryList;
-    private DeliveryCollapsiblePane deliveryCollapsiblePane;
 
     public MainFrame() {
         super("Optifret");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setSize(800, 600);
-
         setLayout(new BorderLayout());
-
-        // Menu
         setJMenuBar(makeMenu());
-
-        // Delivery map
         add(makeDeliveryMap(), BorderLayout.CENTER);
-
-        // Delivery list
         add(makeDeliveryList(), BorderLayout.WEST);
+        
 
-        //TEST TEST TEST
-        JScrollBar scrollbar = new JScrollBar();
-        deliveryCollapsiblePane = new DeliveryCollapsiblePane();
-        //contentTest.add(test);
-        //contentTest.setVisible(true);
-        deliveryCollapsiblePane.setVisible(true);
-        add(deliveryCollapsiblePane, BorderLayout.WEST);
-        //contentTest.add(test, BoxLayout.LINE_AXIS);
+        
+        
     }
 
     private JMenuBar makeMenu() {
@@ -83,6 +71,65 @@ public class MainFrame extends JFrame {
         return bar;
     }
 
+    private Component makeDeliveryMap() {
+        deliveryMap = new DeliveryMap();
+        deliveryMap.updateNetwork(generateTestNetwork());
+        deliveryMap.setVisible(true);
+        return deliveryMap;
+    }
+
+    private Component makeDeliveryList() {
+        deliveryList = new DeliveryList();
+        deliveryList.setDeliveries(generateDeliveries());
+        
+        return deliveryList;
+    }
+
+    // TODO remove this method
+    private List<RoadNode> generateTestNetwork() {
+        List<RoadNode> temp = new ArrayList<>();
+        RoadNode rnTemp = new RoadNode(1);
+        rnTemp.setX(10);
+        rnTemp.setY(10);
+        RoadNode rnTemp2 = new RoadNode(2);
+        rnTemp2.setX(60);
+        rnTemp2.setY(60);
+        RoadSection sec = new RoadSection(rnTemp, rnTemp2, 1, 10);
+
+        RoadNode rnTemp3 = new RoadNode(3);
+        rnTemp3.setX(0);
+        rnTemp3.setY(20);
+        RoadNode rnTemp4 = new RoadNode(4);
+        rnTemp4.setX(20);
+        rnTemp4.setY(60);
+        RoadSection sec2 = new RoadSection(rnTemp3, rnTemp4, 1, 10);
+        RoadSection sec3 = new RoadSection(rnTemp2, rnTemp4, 1, 10);
+        RoadSection sec4 = new RoadSection(rnTemp4, rnTemp2, 1, 10);
+
+        rnTemp.addNeighbor(sec);
+        rnTemp2.addNeighbor(sec3);
+        rnTemp3.addNeighbor(sec2);
+        rnTemp4.addNeighbor(sec4);
+
+        temp.add(rnTemp);
+        temp.add(rnTemp2);
+        temp.add(rnTemp3);
+        temp.add(rnTemp4);
+        return temp;
+    }
+    
+    // TODO remove this method
+    private List<Delivery> generateDeliveries() {
+        List<Delivery> deliveries = new ArrayList<>();
+        for (int i = 0; i < 100; i++) {
+            int t = i / 24;
+            deliveries.add(new Delivery((long) i, (long) (Math.random() * 100),
+                    new TimeSlot(new Date(t), (long) 3600000),
+                    new Client((long) i, "truc", "machin", "bidule")));
+        }
+        return deliveries;
+    }
+
     public JMenuItem getLoadRound() {
         return loadRound;
     }
@@ -103,66 +150,8 @@ public class MainFrame extends JFrame {
         return redo;
     }
 
-    private List<RoadNode> generateTestNetwork() {
-        List<RoadNode> temp = new ArrayList<>();
-        RoadNode rnTemp = new RoadNode(1);
-        rnTemp.setX(100);
-        rnTemp.setY(100);
-        RoadNode rnTemp2 = new RoadNode(2);
-        rnTemp2.setX(160);
-        rnTemp2.setY(180);
-        RoadSection sec = new RoadSection(rnTemp, rnTemp2, 1, 10);
-        RoadSection sec3 = new RoadSection(rnTemp, rnTemp2, 1, 10);
-        RoadSection sec4 = new RoadSection(rnTemp, rnTemp2, 1, 10);
-
-
-//
-//        RoadNode rnTemp3 = new RoadNode(3);
-//        rnTemp3.setX(200);
-//        rnTemp3.setY(400);
-//        RoadNode rnTemp4 = new RoadNode(4);
-//        rnTemp4.setX(600);
-//        rnTemp4.setY(450);
-//        RoadSection sec2 = new RoadSection(rnTemp3, rnTemp4, 1, 10);
-//        RoadSection sec3 = new RoadSection(rnTemp2, rnTemp4, 1, 10);
-//        RoadSection sec4 = new RoadSection(rnTemp4, rnTemp2, 1, 10);
-//        RoadSection sec5 = new RoadSection(rnTemp4, rnTemp3, 1, 10);
-//        RoadSection sec6 = new RoadSection(rnTemp4, rnTemp, 1, 10);
-//
-//        
-          rnTemp.addNeighbor(sec);
-          rnTemp.addNeighbor(sec3);
-          rnTemp.addNeighbor(sec4);
-
-//        rnTemp3.addNeighbor(sec2);
-//        rnTemp4.addNeighbor(sec4);
-//        rnTemp4.addNeighbor(sec5);
-//        rnTemp4.addNeighbor(sec6);
-//        rnTemp4.addNeighbor(sec6);
-//
-          temp.add(rnTemp);
-          temp.add(rnTemp2);
-//        temp.add(rnTemp3);
-//        temp.add(rnTemp4);
-        return temp;
-    }
-
-    private Component makeDeliveryMap() {  
-         deliveryMap = new DeliveryMap();
-         ArrayList<RoadNode> temp=(ArrayList<RoadNode>)generateTestNetwork();
-         deliveryMap.updateNetwork(temp);
-         deliveryMap.updateDeliveryNodes(temp);
-         deliveryMap.setVisible(true);
-         return deliveryMap;
-    }
-
     public DeliveryMap getDeliveryMap() {
         return deliveryMap;
-    }
-
-    private Component makeDeliveryList() {
-        deliveryList = new DeliveryList();
-        return deliveryList;
     }
 
     public DeliveryList getDeliveryList() {
