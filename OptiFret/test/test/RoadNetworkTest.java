@@ -5,14 +5,21 @@ import java.io.BufferedWriter;
 import java.io.File;
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.util.Iterator;
 import junit.framework.TestCase;
 import model.RoadNetwork;
 import model.RoadNode;
 import model.RoadSection;
+import org.junit.rules.ExpectedException;
+import org.xml.sax.SAXException;
 
 public class RoadNetworkTest extends TestCase {
+    
+    public ExpectedException exception = ExpectedException.none();
 
+    
+/* // l'on ne prend pls de fichier mais un reader :)
     public void testFile() {
         // Si le filename est null, la fonction retourne null.
         assertNull(RoadNetwork.loadFromXML(null));
@@ -43,18 +50,21 @@ public class RoadNetworkTest extends TestCase {
         }
         return false;
     }
-
-    public void testXMLSyntax() {
-        // Si la syntaxe XML est mauvaise, la fonction retourne Null
-        String filename = "/tmp/dragibus-roadnetworktest-testxmlsyntax.xml";
-
+*/
+    public void testXMLSyntax() throws IOException {
+        // Si la syntaxe XML est mauvaise, la fonction lance une SAXException
+      
         // Test d'une fermeture de balise manquante
-        writeInFile(filename, "<root>");
-        assertNull(RoadNetwork.loadFromXML(new File(filename)));
-
+        StringReader sr = new StringReader( "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n" +
+"<Reseau>");
+        RoadNetwork.loadFromXML( sr );
+        exception.expect(SAXException.class);
+    
         // Test d'une ouverture de balise manquante
-        writeInFile(filename, "<root></balise></root>");
-        assertNull(RoadNetwork.loadFromXML(new File(filename)));
+        sr = new StringReader( "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n" +
+"<Reseau></Noeud><Reseau>");
+        RoadNetwork.loadFromXML( sr );
+        exception.expect(SAXException.class);
 
         // Il n'y a pas tout les cas sur la syntaxe XML. La bibliothèque
         // utilisée doit pouvoir détecter les erreurs. Nous l'utilisons et ces
@@ -62,26 +72,28 @@ public class RoadNetworkTest extends TestCase {
         // a détecté une erreur.
     }
 
-    public void testXMLSemantic() {
-        // Si la sémantique XML est mauvaise, la fonction retourne Null
-        String filename = "/tmp/dragibus-roadnetworktest-testxmlsemantic.xml";
-
+    public void testXMLSemantic() throws IOException {
+        
         // Si la balise racine est un élément quelconque (différent de ce qui
-        // est attendu), la fonction renvoie null.
-        writeInFile(filename, "<root></root>");
-        assertNull(RoadNetwork.loadFromXML(new File(filename)));
+        // est attendu), la fonction lance une erreur.
+        StringReader sr = new StringReader("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>"+
+                "<root></root>");
+        RoadNetwork.loadFromXML( sr );
+        exception.expect( IOException.class );
+        exception.expectMessage("Erreur roadNetwork.loadFromXML : \n"
+                    + "Erreur syntaxique :\n"
+                    + "\tLe noeud racine n'est pas <Reseau>");
 
         // Si le document contient un élément non défini, la fonction renvoie
         // null.
-        writeInFile(filename, "<road_network><autre></autre></road_network>");
-        assertNull(RoadNetwork.loadFromXML(new File(filename)));
-
-        // Si c'est la bonne balise racine, la fonction renvoie quelque chose de non
-        // null.
-        writeInFile(filename, "<road_network></road_network>");
-        RoadNetwork rn = RoadNetwork.loadFromXML(new File(filename));
-        assertNotNull(rn);
-        assertEquals(rn.getSize(), 0);
+        sr = new StringReader ("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>"+""
+                + "<Reseau><autre></autre></Reseau>");
+        RoadNetwork.loadFromXML(sr);
+        exception.expect( IOException.class );
+        exception.expectMessage("Erreur roadNetwork.loadFromXML : \n"
+                    + "Erreur syntaxique :\n"
+                    + "\tLe document ne contient pas de RoadNodes");
+        
 
         // TODO tests sur l'intégrité du document
         // Voir le format des xmls à lire pour vérifier ça
