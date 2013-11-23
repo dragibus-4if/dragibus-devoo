@@ -24,6 +24,7 @@ public class NodeView {
     private static final int STROKE_ENLIGHT = 5;
     private int x1;
     private int y1;
+    private Long address;
     private final BasicStroke myStroke = new BasicStroke(STROKE);
     private final BasicStroke myStrokeEnlight = new BasicStroke(STROKE_ENLIGHT);
     private Ellipse2D circle;
@@ -42,9 +43,10 @@ public class NodeView {
     };
     private MODE mode;
 
-    public NodeView(int x1, int y1, WeakReference<DeliveryMap> ref, MODE mode) {
+    public NodeView(int x1, int y1,Long address, WeakReference<DeliveryMap> ref, MODE mode) {
         this.x1 = x1;
         this.y1 = y1;
+        this.address=address;
         this.circle = new Ellipse2D.Double((float) x1, (float) y1, (float) DIAMETER, (float) DIAMETER);
         this.mode = mode;
         parent = ref;
@@ -150,7 +152,6 @@ public class NodeView {
             if (parent.get().getSelectedNode() != null) {
                 parent.get().getSelectedNode().clear();
             }
-            parent.get().fireChangeEvent();
             parent.get().setSelectedNode(new WeakReference<>(this));
         } else {
             selected = false;

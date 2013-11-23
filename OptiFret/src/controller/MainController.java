@@ -199,8 +199,9 @@ public class MainController implements Listener {
     }
     
     public void onMapNodeSelected(DeliveryMap map){
-        System.out.println("BAAEFOEAJFOEAJFOJEAOFJEAFJOEAFOJAEJFEOAJFOEAJFOEAJFOAEJF");
+        
     }
+    
     private abstract class MenuItemClickListener implements MouseListener {
 
         /**
