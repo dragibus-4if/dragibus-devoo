@@ -107,14 +107,14 @@ public class DeliveryCollapsiblePane extends JPanel {
 
             @Override
             public void mouseEntered(MouseEvent e) {
-                if (parent.getSelected() != that) {
+                if (extend.isCollapsed() && parent.getSelected() != that) {
                     that.minimal.setBackground(MINIMAL_BG_OVER_COLOR);
                 }
             }
 
             @Override
             public void mouseExited(MouseEvent e) {
-                if (!extend.isCollapsed() && parent.getSelected() != that) {
+                if (extend.isCollapsed() && parent.getSelected() != that) {
                     that.minimal.setBackground(MINIMAL_BG_COLOR);
                 }
             }

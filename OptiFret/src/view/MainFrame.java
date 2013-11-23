@@ -74,9 +74,8 @@ public class MainFrame extends JFrame {
 
     private Component makeDeliveryMap() {
         deliveryMap = new DeliveryMap();
-        List<RoadNode> temp = generateTestNetwork();
-        deliveryMap.updateNetwork(temp);
-        deliveryMap.updateDeliveryNodes(temp);
+       // deliveryMap.updateNetwork(temp);
+       // deliveryMap.updateDeliveryNodes(temp);
         deliveryMap.setPreferredSize(new Dimension(600, getHeight()));
         deliveryMap.setVisible(true);
         return deliveryMap;
