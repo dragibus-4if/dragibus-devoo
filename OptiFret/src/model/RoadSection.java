@@ -11,28 +11,26 @@ public class RoadSection {
     private final RoadNode roadNodeEnd;
 
     public RoadSection(RoadNode roadNodeBegin, RoadNode roadNodeEnd) {
-        this.roadNodeBegin = roadNodeBegin;
-        this.roadNodeEnd = roadNodeEnd;
-    }
-
-    public RoadSection(RoadNode roadNodeBegin, RoadNode roadNodeEnd, double speed, double length) {
         if (roadNodeBegin == null) {
             throw new NullPointerException("'roadNodeBegin' ne doit pas être nul");
         }
         this.roadNodeBegin = roadNodeBegin;
 
-        if (roadNodeBegin == null) {
+        if (roadNodeEnd == null) {
             throw new NullPointerException("'roadNodeEnd' ne doit pas être nul");
         }
         this.roadNodeEnd = roadNodeEnd;
+    }
 
+    public RoadSection(RoadNode roadNodeBegin, RoadNode roadNodeEnd, double speed, double length) {
+        this(roadNodeBegin, roadNodeEnd);
         this.speed = speed;
         this.length = length;
     }
 
     public double getCost() {
-        if (length == 0 || speed == 0) {
-            throw new RuntimeErrorException(new Error("Undefined cost, length or speed are nil"));
+        if (speed == 0) {
+            throw new RuntimeErrorException(new Error("Coût indéfini, vitesse de 0"));
         }
         return length / speed;
     }
@@ -87,6 +85,11 @@ public class RoadSection {
         hash = 67 * hash + roadNodeBegin.hashCode();
         hash = 67 * hash + roadNodeEnd.hashCode();
         return hash;
+    }
+
+    @Override
+    public String toString() {
+        return "RoadSection with begin = " + roadNodeBegin + " and end = " + roadNodeEnd;
     }
 
 }

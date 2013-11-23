@@ -3,6 +3,7 @@ package model;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -30,8 +31,8 @@ public class RoadNetwork {
     private static final String SPEED_ATTR = "vitesse";
     private static final String ROAD_ATTR = "nomRue";
     private static final String SECTION_ELEM = "TronconSortant";
-    private static final String Y_ELEM = "y";
-    private static final String X_ELEM = "x";
+    private static final String Y_ATTR = "y";
+    private static final String X_ATTR = "x";
     private static final String ID_ATTR = "id";
     private RoadNode root;
 
@@ -39,8 +40,8 @@ public class RoadNetwork {
         if (input == null) {
             throw new NullPointerException("Fichier chargé null");
         }
-        HashSet<RoadNode> roadNodes = new HashSet<>();
-        HashSet<RoadNode> destinationNodes = new HashSet<>();
+        HashMap<Long, RoadNode> roadNodes = new HashMap<>();
+        HashMap<Long, RoadNode> destinationNodes = new HashMap<>();
         Element documentRoot = null;
         try {
             DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
@@ -77,7 +78,7 @@ public class RoadNetwork {
                     + "\tLe document ne contient pas de RoadNodes"
             );
         }
-        RoadNetwork result = new RoadNetwork();
+        RoadNetwork roadNetwork = new RoadNetwork();
 
         for (int i = 0; i < nodes.getLength(); i++) {
             Node m = nodes.item(i);
@@ -102,35 +103,38 @@ public class RoadNetwork {
             NamedNodeMap roadNodeAttributes = n.getAttributes();
 
             // ID du roadNode
-            Node id = roadNodeAttributes.getNamedItem(ID_ATTR);
-            String stringFormNodeId = id.getNodeValue();
-            long nodeId = Long.parseLong(stringFormNodeId);
+            Long nodeId;
+            try {
+                Node id = roadNodeAttributes.getNamedItem(ID_ATTR);
+                String stringFormNodeId = id.getNodeValue();
+                nodeId = Long.parseLong(stringFormNodeId);
+            } catch (NumberFormatException e) {
+                throw new IOException("L'attribut '" + ID_ATTR + "' d'un RoadNode devrait être un entier");
+            } catch (NullPointerException e) {
+                throw new IOException("L'attribut '" + ID_ATTR + "' d'un RoadNode est requis");
+            }
 
-            RoadNode rn = new RoadNode(nodeId);
-            RoadNode beginRoadNode = null;
-            if (roadNodes.add(rn)) {
-                beginRoadNode = rn;
+            RoadNode beginRoadNode;
+            if (destinationNodes.containsKey(nodeId)) {
+                beginRoadNode = destinationNodes.remove(nodeId);
             } else {
-                for (RoadNode node : roadNodes) {
-                    if (node.getId() == nodeId) {
-                        beginRoadNode = node;
-                    }
+                beginRoadNode = new RoadNode(nodeId);
+                if (i == 0) {
+                    roadNetwork.root = beginRoadNode;
                 }
             }
-            assert beginRoadNode != null;
-
-            if (i == 0) {
-                result.root = beginRoadNode;
-            }
+            roadNodes.put(nodeId, beginRoadNode);
 
             // Coordonnées x et y du roadNode
             try {
-                String stringFormX = roadNodeAttributes.getNamedItem(X_ELEM).getNodeValue();
-                String stringFormY = roadNodeAttributes.getNamedItem(Y_ELEM).getNodeValue();
-                beginRoadNode.setX(Integer.parseInt(stringFormX));
-                beginRoadNode.setY(Integer.parseInt(stringFormY));
+                String x = roadNodeAttributes.getNamedItem(X_ATTR).getNodeValue();
+                String y = roadNodeAttributes.getNamedItem(Y_ATTR).getNodeValue();
+                beginRoadNode.setX(Integer.parseInt(x));
+                beginRoadNode.setY(Integer.parseInt(y));
             } catch (NumberFormatException e) {
-                throw new IOException("Les attribute 'x' et 'y' d'un node devraient être des entiers");
+                throw new IOException("Les attributs '" + X_ATTR + "' et '" + Y_ATTR + "' d'un RoadNode devraient être des entiers");
+            } catch (NullPointerException e) {
+                throw new IOException("Les attributs '" + X_ATTR + "' et '" + Y_ATTR + "' d'un RoadNode sont requis");
             }
 
             // Sections
@@ -142,7 +146,6 @@ public class RoadNetwork {
                         + "\tRoadNode " + beginRoadNode.getId() + " sans RoadSection."
                 );
             }
-
             for (int j = 0; j < roadSections.getLength(); j++) {
                 Node roadSectionNode = roadSections.item(j);
                 NamedNodeMap roadSectionAttributes = roadSectionNode.getAttributes();
@@ -158,28 +161,26 @@ public class RoadNetwork {
                 }
 
                 // roadNode de destination
-                String destinationIdStr = roadSectionAttributes.getNamedItem(DEST_ATTR).getNodeValue();
-                long destinationId;
+                Long destId;
                 try {
-                    destinationId = Long.parseLong(destinationIdStr);
+                    String destinationIdStr = roadSectionAttributes.getNamedItem(DEST_ATTR).getNodeValue();
+                    destId = Long.parseLong(destinationIdStr);
                 } catch (NumberFormatException e) {
                     throw new IOException(e.getMessage(), e.getCause());
+                } catch (NullPointerException e) {
+                    throw new IOException("L'attribut '" + DEST_ATTR + "' est requis");
                 }
 
-                RoadNode dest = new RoadNode(destinationId);
-                if (!destinationNodes.contains(dest)) {
-                    destinationNodes.add(dest);
-                } else {
-                    Iterator<RoadNode> it = destinationNodes.iterator();
-                    while (it.hasNext()) {
-                        RoadNode nNode = it.next();
-                        if (nNode.getId() == destinationId) {
-                            dest = nNode;
-                        }
+                RoadNode destRoadNode = roadNodes.get(destId);
+                if (destRoadNode == null) {
+                    destRoadNode = destinationNodes.get(destId);
+                    if (destRoadNode == null) {
+                        destinationNodes.put(destId, new RoadNode(destId));
+                        destRoadNode = destinationNodes.get(destId);
                     }
                 }
 
-                RoadSection roadSection = new RoadSection(beginRoadNode, dest);
+                RoadSection roadSection = new RoadSection(beginRoadNode, destRoadNode);
 
                 // nomRue, vitesse, longueur
                 String roadName = roadSectionAttributes.getNamedItem(ROAD_ATTR).getNodeValue();
@@ -191,6 +192,8 @@ public class RoadNetwork {
                     roadSection.setSpeed(Double.parseDouble(speedStr));
                 } catch (NumberFormatException e) {
                     throw new IOException(e.getMessage(), e.getCause());
+                } catch (NullPointerException e) {
+                    throw new IOException("L'attribut '" + SPEED_ATTR + "' de RoadSection est requis");
                 }
 
                 // roadSection length
@@ -199,12 +202,21 @@ public class RoadNetwork {
                     roadSection.setLength(Double.parseDouble(lengthStr));
                 } catch (NumberFormatException e) {
                     throw new IOException(e.getMessage(), e.getCause());
+                } catch (NullPointerException e) {
+                    throw new IOException("L'attribut '" + LENGTH_ATTR + "' de RoadSection est requis");
                 }
 
                 beginRoadNode.addNeighbor(roadSection);
             }
         }
-        return result;
+
+        // Vérification : si on a ajouté des RoadSection dont la
+        // destination n'est pas un RoadNode défini, grosse erreur
+        if (!destinationNodes.isEmpty()) {
+            throw new IOException("Destination définie mais noeud correspondant non défini");
+        }
+
+        return roadNetwork;
     }
 
     public RoadNetwork() {
