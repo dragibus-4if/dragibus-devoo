@@ -2,10 +2,10 @@ package controller;
 
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.io.Reader;
 import java.util.EmptyStackException;
 import java.util.Stack;
 import javax.swing.JFileChooser;
@@ -58,7 +58,14 @@ public class MainController {
     }
 
     private void exportRound() {
-        // TODO save as dialog
+        JFileChooser fc = new JFileChooser();
+        if (fc.showSaveDialog(mainFrame) == JFileChooser.APPROVE_OPTION) {
+            try {
+                deliverySheetModel.export(new FileWriter(fc.getSelectedFile()));
+            } catch (IOException e) {
+                mainFrame.showErrorMessage(e.getMessage());
+            }
+        }
     }
 
     /**

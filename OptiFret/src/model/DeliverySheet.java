@@ -11,7 +11,7 @@ public class DeliverySheet {
     private DeliveryRound deliveryRound = new DeliveryRound();
     private DeliveryEmployee deliveryEmployee = new DeliveryEmployee();
 
-    public static DeliverySheet loadFromXML(Reader input) {
+    public static DeliverySheet loadFromXML(Reader input) throws IOException {
         // TODO - implement DeliverySheetModel.loadFromXML
         throw new UnsupportedOperationException();
     }
