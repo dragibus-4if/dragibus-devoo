@@ -41,21 +41,47 @@ public class DeliverySheet {
     private DeliveryRound deliveryRound = new DeliveryRound();
     private DeliveryEmployee deliveryEmployee = new DeliveryEmployee();
 
+    /**
+     * Constructeur standard.
+     */
     public DeliverySheet() {
     }
 
+    /**
+     * Getteur pour l'instance de DeliveryRound.
+     * @return l'instance de DeliveryRound
+     */
     public DeliveryRound getDeliveryRound() {
         return this.deliveryRound;
     }
 
+    /**
+     * Getteur pour l'instance du DeliveryEmployee.
+     * @return l'instance du DeliveryEmployee
+     */
     public DeliveryEmployee getDeliveryEmployee() {
         return deliveryEmployee;
     }
 
+    /**
+     * Setteur pour l'instance de DeliveryEmployee.
+     * @param deliveryEmployee une instance de DeliveryEmployee representant un
+     *                         livreur
+     */
     public void setDeliveryEmployee(DeliveryEmployee deliveryEmployee) {
         this.deliveryEmployee = deliveryEmployee;
     }
 
+    /**
+     * Cette methode charger une liste de livraisons pour un plage horaire a
+     * partir d'un fichier XML. Elle prend un Reader representant le fichier, le
+     * parse et cree les entrepots et livraisons précisés dedans. En suite, ils
+     * sont ajoute a l'instance de DeliveryRound du nouveau DeliverySheet.
+     * Si le reader est null, une exception sera lance ainsi aue pour les
+     * erreurs de structure du fichier XML.
+     * @param reader un Reader contenant le fichier XML a charger
+     * @return le nouveau DeliverySheet avec les entrepots et les livraisons 
+     */
     public static DeliverySheet loadFromXML(Reader reader) {
         if (reader == null) {
             throw new NullPointerException("'reader' ne doit pas être nul");
@@ -111,25 +137,27 @@ public class DeliverySheet {
     }
 
     /**
-     *
-     * @param entrepots
+     * Cette methode prend une NodeList d'entrepots et en cree des RoadNodes.
+     * @param entrepots la NodeList contenant les donnees pour les entrepots
      */
     private static List<RoadNode> treatWarehouse(NodeList entrepots) {
-        // TODO - traiter les entrepots, on va dire que l'id des RoadNodes
+        // on va dire que l'id des RoadNodes
         // correspond à l'adresse précisé dans l'élément entrepot
         List<RoadNode> nodes = new LinkedList<>();
 
         for (int i = 0; i < entrepots.getLength(); i++) {
+            // lire l'adresse de l'element XML
             NamedNodeMap attributs = entrepots.item(i).getAttributes();
             Node adresse = attributs.getNamedItem(ROADNODE_ID);
-
             String adresseString = adresse.getNodeValue();
+            
+            // creer un nouveau RoadNode avec l'adresse lu
             RoadNode entrepot = new RoadNode(Long.parseLong(adresseString));
 
             // ajouter l'entrepot à la liste de RoadNodes
             nodes.add(entrepot);
 
-            System.out.println(entrepot);
+            //System.out.println(entrepot);
         }
 
         return nodes;
@@ -137,13 +165,16 @@ public class DeliverySheet {
 
     /**
      * Cette methode s'occupe du traitement des elements d'une tournee. Elle
-     * traverse le DOM du document XML pour recuperer les details sur l'entrepot
-     * et le plage horaire. Pour le plage horaire elle cree tous les plages
-     * d'apres les infos dans l'element XML correspondant ainsi que les
-     * livraisons de chaque plage.
+     * traverse le DOM du document XML à partir les elements "plage" pour
+     * recuperer les details sur l'entrepot et le plage horaire.
+     * Elle cree tous les plages d'apres les infos dans l'element XML
+     * correspondant ainsi que les livraisons de chaque plage en transformant
+     * les childNodes des plage et en les transformant en Element pour pouvoir
+     * acceder aux livraisons facilement.
+     * Puis, le plage correspondant est ajoute a la livraison.
      *
-     * @param journeyNodes la liste d'elements d'une tournee, normalement un
-     * entrepot et un plage horaire
+     * @param journeyNodes la NodeListe de plages
+     * @return la liste de livraisons creee
      */
     private static List<Delivery> treatTimetable(NodeList timetable) throws Exception {
         // traiter chaque plage
@@ -194,21 +225,31 @@ public class DeliverySheet {
         Node timeslotDebut = attributs.getNamedItem(TIMESLOT_DEBUT);
         Node timeslotFin = attributs.getNamedItem(TIMESLOT_FIN);
 
-        // recuperer les valeurs des attributs
+        /* recuperer l'heure de debut de livraison en String, repartir le String
+         * en ses trois parties pour les caster en int
+         */
         String tsDebutString = timeslotDebut.getNodeValue();
         String[] debutHeureParties = tsDebutString.split(":");
         int debutHeure = Integer.parseInt(debutHeureParties[0]);
         int debutMin = Integer.parseInt(debutHeureParties[1]);
         int debutSec = Integer.parseInt(debutHeureParties[2]);
 
+        /* recuperer l'heure de fin de livraison en String, repartir le String
+         * en ses trois parties pour les caster en int
+         */
         String tsFinString = timeslotFin.getNodeValue();
         String[] finHeureParties = tsFinString.split(":");
         int finHeure = Integer.parseInt(finHeureParties[0]);
         int finMin = Integer.parseInt(finHeureParties[1]);
         int finSec = Integer.parseInt(finHeureParties[2]);
 
-        // convertir les attributs de String en Date
+        // creer un nouveau Date representant le jour actuel
         Date today = new Date();
+        
+        // creer un GregorianCalendar a partir de la date today et l'heure
+        // les minutes et les secondes lus
+        // on prend un GregorianCalendar parce que Date va changer la date en
+        // 01.01.1970 01:00:00 si en fait un .setTime(long millisecondes)
         GregorianCalendar calDebut = new GregorianCalendar(
                 today.getYear(), today.getMonth(), today.getDay(),
                 debutHeure, debutMin, debutSec);
@@ -216,10 +257,11 @@ public class DeliverySheet {
                 today.getYear(), today.getMonth(), today.getDay(),
                 finHeure, finMin, debutSec);
 
+        // recuperer les heures des calendriers
         Date tsDebutDate = calDebut.getTime();
         Date tsFinDate = calFin.getTime();
 
-        // creer nouveau TimeSlot
+        // creer nouveau TimeSlot et le renvoyer a la fois
         return new TimeSlot(tsDebutDate, tsFinDate);
     }
 
