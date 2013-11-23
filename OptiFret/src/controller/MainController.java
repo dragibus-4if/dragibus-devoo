@@ -32,6 +32,7 @@ public class MainController {
 
     private void loadRoadNetwork() {
         JFileChooser fc = new JFileChooser();
+        fc.setDialogTitle(mainFrame.getLoadMap().getText());
         if (fc.showOpenDialog(mainFrame) == JFileChooser.APPROVE_OPTION) {
             try {
                 roadNetwork = RoadNetwork.loadFromXML(new FileReader(fc.getSelectedFile()));
@@ -48,6 +49,7 @@ public class MainController {
 
     private void loadDeliverySheet() {
         JFileChooser fc = new JFileChooser();
+        fc.setDialogTitle(mainFrame.getLoadRound().getText());
         if (fc.showOpenDialog(mainFrame) == JFileChooser.APPROVE_OPTION) {
             try {
                 deliverySheetModel = DeliverySheet.loadFromXML(new FileReader(fc.getSelectedFile()));
@@ -130,8 +132,8 @@ public class MainController {
         
         // Listeners
         setupViewListeners();
-        loadRoadNetwork();
-        loadDeliverySheet();
+        //loadRoadNetwork();
+        //loadDeliverySheet();
     }
 
     private void setupViewListeners() {
