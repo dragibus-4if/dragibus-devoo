@@ -206,7 +206,7 @@ public class MainController implements Listener {
     }
 
     private void onListDeliverySelected(DeliveryList deliveryList) {
-        System.out.println("vive la biiiiiiiiiiiiiite");
+        
     }
     
     private abstract class MenuItemClickListener implements MouseListener {
