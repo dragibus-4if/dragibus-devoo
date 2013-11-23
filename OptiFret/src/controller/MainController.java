@@ -43,6 +43,7 @@ public class MainController implements Listener {
 
     private void loadRoadNetwork() {
         final JFileChooser fc = new JFileChooser();
+        fc.setDialogTitle(mainFrame.getLoadMap().getText());
         if (fc.showOpenDialog(mainFrame) == JFileChooser.APPROVE_OPTION) {
             try {
                 final RoadNetwork loadedNetwork = RoadNetwork.loadFromXML(new FileReader(fc.getSelectedFile()));
@@ -139,7 +140,6 @@ public class MainController implements Listener {
                             DeliveryRound dr = deliverySheetModel.getDeliveryRound();
                             mainFrame.getDeliveryList().setDeliveries(dr.getDeliveries());
                         }
-
                         mainFrame.repaint();
                     }
                 });
