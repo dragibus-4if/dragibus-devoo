@@ -7,11 +7,7 @@ public class Client {
     private String address;
     private String name;
 
-    public Client(Long id, String phoneNum, String address, String name) {
-        this.id = id;
-        this.phoneNum = phoneNum;
-        this.address = address;
-        this.name = name;
+    public Client() {
     }
 
     public Client(long id) {
@@ -53,7 +49,7 @@ public class Client {
     public void setName(String name) {
         this.name = name;
     }
-    
+
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("Client ")

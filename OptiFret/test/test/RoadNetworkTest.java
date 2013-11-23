@@ -13,34 +13,20 @@ import model.RoadSection;
 
 public class RoadNetworkTest extends TestCase {
 
-    public void testSimpleIO() {
-        // Argument nul => NullPointerException
-        try {
-            RoadNetwork.loadFromXML(null);
-            throw new Exception();
-        } catch (NullPointerException e) {
-        } catch (Exception e) {
-            fail("loadFromXML(null) devrait causer une NullPointerException");
-        }
-        
-        // Fichier inexistant => Exception
-        try {
-            RoadNetwork.loadFromXML(new File("C://frthi/f4242"));
-            throw new Exception();
-        } catch (IOException e) {
-        } catch (Exception e) {
-            fail("loadFromXML(fichier inexistant) devrait causer une IOException");
-        }
+    public void testFile() {
+        // Si le filename est null, la fonction retourne null.
+        assertNull(RoadNetwork.loadFromXML(null));
 
-        // Dossier => Exception
-        try {
-            RoadNetwork.loadFromXML(new File("."));
-            throw new Exception();
-        } catch (IOException e) {
-            System.out.println("Test error while generating temporary files for test purposes.");
-        } catch (Exception e) {
-            fail("loadFromXML(dossier) devrait causer une IOException");
-        }
+        // Si le fichier n'existe pas, la fonction retourne Null
+        // Normalement le fichier /4242 n'existe pas
+        assertNull(RoadNetwork.loadFromXML(new File("/4242")));
+
+        // Si c'est un dossier, la fonction retourne Null
+        assertNull(RoadNetwork.loadFromXML(new File("/")));
+
+        // Si le fichier n'est pas lisible, la fonction retourne Null
+        // Normalement le fichier /root ne sont pas lisibles
+        assertNull(RoadNetwork.loadFromXML(new File("/root")));
     }
 
     private boolean writeInFile(String filename, String content) {
@@ -58,7 +44,7 @@ public class RoadNetworkTest extends TestCase {
         return false;
     }
 
-    public void testXMLSyntax() throws Exception {
+    public void testXMLSyntax() {
         // Si la syntaxe XML est mauvaise, la fonction retourne Null
         String filename = "/tmp/dragibus-roadnetworktest-testxmlsyntax.xml";
 
@@ -76,7 +62,7 @@ public class RoadNetworkTest extends TestCase {
         // a détecté une erreur.
     }
 
-    public void testXMLSemantic() throws Exception {
+    public void testXMLSemantic() {
         // Si la sémantique XML est mauvaise, la fonction retourne Null
         String filename = "/tmp/dragibus-roadnetworktest-testxmlsemantic.xml";
 
@@ -127,13 +113,42 @@ public class RoadNetworkTest extends TestCase {
         assertEquals(net.getSize(), 4);
     }
 
-    public void testGetNodes() {
+    public void testGetNodeById() {
         RoadNetwork net = new RoadNetwork();
 
+        // Essaye d'acceder à élément n'existant pas (ou invalide)
+        assertNull(net.getNodeById(null));
+        assertNull(net.getNodeById(new Long(-1)));
+        assertNull(net.getNodeById(new Long(0)));
+
+        // Ajout d'un noeud dans le graphe puis récupération de ce noeud par
+        // l'id
+        RoadNode node = new RoadNode(0);
+        Long id = node.getId();
+        net.setRoot(node);
+        assertNotNull(net.getNodeById(id));
+        assertEquals(net.getNodeById(id).getId(), id);
+
+        // Ajout d'un noeud comme fils du précédent puis recherche dans le
+        // graphe
+        RoadNode node2 = new RoadNode(1);
+        Long id2 = node2.getId();
+        node2.addNeighbor(new RoadSection(node2, node, 0.0, 0.0));
+        assertNotNull(net.getNodeById(id2));
+        assertEquals(net.getNodeById(id2).getId(), id2);
+
+        // Essaye d'acceder à élément n'existant toujours pas (ou invalide)
+        assertNull(net.getNodeById(null));
+        assertNull(net.getNodeById(new Long(-1)));
+    }
+    
+    public void testGetNodes() {
+        RoadNetwork net = new RoadNetwork();
+        
         // Récupère la liste des nodes sans avoir défini une racine.
         assertNotNull(net.getNodes());
         assertEquals(net.getNodes().size(), 0);
-
+        
         // Ajout d'un noeud dans le graphe puis récupération de ce noeud dans
         // une liste
         RoadNode node = new RoadNode(0);
@@ -152,7 +167,7 @@ public class RoadNetworkTest extends TestCase {
         RoadNode n1 = it.next();
         RoadNode n2 = it.next();
         assertEquals(it.hasNext(), false);
-        if (!((n1 == node && n2 == node2) || (n1 == node2 && n2 == node))) {
+        if(!((n1 == node && n2 == node2) || (n1 == node2 && n2 == node))) {
             fail("Les 2 noeuds ne sont pas trouvés");
         }
     }
