@@ -30,6 +30,8 @@ public class DeliverySheetModel {
         int index_delv = 0;
         RoadNode old = null;
         
+        String bufferRoad = "";      //Buffer de toute la route à effectuer
+        
         for(RoadNode liv : path) {
             if(old == null) {
                 old = liv;
@@ -40,22 +42,34 @@ public class DeliverySheetModel {
             while(secI.hasNext()) {
                 rs = (RoadSection)secI.next();
                 if(rs.getRoadNodeEnd() == liv) {
-                    output.write("Prendre la rue ");
-                    output.write(rs.getRoadName() + "\n");
+                    bufferRoad += "Prendre la rue ";
+                    bufferRoad += rs.getRoadName(); 
+                    bufferRoad += "\n";
                     break;
                 }
             }
             if(rs == null)
                 throw new RuntimeException();
-            if(index_delv < delv.size() && liv.getId().equals(delv.get(index_delv).getAddress())) {
+            if(index_delv < delv.size() && liv.getId().equals(
+                    delv.get(index_delv).getAddress())) {
+                
+                output.write("Prochaine livraison : ");
+                output.write(rs.getRoadName() + "\n");
+                output.write(bufferRoad);
                 output.write("Arrivée à la livraison : ");
                 output.write(rs.getRoadName());
                 output.write("\n\n***\n\n");
+                bufferRoad = "";
                 index_delv++;
+            }
+            else if (index_delv == delv.size()) {
+                output.write(bufferRoad);
+                bufferRoad = "";
             }
             old = liv;
         }
-        if(index_delv != delv.size()) { // On est pas passé par toutes les livraisons
+        if(index_delv != delv.size()) { 
+            // On est pas passé par toutes les livraisons
             throw new RuntimeException();
         }
         output.flush();

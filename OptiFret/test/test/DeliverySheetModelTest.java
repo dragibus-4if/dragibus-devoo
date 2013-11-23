@@ -145,8 +145,11 @@ public class DeliverySheetModelTest extends TestCase {
         sheet.getDeliveryRound().addDelivery(new Delivery(new Long(1), new Long(3),
                 new TimeSlot(new Date(), new Long(0)), new Client()));
         
-        String result = "Prendre la rue R1\n";
+        String result = "";
+        result += "Prochaine livraison : R1\n";
+        result += "Prendre la rue R1\n";
         result += "Arrivée à la livraison : R1\n\n***\n\n";
+        result += "Prochaine livraison : R3\n";
         result += "Prendre la rue R2\n";
         result += "Prendre la rue R3\n";
         result += "Arrivée à la livraison : R3\n\n***\n\n";
@@ -224,10 +227,13 @@ public class DeliverySheetModelTest extends TestCase {
         sheet.getDeliveryRound().addDelivery(new Delivery(new Long(3), new Long(4),
                 new TimeSlot(new Date(), new Long(0)), new Client()));
         
-        String result = "Prendre la rue R1\n";
+        String result = "Prochaine livraison : R1\n"; 
+        result += "Prendre la rue R1\n";
         result += "Arrivée à la livraison : R1\n\n***\n\n";
+        result += "Prochaine livraison : R2\n";
         result += "Prendre la rue R2\n";
         result += "Arrivée à la livraison : R2\n\n***\n\n";
+        result += "Prochaine livraison : R4\n";
         result += "Prendre la rue -R2\n";
         result += "Prendre la rue R3\n";
         result += "Prendre la rue -R3\n";
