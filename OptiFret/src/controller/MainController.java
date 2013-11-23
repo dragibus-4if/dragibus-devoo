@@ -2,24 +2,21 @@ package controller;
 
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.EmptyStackException;
 import java.util.Stack;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JFileChooser;
-import model.DeliveryRound;
-import model.DeliverySheet;
+import model.DeliverySheetModel;
 import model.RoadNetwork;
 import view.MainFrame;
 
 public class MainController {
 
-    private Stack<Command> history = new Stack<>();
-    private Stack<Command> redoneHistory = new Stack<>();
+    private Stack<DeliverySheetCommand> history = new Stack<>();
+    private Stack<DeliverySheetCommand> redoneHistory = new Stack<>();
     private RoadNetwork roadNetwork;
-    private DeliverySheet deliverySheetModel;
+    private DeliverySheetModel deliverySheetModel;
     private MainFrame mainFrame;
 
     public MainController(MainFrame frame) {
@@ -34,11 +31,10 @@ public class MainController {
         JFileChooser fc = new JFileChooser();
         if (fc.showOpenDialog(mainFrame) == JFileChooser.APPROVE_OPTION) {
             try {
-                roadNetwork = RoadNetwork.loadFromXML(new FileReader(fc.getSelectedFile()));
-                System.out.println(roadNetwork);
-                //mainFrame.getDeliveryMap().setAllNodes(roadNetwork.getNodes());
-            } catch (IOException e) {
-                mainFrame.showErrorMessage(e.getMessage());
+                roadNetwork = RoadNetwork.loadFromXML(fc.getSelectedFile());
+                // TODO update view
+            } catch (Exception ex) {
+                Logger.getLogger(MainController.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
@@ -46,26 +42,13 @@ public class MainController {
     private void loadDeliverySheet() {
         JFileChooser fc = new JFileChooser();
         if (fc.showOpenDialog(mainFrame) == JFileChooser.APPROVE_OPTION) {
-            try {
-                deliverySheetModel = DeliverySheet.loadFromXML(new FileReader(fc.getSelectedFile()));
-                DeliveryRound dr = deliverySheetModel.getDeliveryRound();
-                mainFrame.getDeliveryList().setDeliveries(dr.getDeliveries());
-                //mainFrame.getDeliveryMap().setRouteNodes(roadNetwork.makeRoute());
-            } catch (IOException e) {
-                mainFrame.showErrorMessage(e.getMessage());
-            }
+            deliverySheetModel = DeliverySheetModel.loadFromXML(fc.getSelectedFile());
+            // TODO update view
         }
     }
 
     private void exportRound() {
-        JFileChooser fc = new JFileChooser();
-        if (fc.showSaveDialog(mainFrame) == JFileChooser.APPROVE_OPTION) {
-            try {
-                deliverySheetModel.export(new FileWriter(fc.getSelectedFile()));
-            } catch (IOException e) {
-                mainFrame.showErrorMessage(e.getMessage());
-            }
-        }
+        // TODO save as dialog
     }
 
     /**
@@ -104,7 +87,7 @@ public class MainController {
      *
      * @param cmd
      */
-    private void executeCommand(Command cmd) {
+    private void executeCommand(DeliverySheetCommand cmd) {
         cmd.execute();
         history.add(cmd);
         redoneHistory.clear();
@@ -118,7 +101,7 @@ public class MainController {
      *
      * @param cmd
      */
-    private void undoCommand(Command cmd) {
+    private void undoCommand(DeliverySheetCommand cmd) {
         cmd.undo();
         redoneHistory.add(cmd);
     }

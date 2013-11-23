@@ -5,10 +5,15 @@ package view;
 import java.awt.Graphics;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import javax.swing.JPanel;
 import model.RoadNode;
+import view.NodeView.MODE;
 
 /**
  *
@@ -16,12 +21,14 @@ import model.RoadNode;
  */
 public class DeliveryMap extends JPanel {
 
-    private ArrayList<ArcView> mapArcs;
+    private Map<Integer ,ArcView> mapArcs;
     private ArrayList<NodeView> mapNodes;
+    
+    private WeakReference<NodeView> selectedNode;
 
     public DeliveryMap() {
         super();
-        mapArcs = new ArrayList<>();
+        mapArcs = new LinkedHashMap<>();
         mapNodes = new ArrayList<>();
         addMouseListener(new MouseListener() {
             @Override
@@ -55,7 +62,7 @@ public class DeliveryMap extends JPanel {
 
     }
 
-    public void update(List<RoadNode> nodes) {
+    public void updateNetwork(List<RoadNode> nodes) {
         if (nodes == null) {
             return;
         }
@@ -64,18 +71,41 @@ public class DeliveryMap extends JPanel {
             if (rn.getNeighbors() == null) {
                 break;
             }
-            NodeView tempNode = new NodeView(rn.getX(), rn.getY());
+            NodeView tempNode = new NodeView(rn.getX(), rn.getY(), new WeakReference<>(this), MODE.CLASSIC );
             if (!mapNodes.contains(tempNode)) {
                 mapNodes.add(tempNode);
             }
             for (RoadNode neighbor : rn.getNeighbors()) {
-
-                ArcView temp = new ArcView(rn.getX(), rn.getY(), neighbor.getX(), neighbor.getY(), 4);
-                if (!mapArcs.contains(temp)) {
-                    mapArcs.add(temp);
+                ArcView temp = new ArcView(rn.getX(), rn.getY(), neighbor.getX(), neighbor.getY(), 0);
+                if (!mapArcs.containsKey(temp.hashCode())) {
+                    mapArcs.put(temp.hashCode(), temp);
                 }
             }
-
+        }
+    }
+    
+    public void updateDeliveryNodes(List<RoadNode> nodes){
+        if (nodes == null) {
+            return;
+        }
+        
+        for (RoadNode rn : nodes) {
+            if (rn.getNeighbors() == null) {
+                break;
+            }
+            NodeView tempNode = new NodeView(rn.getX(), rn.getY(), new WeakReference<>(this), MODE.CLASSIC );
+            for(int i=0;i<mapNodes.size();i++){
+                if(tempNode.equals(mapNodes.get(i))){
+                    mapNodes.get(i).setMode(MODE.DELIVERY);
+                }
+            }
+     
+            for (RoadNode neighbor : rn.getNeighbors()) {
+                ArcView temp = new ArcView(rn.getX(), rn.getY(), neighbor.getX(), neighbor.getY(), 0);
+                if (mapArcs.containsKey(temp.hashCode())) {
+                    mapArcs.get(temp.hashCode()).incrementNbLines();
+                }
+            }
         }
     }
 
@@ -104,11 +134,19 @@ public class DeliveryMap extends JPanel {
     }
 
     private void draw(Graphics g) {
-        for (ArcView arc : mapArcs) {
+        for (ArcView arc : mapArcs.values()) {
             arc.draw(g);
         }
         for (NodeView node : mapNodes) {
             node.draw(g);
         }
+    }
+
+    public WeakReference<NodeView> getSelectedNode() {
+        return selectedNode;
+    }
+
+    public void setSelectedNode(WeakReference<NodeView> selectedNode) {
+        this.selectedNode = selectedNode;
     }
 }

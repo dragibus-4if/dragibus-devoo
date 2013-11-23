@@ -20,7 +20,7 @@ public class RoadNode {
     public RoadNode(Long id) {
         if (id == null) {
             throw new NullPointerException("'id' ne doit pas être nul");
-        }
+        } 
         this.id = id;
     }
 
@@ -55,17 +55,13 @@ public class RoadNode {
         }
         return ls;
     }
-
+    
     public final Collection<RoadNode> getNodes() {
         return nodes;
     }
 
     public void addNeighbor(RoadNode section, double speed, double length) {
         addNeighbor(new RoadSection(this, section, speed, length));
-    }
-    
-    public void addNeighbor(RoadNode section, double speed, double length, String roadName) {
-        addNeighbor(new RoadSection(this, section, speed, length, roadName));
     }
     
     public void addNeighbor(RoadSection section) {
