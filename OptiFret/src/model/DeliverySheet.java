@@ -43,7 +43,7 @@ public class DeliverySheet {
 
     public DeliverySheet() {
     }
-    
+
     public DeliveryRound getDeliveryRound() {
         return this.deliveryRound;
     }
@@ -56,88 +56,82 @@ public class DeliverySheet {
         this.deliveryEmployee = deliveryEmployee;
     }
 
-    public static DeliverySheet loadFromXML(Reader file) {
-        // TODO - implement DeliverySheetModel.loadFromXML
-        //throw new UnsupportedOperationException();
+    public static DeliverySheet loadFromXML(Reader reader) {
+        if (reader == null) {
+            throw new NullPointerException("'reader' ne doit pas être nul");
+        }
+
         DeliverySheet dsm = new DeliverySheet();
-        
-        if (file != null) {
-            try {
-                
-                
-                // creation d'un constructeur de documents a l'aide d'une fabrique
-                DocumentBuilder builder = DocumentBuilderFactory.newInstance()
-                        .newDocumentBuilder();
-                // lecture du contenu d'un fichier XML avec DOM
-                Document document = builder.parse(new InputSource(file));
-                Element documentRoot = document.getDocumentElement();
+        try {
+            // creation d'un constructeur de documents a l'aide d'une fabrique
+            DocumentBuilder builder = DocumentBuilderFactory.newInstance()
+                    .newDocumentBuilder();
+            // lecture du contenu d'un fichier XML avec DOM
+            Document document = builder.parse(new InputSource(reader));
+            Element documentRoot = document.getDocumentElement();
 
-                // normalizer la représentation textuelle des elements
-                documentRoot.normalize();
+            // normalizer la représentation textuelle des elements
+            documentRoot.normalize();
 
-                // recuperer la liste de sous-elements
-                if (documentRoot.getTagName().equals(ROOT_ELEM)) {
-                    NodeList entrepots = documentRoot.getElementsByTagName(NAME_WAREHOUSE);
-                    List<RoadNode> rnListe = treatWarehouse(entrepots);
-                    
-                    // ajouter la liste des entrepots a la deliveryRound du DSM
-                    dsm.deliveryRound.setPath(rnListe);
-                    
-                    NodeList plages = documentRoot.getElementsByTagName(NAME_TIMETABLE);
-                    List<Delivery> livListe = treatTimetable(plages);
-                    
-                    // parcourir la liste des livraisons pour les ajouter a la
-                    // deliveryRound du DSM
-                    for (Delivery delivery : livListe) {
-                        dsm.deliveryRound.addDelivery(delivery);
-                    }
-                } else { // element racine different de "JourneeType" (erreur de syntaxe)
-                    throw new Exception("La structure du document n'est pas la bonne!");
+            // recuperer la liste de sous-elements
+            if (documentRoot.getTagName().equals(ROOT_ELEM)) {
+                NodeList entrepots = documentRoot.getElementsByTagName(NAME_WAREHOUSE);
+                List<RoadNode> rnListe = treatWarehouse(entrepots);
+
+                // ajouter la liste des entrepots a la deliveryRound du DSM
+                dsm.deliveryRound.setPath(rnListe);
+
+                NodeList plages = documentRoot.getElementsByTagName(NAME_TIMETABLE);
+                List<Delivery> livListe = treatTimetable(plages);
+
+                // parcourir la liste des livraisons pour les ajouter a la
+                // deliveryRound du DSM
+                for (Delivery delivery : livListe) {
+                    dsm.deliveryRound.addDelivery(delivery);
                 }
-
-                // todo : traiter les erreurs
-            } catch (ParserConfigurationException pce) {
-                System.out.println("Erreur de configuration du parseur DOM");
-                System.out.println("lors de l'appel a fabrique.newDocumentBuilder();");
-            } catch (SAXException se) {
-                System.out.println("Erreur lors du parsing du document");
-                System.out.println("lors de l'appel a construteur.parse(xml)");
-            } catch (IOException ioe) {
-                System.out.println("Erreur d'entree/sortie");
-                System.out.println("lors de l'appel a construteur.parse(xml)");
-            } catch (Exception ex) {
-                System.out.println("Erreur de type d'element XML");
-                System.out.println("lors de l'appel a Node.getNodeType()");
+            } else { // element racine different de "JourneeType" (erreur de syntaxe)
+                throw new IOException("La structure du document n'est pas la bonne!");
             }
 
-        } else { // le fichier est null
-            return null;
+            // todo : traiter les erreurs
+        } catch (ParserConfigurationException pce) {
+            System.out.println("Erreur de configuration du parseur DOM");
+            System.out.println("lors de l'appel a fabrique.newDocumentBuilder();");
+        } catch (SAXException se) {
+            System.out.println("Erreur lors du parsing du document");
+            System.out.println("lors de l'appel a construteur.parse(xml)");
+        } catch (IOException ioe) {
+            System.out.println("Erreur d'entree/sortie");
+            System.out.println("lors de l'appel a construteur.parse(xml)");
+        } catch (Exception ex) {
+            System.out.println("Erreur de type d'element XML");
+            System.out.println("lors de l'appel a Node.getNodeType()");
         }
         return dsm;
     }
 
     /**
-     * 
-     * @param entrepots 
+     *
+     * @param entrepots
      */
     private static List<RoadNode> treatWarehouse(NodeList entrepots) {
         // TODO - traiter les entrepots, on va dire que l'id des RoadNodes
         // correspond à l'adresse précisé dans l'élément entrepot
         List<RoadNode> nodes = new LinkedList<>();
-        
+
         for (int i = 0; i < entrepots.getLength(); i++) {
             NamedNodeMap attributs = entrepots.item(i).getAttributes();
             Node adresse = attributs.getNamedItem(ROADNODE_ID);
 
             String adresseString = adresse.getNodeValue();
             RoadNode entrepot = new RoadNode(Long.parseLong(adresseString));
-            
+
             // ajouter l'entrepot à la liste de RoadNodes
             nodes.add(entrepot);
 
             System.out.println(entrepot);
         }
-        
+
         return nodes;
     }
 
@@ -154,7 +148,7 @@ public class DeliverySheet {
     private static List<Delivery> treatTimetable(NodeList timetable) throws Exception {
         // traiter chaque plage
         List<Delivery> livs = new LinkedList<>();
-        
+
         for (int i = 0; i < timetable.getLength(); i++) {
             Node node = timetable.item(i);
             Element plage;
@@ -177,11 +171,11 @@ public class DeliverySheet {
                 // ajouter le plage a la livraison
                 liv.setTimeSlot(ts);
                 System.out.println(liv);
-                
+
                 // ajouter la livraison à la liste
                 livs.add(liv);
             }
-            
+
         }
         return livs;
     }
@@ -216,10 +210,10 @@ public class DeliverySheet {
         // convertir les attributs de String en Date
         Date today = new Date();
         GregorianCalendar calDebut = new GregorianCalendar(
-                today.getYear(), today.getMonth(), today.getDay(), 
+                today.getYear(), today.getMonth(), today.getDay(),
                 debutHeure, debutMin, debutSec);
         GregorianCalendar calFin = new GregorianCalendar(
-                today.getYear(), today.getMonth(), today.getDay(), 
+                today.getYear(), today.getMonth(), today.getDay(),
                 finHeure, finMin, debutSec);
 
         Date tsDebutDate = calDebut.getTime();
@@ -270,7 +264,7 @@ public class DeliverySheet {
 
     /**
      * TODO - a supprimer après le testing
-     * @param args 
+     * @param args
      */
     public static void main(String[] args) {
         File testfile = null;
@@ -279,7 +273,7 @@ public class DeliverySheet {
         } catch (Exception e) {
             System.out.println("Sorry, file could not be created, try another path.");
         }
-        
+
         try {
             DeliverySheet dsm = DeliverySheet.loadFromXML(new FileReader(testfile));
         } catch (FileNotFoundException ex) {
