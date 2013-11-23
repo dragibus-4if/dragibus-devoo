@@ -43,6 +43,10 @@ public class MainFrame extends JFrame {
         setJMenuBar(makeMenu());
         add(makeDeliveryMap(), BorderLayout.CENTER);
         add(makeDeliveryList(), BorderLayout.WEST);
+        
+
+        
+        
     }
 
     private JMenuBar makeMenu() {
@@ -77,6 +81,7 @@ public class MainFrame extends JFrame {
     private Component makeDeliveryList() {
         deliveryList = new DeliveryList();
         deliveryList.setDeliveries(generateDeliveries());
+        
         return deliveryList;
     }
 
@@ -112,7 +117,7 @@ public class MainFrame extends JFrame {
         temp.add(rnTemp4);
         return temp;
     }
-
+    
     // TODO remove this method
     private List<Delivery> generateDeliveries() {
         List<Delivery> deliveries = new ArrayList<>();

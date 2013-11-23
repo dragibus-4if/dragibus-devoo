@@ -1,5 +1,6 @@
 package view;
 
+import java.awt.Component;
 import java.util.List;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -26,9 +27,14 @@ public class DeliveryList extends JScrollPane {
             DeliveryCollapsiblePane dcp = new DeliveryCollapsiblePane(d,this);
             dcp.toggle();
             panel.add(dcp);
+            
         }
+        repaint();
+        
     }
 
+
+    
     public DeliveryCollapsiblePane getSelected() {
         return selected;
     }

@@ -1,12 +1,12 @@
 package view;
 
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import model.Client;
@@ -29,12 +29,15 @@ public class DeliveryCollapsiblePane extends JPanel {
     private JLabel clientAdressLabel = new JLabel();
     private JLabel clientPhoneNumLabel = new JLabel();
     private JLabel clientNameLabel = new JLabel();
-    private JXImageView arrow;
-    private Image arrowUp;
-    private Image arrowDown;
+    private JLabel arrow;
+    private ImageIcon arrowUp;
+    private ImageIcon arrowDown;
+    //private Image arrowUp;
+    //private Image arrowDown;
 
     private DeliveryList parent;
 
+    private boolean folded =true;
     public DeliveryCollapsiblePane(Delivery delivery, DeliveryList parent) {
         this.parent = parent;
         this.delivery = delivery;
@@ -71,12 +74,15 @@ public class DeliveryCollapsiblePane extends JPanel {
         minimal.setBackground(Color.white);
         minimal.setLayout(new FlowLayout(FlowLayout.LEFT));
 
-        arrow = new JXImageView();
-        arrowDown = toolkit.getImage("src/flechedown.jpg");
-        arrowUp = toolkit.getImage("src/flecheup.jpg");
+        arrow = new JLabel();
+        arrow.setDoubleBuffered(true);
+        
+        
+        arrowDown = new ImageIcon(toolkit.getImage("src/flechedown.jpg"));
+        arrowUp = new ImageIcon(toolkit.getImage("src/flecheup.jpg"));
 
-        arrow.setImage(arrowDown);
-
+        arrow.setIcon(arrowDown);
+       
         minimal.add(idDeliveryLabel);
         minimal.add(arrow);
         minimal.addMouseListener(new MouseListener() {
@@ -84,6 +90,14 @@ public class DeliveryCollapsiblePane extends JPanel {
             @Override
             public void mouseClicked(MouseEvent e) {
                 select();
+                
+                if(parent.getSelected()!=null)
+                {
+                System.out.println(parent.getSelected().getDelivery().getId());
+                }
+                else{
+                    System.out.println("RIEN RIEN RIEN");
+                }
             }
 
             @Override
@@ -107,10 +121,12 @@ public class DeliveryCollapsiblePane extends JPanel {
             @Override
             public void mouseClicked(MouseEvent e) {
                 toggle(e);
-                if (arrow.getImage() == arrowDown) {
-                    arrow.setImage(arrowUp);
+                if (folded) {
+                    arrow.setIcon(arrowUp);
+                    folded = false;
                 } else {
-                    arrow.setImage(arrowDown);
+                     arrow.setIcon(arrowDown);
+                     folded=true;
                 }
             }
 
@@ -130,7 +146,6 @@ public class DeliveryCollapsiblePane extends JPanel {
             public void mouseExited(MouseEvent e) {
             }
         });
-
         return minimal;
     }
 
@@ -161,4 +176,10 @@ public class DeliveryCollapsiblePane extends JPanel {
     public void unselect() {
         minimal.setBackground(Color.white);
     }
+
+    public Delivery getDelivery() {
+        return delivery;
+    }
+
+    
 }
