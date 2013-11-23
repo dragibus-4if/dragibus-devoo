@@ -4,9 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -54,6 +53,8 @@ public class DeliverySheetModel {
     public static DeliverySheetModel loadFromXML(File file) {
         // TODO - implement DeliverySheetModel.loadFromXML
         //throw new UnsupportedOperationException();
+        DeliverySheetModel dsm = new DeliverySheetModel();
+        
         if (file != null) {
             try {
                 // creation d'un constructeur de documents a l'aide d'une fabrique
@@ -69,9 +70,19 @@ public class DeliverySheetModel {
                 // recuperer la liste de sous-elements
                 if (documentRoot.getTagName().equals(ROOT_ELEM)) {
                     NodeList entrepots = documentRoot.getElementsByTagName(NAME_WAREHOUSE);
-                    treatWarehouse(entrepots);
+                    List<RoadNode> rnListe = treatWarehouse(entrepots);
+                    
+                    // ajouter la liste des entrepots a la deliveryRound du DSM
+                    dsm.deliveryRound.setPath(rnListe);
+                    
                     NodeList plages = documentRoot.getElementsByTagName(NAME_TIMETABLE);
-                    treatTimetable(plages);
+                    List<Delivery> livListe = treatTimetable(plages);
+                    
+                    // parcourir la liste des livraisons pour les ajouter a la
+                    // deliveryRound du DSM
+                    for (Delivery delivery : livListe) {
+                        dsm.deliveryRound.addDelivery(delivery);
+                    }
                 } else { // element racine different de "JourneeType" (erreur de syntaxe)
                     throw new Exception("La structure du document n'est pas la bonne!");
                 }
@@ -94,26 +105,32 @@ public class DeliverySheetModel {
         } else { // le fichier est null
             return null;
         }
-        return new DeliverySheetModel();
+        return dsm;
     }
 
     /**
      * 
      * @param entrepots 
      */
-    private static void treatWarehouse(NodeList entrepots) {
+    private static List<RoadNode> treatWarehouse(NodeList entrepots) {
         // TODO - traiter les entrepots, on va dire que l'id des RoadNodes
         // correspond à l'adresse précisé dans l'élément entrepot
+        List<RoadNode> nodes = new LinkedList<>();
+        
         for (int i = 0; i < entrepots.getLength(); i++) {
             NamedNodeMap attributs = entrepots.item(i).getAttributes();
             Node adresse = attributs.getNamedItem(ROADNODE_ID);
 
             String adresseString = adresse.getNodeValue();
             RoadNode entrepot = new RoadNode(Long.parseLong(adresseString));
+            
+            // ajouter l'entrepot à la liste de RoadNodes
+            nodes.add(entrepot);
 
             System.out.println(entrepot);
         }
-
+        
+        return nodes;
     }
 
     /**
@@ -126,8 +143,10 @@ public class DeliverySheetModel {
      * @param journeyNodes la liste d'elements d'une tournee, normalement un
      * entrepot et un plage horaire
      */
-    private static void treatTimetable(NodeList timetable) throws Exception {
+    private static List<Delivery> treatTimetable(NodeList timetable) throws Exception {
         // traiter chaque plage
+        List<Delivery> livs = new LinkedList<>();
+        
         for (int i = 0; i < timetable.getLength(); i++) {
             Node node = timetable.item(i);
             Element plage;
@@ -150,8 +169,13 @@ public class DeliverySheetModel {
                 // ajouter le plage a la livraison
                 liv.setTimeSlot(ts);
                 System.out.println(liv);
+                
+                // ajouter la livraison à la liste
+                livs.add(liv);
             }
+            
         }
+        return livs;
     }
 
     /**
