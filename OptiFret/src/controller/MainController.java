@@ -4,9 +4,11 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.EmptyStackException;
 import java.util.Stack;
 import javax.swing.JFileChooser;
+import model.Delivery;
 import model.DeliveryRound;
 import model.DeliverySheet;
 import model.RoadNetwork;
@@ -34,7 +36,10 @@ public class MainController {
             try {
                 roadNetwork = RoadNetwork.loadFromXML(new FileReader(fc.getSelectedFile()));
                 mainFrame.getLoadRound().setEnabled(true);
-                //mainFrame.getDeliveryMap().setAllNodes(roadNetwork.getNodes());
+                mainFrame.getDeliveryMap().clearMap();
+                mainFrame.getDeliveryMap().updateNetwork(roadNetwork.getNodes());
+                mainFrame.getDeliveryList().setDeliveries(new ArrayList<Delivery>());
+                mainFrame.repaint();
             } catch (IOException e) {
                 mainFrame.showErrorMessage(e.getMessage());
             }
@@ -48,8 +53,8 @@ public class MainController {
                 deliverySheetModel = DeliverySheet.loadFromXML(new FileReader(fc.getSelectedFile()));
                 DeliveryRound dr = deliverySheetModel.getDeliveryRound();
                 mainFrame.getDeliveryList().setDeliveries(dr.getDeliveries());
-                mainFrame.getExportRound().setEnabled(true);
-                //mainFrame.getDeliveryMap().setRouteNodes(roadNetwork.makeRoute());
+                mainFrame.getExportRound().setEnabled(true);             
+                //mainFrame.getDeliveryMap().updateDeliveryNodes(roadNetwork.makeRoute(dr.getPath()));
             } catch (IOException e) {
                 mainFrame.showErrorMessage(e.getMessage());
             }
@@ -122,9 +127,11 @@ public class MainController {
         mainFrame.getRedo().setEnabled(false);
         mainFrame.getLoadRound().setEnabled(false);
         mainFrame.getExportRound().setEnabled(false);
-
+        
         // Listeners
         setupViewListeners();
+        loadRoadNetwork();
+        loadDeliverySheet();
     }
 
     private void setupViewListeners() {
