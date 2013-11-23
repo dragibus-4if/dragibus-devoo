@@ -1,12 +1,19 @@
 package model;
 
+import javax.management.RuntimeErrorException;
+
 public class RoadSection {
 
     private String roadName;
-    private double speed;
-    private double length;
+    private double speed = 0;
+    private double length = 0;
     private final RoadNode roadNodeBegin;
     private final RoadNode roadNodeEnd;
+
+    public RoadSection(RoadNode roadNodeBegin, RoadNode roadNodeEnd) {
+        this.roadNodeBegin = roadNodeBegin;
+        this.roadNodeEnd = roadNodeEnd;
+    }
 
     public RoadSection(RoadNode roadNodeBegin, RoadNode roadNodeEnd, double speed, double length) {
         if (roadNodeBegin == null) {
@@ -24,6 +31,9 @@ public class RoadSection {
     }
 
     public double getCost() {
+        if (length == 0 || speed == 0) {
+            throw new RuntimeErrorException(new Error("Undefined cost, length or speed are nil"));
+        }
         return length / speed;
     }
 
