@@ -17,7 +17,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-public class DeliverySheetModel {
+public class DeliverySheet {
 
     private static final String ROOT_ELEM = "JourneeType";
     private static final String NAME_WAREHOUSE = "Entrepot";
@@ -35,7 +35,7 @@ public class DeliverySheetModel {
     private DeliveryRound deliveryRound = new DeliveryRound();
     private DeliveryEmployee deliveryEmployee = new DeliveryEmployee();
 
-    public DeliverySheetModel() {
+    public DeliverySheet() {
     }
     
     public DeliveryRound getDeliveryRound() {
@@ -50,10 +50,10 @@ public class DeliverySheetModel {
         this.deliveryEmployee = deliveryEmployee;
     }
 
-    public static DeliverySheetModel loadFromXML(File file) {
+    public static DeliverySheet loadFromXML(File file) {
         // TODO - implement DeliverySheetModel.loadFromXML
         //throw new UnsupportedOperationException();
-        DeliverySheetModel dsm = new DeliverySheetModel();
+        DeliverySheet dsm = new DeliverySheet();
         
         if (file != null) {
             try {
@@ -272,6 +272,6 @@ public class DeliverySheetModel {
             System.out.println("Sorry, file could not be created, try another path.");
         }
 
-        DeliverySheetModel dsm = DeliverySheetModel.loadFromXML(testfile);
+        DeliverySheet dsm = DeliverySheet.loadFromXML(testfile);
     }
 }

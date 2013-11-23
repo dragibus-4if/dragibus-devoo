@@ -10,7 +10,7 @@ import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFileChooser;
-import model.DeliverySheetModel;
+import model.DeliverySheet;
 import model.RoadNetwork;
 import view.MainFrame;
 
@@ -19,7 +19,7 @@ public class MainController {
     private Stack<DeliverySheetCommand> history = new Stack<>();
     private Stack<DeliverySheetCommand> redoneHistory = new Stack<>();
     private RoadNetwork roadNetwork;
-    private DeliverySheetModel deliverySheetModel;
+    private DeliverySheet deliverySheetModel;
     private MainFrame mainFrame;
 
     public MainController(MainFrame frame) {
