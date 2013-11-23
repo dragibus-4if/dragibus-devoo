@@ -100,10 +100,42 @@ public class MainController {
         JFileChooser fc = new JFileChooser();
         if (fc.showOpenDialog(mainFrame) == JFileChooser.APPROVE_OPTION) {
             try {
-                deliverySheetModel = DeliverySheet.loadFromXML(new FileReader(fc.getSelectedFile()));
-                DeliveryRound dr = deliverySheetModel.getDeliveryRound();
-                mainFrame.getDeliveryList().setDeliveries(dr.getDeliveries());
-                mainFrame.getExportRound().setEnabled(true);
+                final DeliverySheet loadedDeliverySheet = DeliverySheet
+                        .loadFromXML(new FileReader(fc.getSelectedFile()));
+                
+                executeCommand(new Command() {
+                    
+                    private DeliverySheet currentDeliverySheet;
+
+                    @Override
+                    public void execute() {
+                        // sauvegarder l'état courant de la liste de livraisons
+                        currentDeliverySheet = deliverySheetModel;
+                        
+                        deliverySheetModel = loadedDeliverySheet;
+                        DeliveryRound dr = deliverySheetModel.getDeliveryRound();
+                        mainFrame.getDeliveryList().setDeliveries(dr.getDeliveries());
+                        mainFrame.getExportRound().setEnabled(true);
+                        mainFrame.repaint();
+                    }
+
+                    @Override
+                    public void undo() {
+                        deliverySheetModel = currentDeliverySheet;
+                        
+                        // verifier si un DeliverySheet a deja ete charge
+                        if (deliverySheetModel == null) {
+                            mainFrame.getDeliveryList().setDeliveries(new ArrayList<Delivery>());
+                            mainFrame.getExportRound().setEnabled(false);
+                        } else {
+                            DeliveryRound dr = deliverySheetModel.getDeliveryRound();
+                            mainFrame.getDeliveryList().setDeliveries(dr.getDeliveries());
+                        }
+                        
+                        mainFrame.repaint();
+                    }
+                });
+                
                 //mainFrame.getDeliveryMap().updateDeliveryNodes(roadNetwork.makeRoute(dr.getPath()));
             } catch (IOException e) {
                 mainFrame.showErrorMessage(e.getMessage());
