@@ -32,8 +32,9 @@ public interface Graph {
 
     /**
      * @param i a vertex such that <code>0 <= i < this.getNbVertices()</code>
-     * @return an array
-     * containing all successor vertices of <code>i</code> in <code>this</code>
+     * @return an arr
+     * ay containing all successor vertices of <code>i</code> in
+     * <code>this</code>
      * @throws ArrayIndexOutOfBoundsException If <code>i<0</code> or
      * <code>i>=this.getNbVertices()</code>
      */
@@ -42,8 +43,8 @@ public interface Graph {
 
     /**
      * @param i a vertex such that <code>0 <= i < this.getNbVertices()</code>
-     * @return the numbe
-     * r of successor vertices of <code>i</code> in <code>this</code>
+     * @return the nu
+     * mbe r of successor vertices of <code>i</code> in <code>this</code>
      * @throws ArrayIndexOutOfBoundsException If <code>i<0</code> or
      * <code>i>=this.getNbVertices()</code>
      */

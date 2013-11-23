@@ -75,7 +75,6 @@ public class RoadSection {
     //        return roadNodeBegin.equals(other.roadNodeBegin);
     //    }
     //}
-
     @Override
     public int hashCode() {
         int hash = 7;

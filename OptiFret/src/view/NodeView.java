@@ -24,7 +24,6 @@ public class NodeView {
     private Ellipse2D circle;
     private Color cBasic = new Color(100, 100, 100);
     private Color cSelectedBasic = new Color(200, 200, 0);
-    
     private boolean selected = false;
 
     public NodeView(int x1, int y1) {
@@ -61,11 +60,12 @@ public class NodeView {
         g2d.translate(-DIAMETER / 2, -DIAMETER / 2);
         if (selected) {
             g2d.setColor(cSelectedBasic);
+            g2d.fill(circle);
         } else {
             g2d.setColor(cBasic);
-
         }
         g2d.draw(circle);
+
         g2d.translate(DIAMETER / 2, DIAMETER / 2);
     }
 
@@ -95,5 +95,16 @@ public class NodeView {
 
     public boolean isSelected() {
         return selected;
+    }
+
+    void onMouseDown(int x, int y) {
+        if (circle.contains(x + DIAMETER / 2, y + DIAMETER / 2)) {
+            selected = true;
+        } else {
+            selected = false;
+        }
+    }
+
+    void onMouseUp(int x, int y) {
     }
 }

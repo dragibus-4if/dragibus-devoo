@@ -1,6 +1,5 @@
 package model;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
@@ -28,8 +27,8 @@ public class RoadNetwork {
 
     private RoadNode root;
 
-    //TODO : check integrity of roadnetwork ( correspondance id des roadnodes des 
-    public static RoadNetwork loadFromXML(Reader input) throws Exception {
+    //TODO : check integrity of roadnetwork ( correspondance id des roadnodes des
+    public static RoadNetwork loadFromXML(Reader input) throws IOException {
         if (input == null) {
             throw new NullPointerException("Fichier chargé null");
         }
@@ -42,20 +41,20 @@ public class RoadNetwork {
         } catch (ParserConfigurationException pce) {
             System.out.println("Erreur de configuration du parseur DOM");
             System.out.println("lors de l'appel a fabrique.newDocumentBuilder();");
-            throw new Exception(pce);
+            throw new IOException(pce.getMessage(), pce.getCause());
         } catch (SAXException se) {
             System.out.println("Erreur lors du parsing du document");
             System.out.println("lors de l'appel a construteur.parse(xml)");
-            throw new Exception(se);
+            throw new IOException(se.getMessage(), se.getCause());
         } catch (IOException ioe) {
             System.out.println("Erreur d'entree/sortie");
             System.out.println("lors de l'appel a construteur.parse(xml)");
-            throw new Exception(ioe);
+            throw new IOException(ioe.getMessage(), ioe.getCause());
         }
 
         // Element racine different de "Reseau" (erreur de syntaxe)
         if (!documentRoot.getTagName().equals("Reseau")) {
-            throw new Exception(
+            throw new IOException(
                     "Erreur roadNetwork.loadFromXML : \n"
                     + "Erreur syntaxique :\n"
                     + "\tLe noeud racine n'est pas <Reseau>"
@@ -64,7 +63,7 @@ public class RoadNetwork {
 
         NodeList nodes = documentRoot.getElementsByTagName("Noeud");
         if (nodes.getLength() == 0) {// 0 nodes dans le document ...
-            throw new Exception(
+            throw new IOException(
                     "Erreur roadNetwork.loadFromXML : \n"
                     + "Erreur syntaxique :\n"
                     + "\tLe document ne contient pas de RoadNodes"
@@ -74,8 +73,8 @@ public class RoadNetwork {
 
         for (int i = 0; i < nodes.getLength(); i++) {
             Node m = nodes.item(i);
-            if (m.getNodeType() == Node.ELEMENT_NODE) {
-                throw new Exception(
+            if (m.getNodeType() != Node.ELEMENT_NODE) {
+                throw new IOException(
                         "Erreur roadNetwork.loadFromXML : \n"
                         + "Erreur syntaxique"
                 );
@@ -83,7 +82,7 @@ public class RoadNetwork {
 
             Element n = (Element) m;
             if (!n.getNodeName().equals("Noeud")) {
-                throw new Exception(
+                throw new IOException(
                         "Erreur roadNetwork.loadFromXML : \n"
                         + "Erreur syntaxique :\n"
                         + "\t\n\tnom de noeud attend : Noeud\n"
@@ -132,7 +131,7 @@ public class RoadNetwork {
 
             // roadNode sans roadSections
             if (roadSections.getLength() == 0) {
-                throw new Exception(
+                throw new IOException(
                         "Erreur roadNetwork.loadFromXML : \n"
                         + "Erreur syntaxique :\n"
                         + "\tRoadNode " + rn.getId() + " sans RoadSection."
@@ -144,7 +143,7 @@ public class RoadNetwork {
 
                 // noeud non defini (n'est pas TronconSortant)
                 if (!roadSectionNode.getNodeName().equals("TronconSortant")) {
-                    throw new Exception(
+                    throw new IOException(
                             "Erreur roadNetwork.loadFromXML : \n"
                             + "Erreur syntaxique :\n"
                             + "\tnom de noeud attend : TronconSortant\n"

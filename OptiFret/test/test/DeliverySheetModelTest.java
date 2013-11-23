@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package test;
 
 import java.io.FileNotFoundException;
@@ -23,35 +22,36 @@ import junit.framework.TestCase;
 import model.Client;
 import model.Delivery;
 import model.DeliveryEmployee;
-import model.DeliverySheetModel;
+import model.DeliverySheet;
 import model.RoadNode;
 import model.TimeSlot;
 
 public class DeliverySheetModelTest extends TestCase {
+
     public void testFile() {
         // Si le filename est null, la fonction retourne null.
-        assertNull(DeliverySheetModel.loadFromXML(null));
-        
+        assertNull(DeliverySheet.loadFromXML(null));
+
         try {
             // Si c'est un dossier, la fonction retourne Null
-            assertNull(DeliverySheetModel.loadFromXML(new FileReader("/")));
+            assertNull(DeliverySheet.loadFromXML(new FileReader("/")));
         } catch (FileNotFoundException ex) {
         }
-        
+
         try {
             // Si le fichier n'est pas lisible, la fonction retourne Null
             // Normalement le fichier /root ne sont pas lisibles
-            assertNull(DeliverySheetModel.loadFromXML(new FileReader("/root")));
+            assertNull(DeliverySheet.loadFromXML(new FileReader("/root")));
         } catch (FileNotFoundException ex) {
         }
     }
 
     public void testXMLSyntax() {
         // Test d'une fermeture de balise manquante
-        assertNull(DeliverySheetModel.loadFromXML(new StringReader("<root>")));
+        assertNull(DeliverySheet.loadFromXML(new StringReader("<root>")));
 
         // Test d'une ouverture de balise manquante
-        assertNull(DeliverySheetModel.loadFromXML(new StringReader("<root></balise></root>")));
+        assertNull(DeliverySheet.loadFromXML(new StringReader("<root></balise></root>")));
 
         // Il n'y a pas tout les cas sur la syntaxe XML. La bibliothèque
         // utilisée doit pouvoir détecter les erreurs. Nous l'utilisons et ces
@@ -63,17 +63,17 @@ public class DeliverySheetModelTest extends TestCase {
         // Si la balise racine est un élément quelconque (différent de ce qui
         // est attendu), la fonction renvoie null.
         String s1 = "<root></root>";
-        assertNull(DeliverySheetModel.loadFromXML(new StringReader(s1)));
+        assertNull(DeliverySheet.loadFromXML(new StringReader(s1)));
 
         // Si le document contient un élément non défini, la fonction renvoie
         // null.
         String s2 = "<road_network><autre></autre></road_network>";
-        assertNull(DeliverySheetModel.loadFromXML(new StringReader(s2)));
+        assertNull(DeliverySheet.loadFromXML(new StringReader(s2)));
 
         // Si c'est la bonne balise racine, la fonction renvoie quelque chose de non
         // null.
         String s3 = "<road_network></road_network>";
-        DeliverySheetModel rn = DeliverySheetModel.loadFromXML(new StringReader(s3));
+        DeliverySheet rn = DeliverySheet.loadFromXML(new StringReader(s3));
         assertNotNull(rn);
         assertNotNull(rn.getDeliveryEmployee());
         assertNotNull(rn.getDeliveryRound());
@@ -81,50 +81,45 @@ public class DeliverySheetModelTest extends TestCase {
         // TODO tests sur l'intégrité du document
         // Voir le format des xmls à lire pour vérifier ça
     }
-    
+
     public void testSetDeliveryEmployee() {
-        DeliverySheetModel sheet = new DeliverySheetModel();
+        DeliverySheet sheet = new DeliverySheet();
         // Test avec un paramètre null
         try {
             sheet.setDeliveryEmployee(null);
             fail("Set un employé avec un null");
         } catch (NullPointerException e) {
         }
-        
+
         // Vérifie l'égalité entre le getter/setter
         DeliveryEmployee e = new DeliveryEmployee();
         sheet.setDeliveryEmployee(e);
         assertSame(sheet.getDeliveryEmployee(), e);
     }
-    
+
     public void testExportEmpty() {
-        DeliverySheetModel sheet = new DeliverySheetModel();
-        
+        DeliverySheet sheet = new DeliverySheet();
+
         // Test avec une sheet vide
         String result = "";
         StringWriter sw = new StringWriter();
         try {
             sheet.export(sw);
         } catch (IOException ex) {
-            Logger.getLogger(DeliverySheetModelTest.class.getName()).log(Level.SEVERE, null, ex);
+            fail("Appel de export ne donne pas un string");
         }
         assertEquals(result, sw.toString());
     }
-     
+
     public void testExportNull() {
-        DeliverySheetModel sheet = new DeliverySheetModel();
+        DeliverySheet sheet = new DeliverySheet();
         try {
-            try {
-                sheet.export(null);
-            } catch (IOException ex) {
-                Logger.getLogger(DeliverySheetModelTest.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            fail("Appel de export avec un paramètre null");
-        }
-        catch(NullPointerException e) {
+            sheet.export(null);
+            fail("Exception IO inattendue");
+        } catch (NullPointerException | IOException e) {
         }
     }
-    
+
     public void testExportBasic() {
         // Création d'un chemin basique
         List<RoadNode> path = new ArrayList<>();
@@ -137,14 +132,14 @@ public class DeliverySheetModelTest extends TestCase {
         path.get(1).addNeighbor(path.get(2), 1, 1, "R2");
         path.get(2).addNeighbor(path.get(3), 1, 1, "R3");
         path.get(3).addNeighbor(path.get(0), 1, 1, "R4");
-        
-        DeliverySheetModel sheet = new DeliverySheetModel();
+
+        DeliverySheet sheet = new DeliverySheet();
         sheet.getDeliveryRound().setPath(path);
         sheet.getDeliveryRound().addDelivery(new Delivery(new Long(0), new Long(1),
                 new TimeSlot(new Date(), new Long(0)), new Client(0)));
         sheet.getDeliveryRound().addDelivery(new Delivery(new Long(1), new Long(3),
                 new TimeSlot(new Date(), new Long(0)), new Client(1)));
-        
+
         String result = "Prendre la rue R1\n";
         result += "Arrivée à la livraison : R1\n\n***\n\n";
         result += "Prendre la rue R2\n";
@@ -155,11 +150,11 @@ public class DeliverySheetModelTest extends TestCase {
         try {
             sheet.export(sw);
         } catch (IOException ex) {
-            Logger.getLogger(DeliverySheetModelTest.class.getName()).log(Level.SEVERE, null, ex);
+            fail("Exception IO inattendue");
         }
         assertEquals(result, sw.toString());
     }
-    
+
     public void testExportWithoutSection() {
         // Création d'un chemin basique
         List<RoadNode> path = new ArrayList<>();
@@ -171,26 +166,25 @@ public class DeliverySheetModelTest extends TestCase {
         path.get(0).addNeighbor(path.get(1), 1, 1, "R1");
         path.get(1).addNeighbor(path.get(2), 1, 1, "R2");
         path.get(3).addNeighbor(path.get(0), 1, 1, "R4");
-        
-        DeliverySheetModel sheet = new DeliverySheetModel();
+
+        DeliverySheet sheet = new DeliverySheet();
         sheet.getDeliveryRound().setPath(path);
         sheet.getDeliveryRound().addDelivery(new Delivery(new Long(0), new Long(1),
                 new TimeSlot(new Date(), new Long(0)), new Client(0)));
         sheet.getDeliveryRound().addDelivery(new Delivery(new Long(1), new Long(3),
                 new TimeSlot(new Date(), new Long(0)), new Client(1)));
-        
+
         try {
             try {
                 sheet.export(new StringWriter());
             } catch (IOException ex) {
-                Logger.getLogger(DeliverySheetModelTest.class.getName()).log(Level.SEVERE, null, ex);
+                fail("Exception IO inattendue");
             }
             fail("Pas de section pour continuer le chemin.");
-        }
-        catch(RuntimeException e) {
+        } catch (RuntimeException e) {
         }
     }
-    
+
     public void testExportCross() {
         RoadNode n0 = new RoadNode(0);
         RoadNode n1 = new RoadNode(1);
@@ -214,8 +208,8 @@ public class DeliverySheetModelTest extends TestCase {
         path.add(n1);
         path.add(n4);
         path.add(n0);
-        
-        DeliverySheetModel sheet = new DeliverySheetModel();
+
+        DeliverySheet sheet = new DeliverySheet();
         sheet.getDeliveryRound().setPath(path);
         sheet.getDeliveryRound().addDelivery(new Delivery(new Long(0), new Long(1),
                 new TimeSlot(new Date(), new Long(0)), new Client(0)));
@@ -223,7 +217,7 @@ public class DeliverySheetModelTest extends TestCase {
                 new TimeSlot(new Date(), new Long(0)), new Client(1)));
         sheet.getDeliveryRound().addDelivery(new Delivery(new Long(3), new Long(4),
                 new TimeSlot(new Date(), new Long(0)), new Client(2)));
-        
+
         String result = "Prendre la rue R1\n";
         result += "Arrivée à la livraison : R1\n\n***\n\n";
         result += "Prendre la rue R2\n";
@@ -238,84 +232,83 @@ public class DeliverySheetModelTest extends TestCase {
         try {
             sheet.export(sw);
         } catch (IOException ex) {
-            Logger.getLogger(DeliverySheetModelTest.class.getName()).log(Level.SEVERE, null, ex);
+            fail("Exception IO inattendue");
         }
         assertEquals(result, sw.toString());
     }
-    
+
     public void testExportDeliveryOutPath() {
         // Création d'un chemin basique
         List<RoadNode> path = new ArrayList<>();
         path.add(new RoadNode(0));
         path.add(path.get(0));
         path.get(0).addNeighbor(path.get(0), 1, 1, "R");
-        
-        DeliverySheetModel sheet = new DeliverySheetModel();
+
+        DeliverySheet sheet = new DeliverySheet();
         sheet.getDeliveryRound().setPath(path);
         sheet.getDeliveryRound().addDelivery(new Delivery(new Long(0), new Long(1),
                 new TimeSlot(new Date(), new Long(0)), new Client(0)));
-        
+
         try {
             try {
                 sheet.export(new StringWriter());
             } catch (IOException ex) {
-                Logger.getLogger(DeliverySheetModelTest.class.getName()).log(Level.SEVERE, null, ex);
+                fail("Exception IO inattendue");
             }
             fail("Livraison en dehors du chemin");
-        }
-        catch(RuntimeException e) {
+        } catch (RuntimeException e) {
         }
     }
-    
+
     public void testExportWithoutDelivery() {
         // Création d'un chemin basique
         List<RoadNode> path = new ArrayList<>();
         path.add(new RoadNode(0));
         path.add(path.get(0));
         path.get(0).addNeighbor(path.get(0), 1, 1, "R");
-        
-        DeliverySheetModel sheet = new DeliverySheetModel();
+
+        DeliverySheet sheet = new DeliverySheet();
         sheet.getDeliveryRound().setPath(path);
-        
+
         String result = "Prendre la rue R\n";
         StringWriter sw = new StringWriter();
         try {
             sheet.export(sw);
         } catch (IOException ex) {
-            Logger.getLogger(DeliverySheetModelTest.class.getName()).log(Level.SEVERE, null, ex);
+            fail("Exception IO inattendue");
         }
         assertEquals(result, sw.toString());
     }
-    
+
     public void testExportEmptyPath() {
         // Création d'un chemin basique
         List<RoadNode> path = new ArrayList<>();
-        DeliverySheetModel sheet = new DeliverySheetModel();
+        DeliverySheet sheet = new DeliverySheet();
         sheet.getDeliveryRound().setPath(path);
-        
+
         String result = "";
         StringWriter sw = new StringWriter();
         try {
             sheet.export(sw);
         } catch (IOException ex) {
-            Logger.getLogger(DeliverySheetModelTest.class.getName()).log(Level.SEVERE, null, ex);
+            fail("Exception IO inattendue");
         }
         assertEquals(result, sw.toString());
     }
-    
+
     public void testExportNoPath() {
         // Création d'un chemin basique
         List<RoadNode> path = new ArrayList<>();
         path.add(new RoadNode(0));
-        DeliverySheetModel sheet = new DeliverySheetModel();
+        DeliverySheet sheet = new DeliverySheet();
         sheet.getDeliveryRound().setPath(path);
-        
+
         String result = "";
         StringWriter sw = new StringWriter();
         try {
             sheet.export(sw);
         } catch (IOException ex) {
-            Logger.getLogger(DeliverySheetModelTest.class.getName()).log(Level.SEVERE, null, ex);
+            fail("Exception IO inattendue");
         }
         assertEquals(result, sw.toString());
     }
