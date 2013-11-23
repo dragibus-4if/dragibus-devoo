@@ -50,4 +50,15 @@ public class Client {
         this.name = name;
     }
 
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Client ")
+                .append(this.getId())
+                .append(" " + this.getName())
+                .append(", phone : " + this.getPhoneNum())
+                .append(", adresse : ")
+                .append(this.getAddress());
+        return sb.toString();
+    } 
+
 }

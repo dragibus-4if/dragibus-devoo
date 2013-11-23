@@ -3,10 +3,7 @@
 package view;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Component;
-import java.awt.Container;
-import java.awt.Dimension;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +12,7 @@ import static javax.swing.JFrame.EXIT_ON_CLOSE;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import javax.swing.JPanel;
+import static javax.swing.JOptionPane.showMessageDialog;
 import javax.swing.JScrollBar;
 import javax.swing.KeyStroke;
 import model.RoadNode;
@@ -166,5 +163,13 @@ public class MainFrame extends JFrame {
     private Component makeDeliveryList() {
         deliveryList = new DeliveryList();
         return deliveryList;
+    }
+
+    public DeliveryList getDeliveryList() {
+        return deliveryList;
+    }
+
+    public void showErrorMessage(String msg) {
+        showMessageDialog(null, msg);
     }
 }
