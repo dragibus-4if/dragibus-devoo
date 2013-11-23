@@ -13,6 +13,8 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Observable;
+import java.util.Observer;
 import javax.swing.JPanel;
 import model.RoadNode;
 import view.NodeView.MODE;
@@ -21,13 +23,15 @@ import view.NodeView.MODE;
  *
  * @author jmcomets
  */
-public class DeliveryMap extends JPanel {
+public class DeliveryMap extends JPanel{
 
     private Map<Integer ,ArcView> mapArcs;
     private ArrayList<NodeView> mapNodes;
     
     private WeakReference<NodeView> selectedNode;
-
+    
+    
+    
     private int maxX=0;
 
    
@@ -37,6 +41,7 @@ public class DeliveryMap extends JPanel {
         super();
         this.setDoubleBuffered(true);
         mapArcs = new LinkedHashMap<>();
+        obs = new Observable();
         mapNodes = new ArrayList<>();
         addMouseListener(new MouseListener() {
             @Override
@@ -192,4 +197,6 @@ public class DeliveryMap extends JPanel {
     public int getMaxY() {
         return maxY;
     }
+
+    
 }
