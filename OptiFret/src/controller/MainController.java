@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.EmptyStackException;
 import java.util.Stack;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JFileChooser;
 import model.Delivery;
 import model.DeliveryRound;
@@ -16,8 +18,8 @@ import view.MainFrame;
 
 public class MainController {
 
-    private Stack<DeliverySheetCommand> history = new Stack<>();
-    private Stack<DeliverySheetCommand> redoneHistory = new Stack<>();
+    private Stack<Command> history = new Stack<>();
+    private Stack<Command> redoneHistory = new Stack<>();
     private RoadNetwork roadNetwork;
     private DeliverySheet deliverySheetModel;
     private MainFrame mainFrame;
@@ -31,15 +33,63 @@ public class MainController {
     }
 
     private void loadRoadNetwork() {
-        JFileChooser fc = new JFileChooser();
+        final JFileChooser fc = new JFileChooser();
         if (fc.showOpenDialog(mainFrame) == JFileChooser.APPROVE_OPTION) {
             try {
-                roadNetwork = RoadNetwork.loadFromXML(new FileReader(fc.getSelectedFile()));
-                mainFrame.getLoadRound().setEnabled(true);
-                mainFrame.getDeliveryMap().clearMap();
-                mainFrame.getDeliveryMap().updateNetwork(roadNetwork.getNodes());
-                mainFrame.getDeliveryList().setDeliveries(new ArrayList<Delivery>());
-                mainFrame.repaint();
+                final RoadNetwork loadedNetwork = RoadNetwork.loadFromXML(new FileReader(fc.getSelectedFile()));
+                executeCommand(new Command() {
+
+                    // instance de RoadNetwork pour stocker l'etat courant
+                    private RoadNetwork currentNetwork;
+                    
+                    // instance de DeliverySheet pour stocker l'etat courant
+                    private DeliverySheet currentDeliverySheet;
+
+                    @Override
+                    public void execute() {
+                        // recuperer l'etat courant du network et de la listLivs
+                        currentNetwork = roadNetwork;
+                        currentDeliverySheet = deliverySheetModel;
+
+                        roadNetwork = loadedNetwork;
+                        mainFrame.getLoadRound().setEnabled(true);
+                        mainFrame.getDeliveryMap().clearMap();
+                        mainFrame.getDeliveryMap()
+                                 .updateNetwork(roadNetwork.getNodes());
+                        mainFrame.getDeliveryList()
+                                 .setDeliveries(new ArrayList<Delivery>());
+                        mainFrame.repaint();
+                    }
+
+                    @Override
+                    public void undo() {
+
+                        roadNetwork = currentNetwork;
+                        deliverySheetModel = currentDeliverySheet;
+
+                        // verifier si un reseau a deja ete charge
+                        if (roadNetwork == null) {
+                            mainFrame.getLoadRound().setEnabled(false);
+                            mainFrame.getDeliveryMap().clearMap();    
+                        } else {
+                            mainFrame.getDeliveryMap().clearMap();
+                            mainFrame.getDeliveryMap().updateNetwork(
+                                    roadNetwork.getNodes());
+                        }
+                        
+                        // verifier si une liste de livraisons a deja ete charge
+                        if (deliverySheetModel == null) {
+                            mainFrame.getDeliveryList().setDeliveries(null);
+                        } else {
+                            mainFrame.getDeliveryList().setDeliveries(
+                                    deliverySheetModel
+                                            .getDeliveryRound()
+                                            .getDeliveries());
+                        }
+                        mainFrame.repaint();
+                    }
+                });
+
             } catch (IOException e) {
                 mainFrame.showErrorMessage(e.getMessage());
             }
@@ -53,7 +103,7 @@ public class MainController {
                 deliverySheetModel = DeliverySheet.loadFromXML(new FileReader(fc.getSelectedFile()));
                 DeliveryRound dr = deliverySheetModel.getDeliveryRound();
                 mainFrame.getDeliveryList().setDeliveries(dr.getDeliveries());
-                mainFrame.getExportRound().setEnabled(true);             
+                mainFrame.getExportRound().setEnabled(true);
                 //mainFrame.getDeliveryMap().updateDeliveryNodes(roadNetwork.makeRoute(dr.getPath()));
             } catch (IOException e) {
                 mainFrame.showErrorMessage(e.getMessage());
@@ -87,7 +137,6 @@ public class MainController {
      */
     private void redoLastCommand() throws EmptyStackException {
         executeCommand(redoneHistory.pop());
-        mainFrame.getUndo().setEnabled(true);
         if (redoneHistory.size() == 0) {
             mainFrame.getRedo().setEnabled(false);
         }
@@ -101,8 +150,9 @@ public class MainController {
      *
      * @param cmd
      */
-    private void executeCommand(DeliverySheetCommand cmd) {
+    private void executeCommand(Command cmd) {
         cmd.execute();
+        mainFrame.getUndo().setEnabled(true);
         history.add(cmd);
         redoneHistory.clear();
     }
@@ -115,7 +165,7 @@ public class MainController {
      *
      * @param cmd
      */
-    private void undoCommand(DeliverySheetCommand cmd) {
+    private void undoCommand(Command cmd) {
         cmd.undo();
         redoneHistory.add(cmd);
     }
@@ -127,7 +177,7 @@ public class MainController {
         mainFrame.getRedo().setEnabled(false);
         mainFrame.getLoadRound().setEnabled(false);
         mainFrame.getExportRound().setEnabled(false);
-        
+
         // Listeners
         setupViewListeners();
         loadRoadNetwork();
@@ -209,6 +259,13 @@ public class MainController {
         public void mouseExited(MouseEvent e) {
         }
 
+    }
+
+    private interface Command {
+
+        void execute();
+
+        void undo();
     }
 
 }
