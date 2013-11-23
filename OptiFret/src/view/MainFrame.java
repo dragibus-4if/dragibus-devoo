@@ -73,7 +73,7 @@ public class MainFrame extends JFrame {
 
     private Component makeDeliveryMap() {
         deliveryMap = new DeliveryMap();
-        deliveryMap.update(generateTestNetwork());
+        deliveryMap.updateNetwork(generateTestNetwork());
         deliveryMap.setVisible(true);
         return deliveryMap;
     }
