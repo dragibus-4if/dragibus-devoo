@@ -1,11 +1,16 @@
 package model;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.Reader;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -15,6 +20,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 public class DeliverySheet {
@@ -50,18 +56,20 @@ public class DeliverySheet {
         this.deliveryEmployee = deliveryEmployee;
     }
 
-    public static DeliverySheet loadFromXML(File file) {
+    public static DeliverySheet loadFromXML(Reader file) {
         // TODO - implement DeliverySheetModel.loadFromXML
         //throw new UnsupportedOperationException();
         DeliverySheet dsm = new DeliverySheet();
         
         if (file != null) {
             try {
+                
+                
                 // creation d'un constructeur de documents a l'aide d'une fabrique
                 DocumentBuilder builder = DocumentBuilderFactory.newInstance()
                         .newDocumentBuilder();
                 // lecture du contenu d'un fichier XML avec DOM
-                Document document = builder.parse(file);
+                Document document = builder.parse(new InputSource(file));
                 Element documentRoot = document.getDocumentElement();
 
                 // normalizer la représentation textuelle des elements
@@ -271,7 +279,11 @@ public class DeliverySheet {
         } catch (Exception e) {
             System.out.println("Sorry, file could not be created, try another path.");
         }
-
-        DeliverySheet dsm = DeliverySheet.loadFromXML(testfile);
+        
+        try {
+            DeliverySheet dsm = DeliverySheet.loadFromXML(new FileReader(testfile));
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(DeliverySheet.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 }
