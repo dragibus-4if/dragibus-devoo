@@ -26,6 +26,9 @@ public class DeliveryMap extends JPanel {
     
     private WeakReference<NodeView> selectedNode;
 
+    private int maxX=0;
+    private int maxY=0;
+    
     public DeliveryMap() {
         super();
         mapArcs = new LinkedHashMap<>();
@@ -66,7 +69,8 @@ public class DeliveryMap extends JPanel {
         if (nodes == null) {
             return;
         }
-
+        mapArcs.clear();
+        mapNodes.clear();
         for (RoadNode rn : nodes) {
             if (rn.getNeighbors() == null) {
                 break;
@@ -133,10 +137,7 @@ public class DeliveryMap extends JPanel {
         draw(g);
     }
 
-    public void clearMap(){
-        mapArcs.clear();
-        mapNodes.clear();
-    }
+   
     
     private void draw(Graphics g) {
         for (ArcView arc : mapArcs.values()) {

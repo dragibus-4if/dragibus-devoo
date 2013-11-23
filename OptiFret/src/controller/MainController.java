@@ -36,7 +36,6 @@ public class MainController {
             try {
                 roadNetwork = RoadNetwork.loadFromXML(new FileReader(fc.getSelectedFile()));
                 mainFrame.getLoadRound().setEnabled(true);
-                mainFrame.getDeliveryMap().clearMap();
                 mainFrame.getDeliveryMap().updateNetwork(roadNetwork.getNodes());
                 mainFrame.getDeliveryList().setDeliveries(new ArrayList<Delivery>());
                 mainFrame.repaint();
