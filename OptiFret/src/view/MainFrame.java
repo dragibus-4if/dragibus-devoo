@@ -2,6 +2,7 @@ package view;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.Date;
@@ -43,8 +44,8 @@ public class MainFrame extends JFrame {
         setJMenuBar(makeMenu());
         add(makeDeliveryMap(), BorderLayout.CENTER);
         add(makeDeliveryList(), BorderLayout.WEST);
-
-
+        
+        pack();
 
 
     }
@@ -76,6 +77,7 @@ public class MainFrame extends JFrame {
         List<RoadNode> temp = generateTestNetwork();
         deliveryMap.updateNetwork(temp);
         deliveryMap.updateDeliveryNodes(temp);
+        deliveryMap.setPreferredSize(new Dimension(600, getHeight()));
         deliveryMap.setVisible(true);
         return deliveryMap;
     }
@@ -83,7 +85,7 @@ public class MainFrame extends JFrame {
     private Component makeDeliveryList() {
         deliveryList = new DeliveryList();
         deliveryList.setDeliveries(generateDeliveries());
-
+        deliveryList.setPreferredSize(new Dimension(200, getHeight()));
         return deliveryList;
     }
 
