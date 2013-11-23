@@ -65,9 +65,4 @@ public class Client {
         return sb.toString();
     } 
 
-    @Override
-    public String toString() {
-        return "Client{" + "id=" + id + ", phoneNum=" + phoneNum + ", address=" + address + ", name=" + name + '}';
-    }
-
 }
