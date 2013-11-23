@@ -2,6 +2,7 @@
  */
 package view;
 
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -28,10 +29,13 @@ public class DeliveryMap extends JPanel {
     private WeakReference<NodeView> selectedNode;
 
     private int maxX=0;
+
+   
     private int maxY=0;
     
     public DeliveryMap() {
         super();
+        this.setDoubleBuffered(true);
         mapArcs = new LinkedHashMap<>();
         mapNodes = new ArrayList<>();
         addMouseListener(new MouseListener() {
@@ -74,7 +78,7 @@ public class DeliveryMap extends JPanel {
                 notifyMoved(e);
             }
         });
-
+        
     }
 
     public void updateNetwork(List<RoadNode> nodes) {
@@ -87,6 +91,12 @@ public class DeliveryMap extends JPanel {
             if (rn.getNeighbors() == null) {
                 break;
             }
+            if(rn.getX()>maxX){
+                maxX=rn.getX();
+            }
+            if(rn.getY()>maxY){
+                maxY=rn.getY();
+            }
             NodeView tempNode = new NodeView(rn.getX(), rn.getY(), new WeakReference<>(this), MODE.CLASSIC );
             if (!mapNodes.contains(tempNode)) {
                 mapNodes.add(tempNode);
@@ -98,6 +108,7 @@ public class DeliveryMap extends JPanel {
                 }
             }
         }
+        this.setPreferredSize(new Dimension(maxX+20, maxY+20));
     }
     
     public void updateDeliveryNodes(List<RoadNode> nodes){
@@ -173,5 +184,12 @@ public class DeliveryMap extends JPanel {
 
     public void setSelectedNode(WeakReference<NodeView> selectedNode) {
         this.selectedNode = selectedNode;
+    }
+     public int getMaxX() {
+        return maxX;
+    }
+
+    public int getMaxY() {
+        return maxY;
     }
 }

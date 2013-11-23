@@ -8,6 +8,8 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Ellipse2D;
 import java.lang.ref.WeakReference;
 
@@ -19,18 +21,17 @@ public class NodeView {
 
     public static final int DIAMETER = 10;
     private static final int STROKE = 2;
+    private static final int STROKE_ENLIGHT = 5;
     private int x1;
     private int y1;
     private final BasicStroke myStroke = new BasicStroke(STROKE);
-    ;
+    private final BasicStroke myStrokeEnlight = new BasicStroke(STROKE_ENLIGHT);
     private Ellipse2D circle;
     private final Color cBasic = new Color(100, 100, 100);
     private final Color cSelectedBasic = new Color(255, 204, 0);
     private final Color cBasicDel = new Color(0, 51, 102);
     private final Color cSelectedBasicDel = new Color(255, 204, 100);
-    private final Color cMouseOver = new Color(204,204,204);
-    
-    
+    private final Color cMouseOver = new Color(204, 204, 204);
     private boolean mouseOver = false;
     private boolean selected = false;
     private WeakReference<DeliveryMap> parent;
@@ -71,7 +72,16 @@ public class NodeView {
     }
 
     public void draw(Graphics g) {
-        Graphics2D g2d = (Graphics2D) g;
+        Graphics2D g2d = (Graphics2D) g.create();
+        g2d.setRenderingHint(
+                RenderingHints.KEY_ANTIALIASING,
+                RenderingHints.VALUE_ANTIALIAS_ON);
+        g2d.setRenderingHint(
+                RenderingHints.KEY_TEXT_ANTIALIASING,
+                RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+        g2d.setRenderingHint(
+                RenderingHints.KEY_FRACTIONALMETRICS,
+                RenderingHints.VALUE_FRACTIONALMETRICS_ON);
         g2d.setStroke(myStroke);
         g2d.translate(-DIAMETER / 2, -DIAMETER / 2);
         switch (mode) {
@@ -92,11 +102,16 @@ public class NodeView {
                 }
                 break;
         }
-        if(mouseOver){
+        if (mouseOver) {
             g2d.setColor(cMouseOver);
-        }
+            g2d.setStroke(myStrokeEnlight);
+            g2d.draw(circle);
+            g2d.setStroke(myStroke);
 
-        g2d.draw(circle);
+        } else {
+            g2d.draw(circle);
+
+        }
 
         g2d.translate(DIAMETER / 2, DIAMETER / 2);
     }
@@ -150,7 +165,7 @@ public class NodeView {
     public void onMouseOver(int x, int y) {
         if (circle.contains(x + DIAMETER / 2, y + DIAMETER / 2) && (parent.get() != null)) {
             mouseOver = true;
-        }else {
+        } else {
             mouseOver = false;
         }
     }

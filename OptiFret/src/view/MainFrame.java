@@ -2,6 +2,7 @@ package view;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.Date;
@@ -12,6 +13,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import static javax.swing.JOptionPane.showMessageDialog;
+import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
 import model.Client;
 import model.Delivery;
@@ -41,12 +43,10 @@ public class MainFrame extends JFrame {
         setSize(800, 600);
         setLayout(new BorderLayout());
         setJMenuBar(makeMenu());
-        add(makeDeliveryMap(), BorderLayout.CENTER);
+        JScrollPane scrollPane = new JScrollPane(makeDeliveryMap());
+        add(scrollPane, BorderLayout.CENTER);
         add(makeDeliveryList(), BorderLayout.WEST);
-
-
-
-
+        deliveryList.setPreferredSize(new Dimension(deliveryList.getPreferredSize().width, deliveryMap.getMaxY()+20));
     }
 
     private JMenuBar makeMenu() {
