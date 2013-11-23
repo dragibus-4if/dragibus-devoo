@@ -133,6 +133,11 @@ public class DeliveryMap extends JPanel {
         draw(g);
     }
 
+    public void clearMap(){
+        mapArcs.clear();
+        mapNodes.clear();
+    }
+    
     private void draw(Graphics g) {
         for (ArcView arc : mapArcs.values()) {
             arc.draw(g);
