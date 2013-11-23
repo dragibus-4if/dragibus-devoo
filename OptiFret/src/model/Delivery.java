@@ -45,4 +45,15 @@ public class Delivery {
     public void setClient(Client client) {
         this.client = client;
     }
+    
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Delivery ")
+                .append(this.getId())
+                .append(" for \n")
+                .append(this.getClient())
+                .append("\nto adresse ")
+                .append(this.getAddress());
+        return sb.toString();
+    }
 }

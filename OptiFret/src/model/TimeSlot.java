@@ -62,5 +62,13 @@ public class TimeSlot {
         end.setTime(begin.getTime() + duration);
         return end;
     }
-
+    
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+            sb.append("TimeSlot: de ")
+                    .append(this.getBegin().toString())
+                    .append(" à ")
+                    .append(this.getEnd().toString());
+            return sb.toString();
+    }
 }
