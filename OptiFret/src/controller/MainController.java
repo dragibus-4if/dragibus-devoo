@@ -4,11 +4,9 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.EmptyStackException;
 import java.util.Stack;
 import javax.swing.JFileChooser;
-import model.Delivery;
 import model.DeliveryRound;
 import model.DeliverySheet;
 import model.RoadNetwork;
@@ -16,6 +14,7 @@ import view.DeliveryMap;
 import view.Listener;
 import view.MainFrame;
 import view.MyChangeEvent;
+import view.DeliveryList;
 
 public class MainController implements Listener {
 
@@ -36,6 +35,7 @@ public class MainController implements Listener {
     
     public void setupListeners(){
         mainFrame.getDeliveryMap().addListener(this);
+        mainFrame.getDeliveryList().addListener(this);
     }
     
     private void loadRoadNetwork() {
@@ -196,10 +196,17 @@ public class MainController implements Listener {
         if(evt.getSource() instanceof DeliveryMap){
             onMapNodeSelected(((DeliveryMap)(evt.getSource())));
         } 
+        else if (evt.getSource() instanceof DeliveryList){
+            onListDeliverySelected( ( (DeliveryList)(evt.getSource())));
+        }
     }
     
     public void onMapNodeSelected(DeliveryMap map){
         
+    }
+
+    private void onListDeliverySelected(DeliveryList deliveryList) {
+        System.out.println("vive la biiiiiiiiiiiiiite");
     }
     
     private abstract class MenuItemClickListener implements MouseListener {
