@@ -21,29 +21,31 @@ public class NodeView {
     private static final int STROKE = 2;
     private int x1;
     private int y1;
-    private final BasicStroke myStroke= new BasicStroke(STROKE);;
+    private final BasicStroke myStroke = new BasicStroke(STROKE);
+    ;
     private Ellipse2D circle;
     private final Color cBasic = new Color(100, 100, 100);
-    private final Color cSelectedBasic = new Color(200, 200, 0);
+    private final Color cSelectedBasic = new Color(255, 204, 0);
+    private final Color cBasicDel = new Color(0, 51, 102);
+    private final Color cSelectedBasicDel = new Color(255, 204, 100);
+    private final Color cMouseOver = new Color(204,204,204);
     
-    private final Color cBasicDel = new Color(255, 100, 100);
-    private final Color cSelectedBasicDel = new Color(200, 200, 0);
     
+    private boolean mouseOver = false;
     private boolean selected = false;
     private WeakReference<DeliveryMap> parent;
 
     public enum MODE {
+
         CLASSIC, DELIVERY
     };
-    
     private MODE mode;
-
 
     public NodeView(int x1, int y1, WeakReference<DeliveryMap> ref, MODE mode) {
         this.x1 = x1;
         this.y1 = y1;
         this.circle = new Ellipse2D.Double((float) x1, (float) y1, (float) DIAMETER, (float) DIAMETER);
-        this.mode=mode;
+        this.mode = mode;
         parent = ref;
     }
 
@@ -82,7 +84,7 @@ public class NodeView {
                 }
                 break;
             case DELIVERY:
-                 if (selected) {
+                if (selected) {
                     g2d.setColor(cSelectedBasicDel);
                     g2d.fill(circle);
                 } else {
@@ -90,7 +92,9 @@ public class NodeView {
                 }
                 break;
         }
-
+        if(mouseOver){
+            g2d.setColor(cMouseOver);
+        }
 
         g2d.draw(circle);
 
@@ -140,10 +144,17 @@ public class NodeView {
         }
     }
 
-    void onMouseUp(int x, int y) {
+    public void onMouseUp(int x, int y) {
     }
-    
-    
+
+    public void onMouseOver(int x, int y) {
+        if (circle.contains(x + DIAMETER / 2, y + DIAMETER / 2) && (parent.get() != null)) {
+            mouseOver = true;
+        }else {
+            mouseOver = false;
+        }
+    }
+
     public MODE getMode() {
         return mode;
     }

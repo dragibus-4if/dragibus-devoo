@@ -5,6 +5,7 @@ package view;
 import java.awt.Graphics;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -60,6 +61,17 @@ public class DeliveryMap extends JPanel {
 
             @Override
             public void mouseExited(MouseEvent e) {
+            }
+        });
+        addMouseMotionListener(new MouseMotionListener() {
+
+            @Override
+            public void mouseDragged(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseMoved(MouseEvent e) {
+                notifyMoved(e);
             }
         });
 
@@ -128,6 +140,13 @@ public class DeliveryMap extends JPanel {
             node.onMouseUp(e.getX(), e.getY());
         }
         System.out.println("Fin parcours nodes Released");
+    }
+    
+    private void notifyMoved(MouseEvent e){
+         for (NodeView node : mapNodes) {
+            node.onMouseOver(e.getX(), e.getY());
+        }
+        repaint();
     }
 
     @Override
