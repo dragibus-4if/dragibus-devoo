@@ -146,14 +146,17 @@ public class DeliverySheetModelTest extends TestCase {
                 new TimeSlot(new Date(), new Long(0)), new Client()));
         
         String result = "";
-        result += "Prochaine livraison : R1\n";
-        result += "Prendre la rue R1\n";
+        result += "Prochaine livraison : R1\n\n";
+        result += "Prendre la rue R1\n\n";
         result += "Arrivée à la livraison : R1\n\n***\n\n";
-        result += "Prochaine livraison : R3\n";
-        result += "Prendre la rue R2\n";
-        result += "Prendre la rue R3\n";
+        result += "Prochaine livraison : R3\n\n";
+        result += "Dans 1 mètres : \n";
+        result += "Prenez tout droit sur la rue R2\n\n";
+        result += "Dans 1 mètres : \n";
+        result += "Prenez tout droit sur la rue R3\n\n";
         result += "Arrivée à la livraison : R3\n\n***\n\n";
-        result += "Prendre la rue R4\n";
+        result += "Dans 1 mètres : \n";
+        result += "Prenez tout droit sur la rue R4\n\n";
         StringWriter sw = new StringWriter();
         try {
             sheet.export(sw);
@@ -196,10 +199,15 @@ public class DeliverySheetModelTest extends TestCase {
     
     public void testExportCross() {
         RoadNode n0 = new RoadNode(0);
+        n0.setX(10);n0.setY(10);
         RoadNode n1 = new RoadNode(1);
+        n1.setX(15);n1.setY(25);
         RoadNode n2 = new RoadNode(2);
+        n2.setX(12);n2.setY(5);
         RoadNode n3 = new RoadNode(3);
+        n3.setX(53);n3.setY(9);
         RoadNode n4 = new RoadNode(4);
+        n4.setX(60);n4.setY(25);
         n0.addNeighbor(n1, 1, 1, "R1");
         n1.addNeighbor(n2, 1, 1, "R2");
         n2.addNeighbor(n1, 1, 1, "-R2");
@@ -227,19 +235,25 @@ public class DeliverySheetModelTest extends TestCase {
         sheet.getDeliveryRound().addDelivery(new Delivery(new Long(3), new Long(4),
                 new TimeSlot(new Date(), new Long(0)), new Client()));
         
-        String result = "Prochaine livraison : R1\n"; 
-        result += "Prendre la rue R1\n";
+        String result = "Prochaine livraison : R1\n\n"; 
+        result += "Prendre la rue R1\n\n";
         result += "Arrivée à la livraison : R1\n\n***\n\n";
-        result += "Prochaine livraison : R2\n";
-        result += "Prendre la rue R2\n";
+        result += "Prochaine livraison : R2\n\n";
+        result += "Dans 1 mètres : \n";
+        result += "Prenez à gauche sur la rue R2\n\n";
         result += "Arrivée à la livraison : R2\n\n***\n\n";
-        result += "Prochaine livraison : R4\n";
-        result += "Prendre la rue -R2\n";
-        result += "Prendre la rue R3\n";
-        result += "Prendre la rue -R3\n";
-        result += "Prendre la rue R4\n";
+        result += "Prochaine livraison : R4\n\n";
+        result += "Dans 1 mètres : \n";
+        result += "Faites demi-tour sur la rue -R2\n\n";
+        result += "Dans 1 mètres : \n";
+        result += "Prenez à gauche sur la rue R3\n\n";
+        result += "Dans 1 mètres : \n";
+        result += "Faites demi-tour sur la rue -R3\n\n";
+        result += "Dans 1 mètres : \n";
+        result += "Prenez à gauche sur la rue R4\n\n";
         result += "Arrivée à la livraison : R4\n\n***\n\n";
-        result += "Prendre la rue R5\n";
+        result += "Dans 1 mètres : \n";
+        result += "Prenez à gauche sur la rue R5\n\n";
         StringWriter sw = new StringWriter();
         try {
             sheet.export(sw);
@@ -283,7 +297,7 @@ public class DeliverySheetModelTest extends TestCase {
         DeliverySheetModel sheet = new DeliverySheetModel();
         sheet.getDeliveryRound().setPath(path);
         
-        String result = "Prendre la rue R\n";
+        String result = "Prendre la rue R\n\n";
         StringWriter sw = new StringWriter();
         try {
             sheet.export(sw);
