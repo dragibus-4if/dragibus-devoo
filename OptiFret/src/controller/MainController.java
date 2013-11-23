@@ -12,9 +12,12 @@ import model.Delivery;
 import model.DeliveryRound;
 import model.DeliverySheet;
 import model.RoadNetwork;
+import view.DeliveryMap;
+import view.Listener;
 import view.MainFrame;
+import view.MyChangeEvent;
 
-public class MainController {
+public class MainController implements Listener {
 
     private Stack<DeliverySheetCommand> history = new Stack<>();
     private Stack<DeliverySheetCommand> redoneHistory = new Stack<>();
@@ -28,8 +31,13 @@ public class MainController {
         }
         this.mainFrame = frame;
         setupNewView();
+        setupListeners();
     }
-
+    
+    public void setupListeners(){
+        mainFrame.getDeliveryMap().addListener(this);
+    }
+    
     private void loadRoadNetwork() {
         JFileChooser fc = new JFileChooser();
         fc.setDialogTitle(mainFrame.getLoadMap().getText());
@@ -183,6 +191,16 @@ public class MainController {
         });
     }
 
+    @Override
+    public void changeEventReceived(MyChangeEvent evt) {
+        if(evt.getSource() instanceof DeliveryMap){
+            onMapNodeSelected(((DeliveryMap)(evt.getSource())));
+        } 
+    }
+    
+    public void onMapNodeSelected(DeliveryMap map){
+        System.out.println("BAAEFOEAJFOEAJFOJEAOFJEAFJOEAFOJAEJFEOAJFOEAJFOEAJFOAEJF");
+    }
     private abstract class MenuItemClickListener implements MouseListener {
 
         /**

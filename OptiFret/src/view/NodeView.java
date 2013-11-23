@@ -150,6 +150,7 @@ public class NodeView {
             if (parent.get().getSelectedNode() != null) {
                 parent.get().getSelectedNode().clear();
             }
+            parent.get().fireChangeEvent();
             parent.get().setSelectedNode(new WeakReference<>(this));
         } else {
             selected = false;
