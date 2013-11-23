@@ -2,6 +2,10 @@ package controller;
 
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.EmptyStackException;
 import java.util.Stack;
 import javax.swing.JFileChooser;
@@ -30,10 +34,10 @@ public class MainController {
         JFileChooser fc = new JFileChooser();
         if (fc.showOpenDialog(mainFrame) == JFileChooser.APPROVE_OPTION) {
             try {
-                roadNetwork = RoadNetwork.loadFromXML(fc.getSelectedFile());
+                roadNetwork = RoadNetwork.loadFromXML(new FileReader(fc.getSelectedFile()));
                 System.out.println(roadNetwork);
                 //mainFrame.getDeliveryMap().setAllNodes(roadNetwork.getNodes());
-            } catch (Exception e) {
+            } catch (IOException e) {
                 mainFrame.showErrorMessage(e.getMessage());
             }
         }
@@ -43,18 +47,25 @@ public class MainController {
         JFileChooser fc = new JFileChooser();
         if (fc.showOpenDialog(mainFrame) == JFileChooser.APPROVE_OPTION) {
             try {
-                deliverySheetModel = DeliverySheet.loadFromXML(fc.getSelectedFile());
+                deliverySheetModel = DeliverySheet.loadFromXML(new FileReader(fc.getSelectedFile()));
                 DeliveryRound dr = deliverySheetModel.getDeliveryRound();
                 mainFrame.getDeliveryList().setDeliveries(dr.getDeliveries());
                 //mainFrame.getDeliveryMap().setRouteNodes(roadNetwork.makeRoute());
-            } catch (Exception e) {
+            } catch (IOException e) {
                 mainFrame.showErrorMessage(e.getMessage());
             }
         }
     }
 
     private void exportRound() {
-        // TODO save as dialog
+        JFileChooser fc = new JFileChooser();
+        if (fc.showSaveDialog(mainFrame) == JFileChooser.APPROVE_OPTION) {
+            try {
+                deliverySheetModel.export(new FileWriter(fc.getSelectedFile()));
+            } catch (IOException e) {
+                mainFrame.showErrorMessage(e.getMessage());
+            }
+        }
     }
 
     /**

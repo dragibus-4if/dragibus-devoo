@@ -14,6 +14,7 @@ public class DeliveryList extends JScrollPane {
     public DeliveryList() {
         panel = new JPanel(new VerticalLayout());
         getViewport().add(panel);
+        selected=null;
     }
 
     public void setDeliveries(List<Delivery> deliveries) {

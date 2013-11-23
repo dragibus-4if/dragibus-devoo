@@ -5,7 +5,7 @@ import java.util.List;
 
 public class DeliveryRound {
 
-    private List<Delivery> deliveries = new ArrayList<Delivery>();
+    private List<Delivery> deliveries = new ArrayList<>();
     private List<RoadNode> path;
 
     public DeliveryRound() {

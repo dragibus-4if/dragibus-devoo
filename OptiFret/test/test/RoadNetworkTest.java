@@ -1,11 +1,13 @@
 package test;
 
-import java.io.FileWriter;
-import java.io.BufferedWriter;
 import java.io.File;
-
+import java.io.FileReader;
 import java.io.IOException;
+
+import java.io.StringReader;
 import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import junit.framework.TestCase;
 import model.RoadNetwork;
 import model.RoadNode;
@@ -25,7 +27,7 @@ public class RoadNetworkTest extends TestCase {
         
         // Fichier inexistant => Exception
         try {
-            RoadNetwork.loadFromXML(new File("C://frthi/f4242"));
+            RoadNetwork.loadFromXML(new FileReader(new File("C://frthi/f4242")));
             throw new Exception();
         } catch (IOException e) {
         } catch (Exception e) {
@@ -34,7 +36,7 @@ public class RoadNetworkTest extends TestCase {
 
         // Dossier => Exception
         try {
-            RoadNetwork.loadFromXML(new File("."));
+            RoadNetwork.loadFromXML(new FileReader(new File(".")));
             throw new Exception();
         } catch (IOException e) {
             System.out.println("Test error while generating temporary files for test purposes.");
@@ -43,62 +45,42 @@ public class RoadNetworkTest extends TestCase {
         }
     }
 
-    private boolean writeInFile(String filename, String content) {
+    public void testXMLSyntax() {
         try {
-            FileWriter fw = new FileWriter(filename, false);
-            try (BufferedWriter output = new BufferedWriter(fw)) {
-                output.write(content);
-                output.flush();
-                return true;
-            }
-        } catch (IOException ioe) {
-            System.out.print("Erreur : ");
-            ioe.printStackTrace();
+            // Test d'une fermeture de balise manquante
+            assertNull(RoadNetwork.loadFromXML(new StringReader("<root>")));
+            
+            // Test d'une ouverture de balise manquante
+            assertNull(RoadNetwork.loadFromXML(new StringReader("<root></balise></root>")));
+        } catch (IOException ex) {
+            Logger.getLogger(RoadNetworkTest.class.getName()).log(Level.SEVERE, null, ex);
+            fail(ex.getMessage());
         }
-        return false;
     }
 
-    public void testXMLSyntax() throws Exception {
-        // Si la syntaxe XML est mauvaise, la fonction retourne Null
-        String filename = "/tmp/dragibus-roadnetworktest-testxmlsyntax.xml";
-
-        // Test d'une fermeture de balise manquante
-        writeInFile(filename, "<root>");
-        assertNull(RoadNetwork.loadFromXML(new File(filename)));
-
-        // Test d'une ouverture de balise manquante
-        writeInFile(filename, "<root></balise></root>");
-        assertNull(RoadNetwork.loadFromXML(new File(filename)));
-
-        // Il n'y a pas tout les cas sur la syntaxe XML. La bibliothèque
-        // utilisée doit pouvoir détecter les erreurs. Nous l'utilisons et ces
-        // quelques tests permettent de montrer qu'on capte que la bibliothèque
-        // a détecté une erreur.
-    }
-
-    public void testXMLSemantic() throws Exception {
-        // Si la sémantique XML est mauvaise, la fonction retourne Null
-        String filename = "/tmp/dragibus-roadnetworktest-testxmlsemantic.xml";
-
-        // Si la balise racine est un élément quelconque (différent de ce qui
-        // est attendu), la fonction renvoie null.
-        writeInFile(filename, "<root></root>");
-        assertNull(RoadNetwork.loadFromXML(new File(filename)));
-
-        // Si le document contient un élément non défini, la fonction renvoie
-        // null.
-        writeInFile(filename, "<road_network><autre></autre></road_network>");
-        assertNull(RoadNetwork.loadFromXML(new File(filename)));
-
-        // Si c'est la bonne balise racine, la fonction renvoie quelque chose de non
-        // null.
-        writeInFile(filename, "<road_network></road_network>");
-        RoadNetwork rn = RoadNetwork.loadFromXML(new File(filename));
-        assertNotNull(rn);
-        assertEquals(rn.getSize(), 0);
-
-        // TODO tests sur l'intégrité du document
-        // Voir le format des xmls à lire pour vérifier ça
+    public void testXMLSemantic() {
+        try {
+            // Si la balise racine est un élément quelconque (différent de ce qui
+            // est attendu), la fonction renvoie null.
+            assertNull(RoadNetwork.loadFromXML(new StringReader("<root></root>")));
+            
+            // Si le document contient un élément non défini, la fonction renvoie
+            // null.
+            String s1 = "<road_network><autre></autre></road_network>";
+            assertNull(RoadNetwork.loadFromXML(new StringReader(s1)));
+            
+            // Si c'est la bonne balise racine, la fonction renvoie quelque chose de non
+            // null.
+            String s2 = "<road_network></road_network>";
+            RoadNetwork rn = RoadNetwork.loadFromXML(new StringReader(s2));
+            assertNotNull(rn);
+            assertEquals(rn.getSize(), 0);
+            
+            // Voir le format des xmls à lire pour vérifier ça
+        } catch (IOException ex) {
+            Logger.getLogger(RoadNetworkTest.class.getName()).log(Level.SEVERE, null, ex);
+            fail(ex.getMessage());
+        }
     }
 
     public void testRoot() {
@@ -127,6 +109,35 @@ public class RoadNetworkTest extends TestCase {
         assertEquals(net.getSize(), 4);
     }
 
+    /*public void testGetNodeById() {
+        RoadNetwork net = new RoadNetwork();
+
+        // Essaye d'acceder à élément n'existant pas (ou invalide)
+        assertNull(net.getNodeById(null));
+        assertNull(net.getNodeById(new Long(-1)));
+        assertNull(net.getNodeById(new Long(0)));
+
+        // Ajout d'un noeud dans le graphe puis récupération de ce noeud par
+        // l'id
+        RoadNode node = new RoadNode(0);
+        Long id = node.getId();
+        net.setRoot(node);
+        assertNotNull(net.getNodeById(id));
+        assertEquals(net.getNodeById(id).getId(), id);
+
+        // Ajout d'un noeud comme fils du précédent puis recherche dans le
+        // graphe
+        RoadNode node2 = new RoadNode(1);
+        Long id2 = node2.getId();
+        node2.addNeighbor(new RoadSection(node2, node, 0.0, 0.0));
+        assertNotNull(net.getNodeById(id2));
+        assertEquals(net.getNodeById(id2).getId(), id2);
+
+        // Essaye d'acceder à élément n'existant toujours pas (ou invalide)
+        assertNull(net.getNodeById(null));
+        assertNull(net.getNodeById(new Long(-1)));
+    }*/
+    
     public void testGetNodes() {
         RoadNetwork net = new RoadNetwork();
 
