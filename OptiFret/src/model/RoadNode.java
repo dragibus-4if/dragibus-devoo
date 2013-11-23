@@ -9,6 +9,7 @@ public class RoadNode {
 
     private final Long id;
     private final Set<RoadSection> sections = new HashSet<>();
+    private final Set<RoadNode> nodes = new HashSet<>();
     private int x;
     private int y;
 
@@ -47,12 +48,20 @@ public class RoadNode {
         return sections;
     }
 
-    public Collection<RoadNode> getNeighbors() {
+    public final Collection<RoadNode> getNeighbors() {
         Collection<RoadNode> ls = new ArrayList<>(sections.size());
         for (RoadSection section : getSections()) {
             ls.add(section.getRoadNodeEnd());
         }
         return ls;
+    }
+
+    public final Collection<RoadNode> getNodes() {
+        return nodes;
+    }
+
+    public void addNeighbor(RoadNode section, double speed, double length) {
+        addNeighbor(new RoadSection(this, section, speed, length));
     }
 
     public void addNeighbor(RoadSection section) {
@@ -63,11 +72,9 @@ public class RoadNode {
         } else if (section.getRoadNodeBegin() != this) {
             throw new IllegalArgumentException("'section' ajoutée doit avoir l'objet courant comme départ");
         } else {
-            int size = sections.size();
             sections.add(section);
-            if (sections.size() == size) {
-                throw new IllegalArgumentException("'section' ajoutée ne doit pas avoir déjà été ajoutée");
-            }
+            nodes.add(section.getRoadNodeEnd());
+            section.getRoadNodeEnd().nodes.add(this);
         }
     }
 

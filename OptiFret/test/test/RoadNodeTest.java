@@ -13,6 +13,7 @@ public class RoadNodeTest extends TestCase {
         RoadNode node = new RoadNode(0);
         assertNotNull(node);
         assertEquals(node.getNeighbors().size(), 0);
+        assertEquals(node.getNodes().size(), 0);
     }
 
     public void testAddNeighbors() {
@@ -22,10 +23,12 @@ public class RoadNodeTest extends TestCase {
         // Ajout d'un voisin et vérification que la taille est à 1
         node.addNeighbor(new RoadSection(node, new RoadNode(1), 0, 0));
         assertEquals(node.getNeighbors().size(), 1);
+        assertEquals(node.getNodes().size(), 1);
         // ...propagation sur quelques autres essais
         for (int size = 2; size < 10; size++) {
             node.addNeighbor(new RoadSection(node, new RoadNode(size), 0, 0));
             assertEquals(node.getNeighbors().size(), size);
+            assertEquals(node.getNodes().size(), size);
         }
 
         // Ajout d'un node null comme fils. Lève une exception et la taille ne
@@ -37,5 +40,25 @@ public class RoadNodeTest extends TestCase {
         } catch (NullPointerException e) {
         }
         assertEquals(node1.getNeighbors().size(), 0);
+        assertEquals(node1.getNodes().size(), 0);
+
+        // Ajout d'un voisin et vérification que la taille est à 1
+        // Test de la symétrie
+        RoadNode node2 = new RoadNode(0);
+        RoadNode node3 = new RoadNode(1);
+        node3.addNeighbor(new RoadSection(node3, node2, 0, 0));
+        assertEquals(node2.getNeighbors().size(), 0);
+        assertEquals(node3.getNeighbors().size(), 1);
+        assertEquals(node2.getNodes().size(), 1);
+        assertEquals(node3.getNodes().size(), 1);
+        // ...propagation sur quelques autres essais
+        for (int size = 2; size < 10; size++) {
+            RoadNode n = new RoadNode(size);
+            n.addNeighbor(new RoadSection(n, node2, 0, 0));
+            assertEquals(node2.getNeighbors().size(), 0);
+            assertEquals(n.getNeighbors().size(), 1);
+            assertEquals(node2.getNodes().size(), size);
+            assertEquals(n.getNodes().size(), 1);
+        }
     }
 };

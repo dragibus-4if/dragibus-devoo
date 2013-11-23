@@ -71,4 +71,5 @@ public class TimeSlot {
                     .append(this.getEnd().toString());
             return sb.toString();
     }
+
 }

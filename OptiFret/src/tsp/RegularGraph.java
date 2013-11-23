@@ -1,11 +1,12 @@
 package tsp;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
-import java.util.TreeSet;
+import java.util.TreeMap;
 import model.RoadNetwork;
 import model.RoadNode;
 import model.RoadSection;
@@ -21,6 +22,7 @@ public class RegularGraph implements Graph {
     private final int minArcCost;
     private final int[][] cost;
     private final ArrayList<ArrayList<Integer>> succ;
+    private final Map<Integer, RoadNode> index2Node;
 
     /**
      *
@@ -32,62 +34,94 @@ public class RegularGraph implements Graph {
             throw new NullPointerException();
         }
         if (net.getRoot() == null) {
-            return new RegularGraph(0, 0, 0, new int[0][0], new ArrayList<ArrayList<Integer>>());
+            return new RegularGraph(0, 0, 0, new int[0][0], new ArrayList<ArrayList<Integer>>(), new TreeMap<Integer, RoadNode>());
         }
 
         Set<RoadNode> open = new HashSet<>();
         Set<RoadNode> close = new HashSet<>();
-        Long index = new Long(0);
-        Map<RoadNode, Long> indexMap = new HashMap<>();
+        Integer index = new Integer(0);
+        Map<Integer, RoadNode> indexMap = new TreeMap<>();
         open.add(net.getRoot());
         while (!open.isEmpty()) {
             RoadNode current = open.iterator().next();
             open.remove(current);
             close.add(current);
-            for (RoadSection section : current.getSections()) {
-                RoadNode n = section.getRoadNodeEnd();
+            for (RoadNode n : current.getNodes()) {
                 if (!close.contains(n)) {
                     open.add(n);
                 }
             }
-            indexMap.put(current, index);
+            indexMap.put(index, current);
             index++;
         }
-        
+
         open = new HashSet<>();
         open.add(net.getRoot());
         close = new HashSet<>();
-        Long size = index;
+        Integer size = index;
         int[][] costs = new int[size.intValue()][size.intValue()];
         ArrayList<ArrayList<Integer>> succ = new ArrayList<>();
-        for(int i = 0 ; i < size ; i++) {
+        double min = Double.MAX_VALUE;
+        double max = 0;
+        for (int i = 0; i < size; i++) {
             succ.add(new ArrayList<Integer>());
         }
         while (!open.isEmpty()) {
             RoadNode current = open.iterator().next();
-            Long currentIndex = indexMap.get(current);
+            Integer currentIndex = null;
+            for (Entry<Integer, RoadNode> e : indexMap.entrySet()) {
+                if (e.getValue().equals(current)) {
+                    currentIndex = e.getKey();
+                    break;
+                }
+            }
             open.remove(current);
             close.add(current);
-            for (RoadSection section : current.getSections()) {
-                RoadNode n = section.getRoadNodeEnd();
+            for (RoadNode n : current.getNodes()) {
                 if (!close.contains(n)) {
                     open.add(n);
                 }
-                Long nIndex = indexMap.get(n);
-                succ.get(currentIndex.intValue()).add(new Integer(nIndex.intValue()));
-                costs[currentIndex.intValue()][nIndex.intValue()] = (int)section.getCost();
+            }
+            for (RoadSection section : current.getSections()) {
+                RoadNode n = section.getRoadNodeEnd();
+                Integer nIndex = null;
+                for (Entry<Integer, RoadNode> e : indexMap.entrySet()) {
+                    if (e.getValue().equals(n)) {
+                        nIndex = e.getKey();
+                        break;
+                    }
+                }
+                succ.get(currentIndex).add(new Integer(nIndex));
+                costs[currentIndex][nIndex] = new Double(section.getCost()).intValue();
+                if (section.getCost() < min) {
+                    min = (double) section.getCost();
+                }
+                if (section.getCost() > max) {
+                    max = (double) section.getCost();
+                }
             }
         }
 
-        return null;
+        return new RegularGraph(indexMap.size(), new Double(max).intValue(), new Double(min).intValue(), costs, succ, indexMap);
     }
 
-    public RegularGraph(int nbVertices, int maxArcCost, int minArcCost, int[][] cost, ArrayList<ArrayList<Integer>> succ) {
+    public RegularGraph(int nbVertices, int maxArcCost, int minArcCost,
+            int[][] cost, ArrayList<ArrayList<Integer>> succ,
+            Map<Integer, RoadNode> index2Node) {
         this.nbVertices = nbVertices;
         this.maxArcCost = maxArcCost;
         this.minArcCost = minArcCost;
         this.cost = cost;
         this.succ = succ;
+        this.index2Node = index2Node;
+    }
+
+    public List<RoadNode> getLsNode(int[] indexes) {
+        List<RoadNode> l = new ArrayList<>();
+        for (int i : indexes) {
+            l.add(index2Node.get(new Integer(i)));
+        }
+        return l;
     }
 
     @Override

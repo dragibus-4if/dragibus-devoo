@@ -59,18 +59,17 @@ public class RoadSection {
         return roadNodeEnd;
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        } else if (getClass() != obj.getClass()) {
-            return false;
-        } else {
-            final RoadSection other = (RoadSection) obj;
-            return roadNodeBegin.equals(other.roadNodeBegin);
-        }
-    }
-
+    //@Override
+    //public boolean equals(Object obj) {
+    //    if (obj == null) {
+    //        return false;
+    //    } else if (getClass() != obj.getClass()) {
+    //        return false;
+    //    } else {
+    //        final RoadSection other = (RoadSection) obj;
+    //        return roadNodeBegin.equals(other.roadNodeBegin);
+    //    }
+    //}
     @Override
     public int hashCode() {
         int hash = 7;
