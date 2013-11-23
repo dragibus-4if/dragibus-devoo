@@ -60,9 +60,9 @@ public class ArcView {
     @Override
     public int hashCode() {
         int hash = 3;
-        hash = 41 * hash + this.x1;
+        hash = 47 * hash + this.x1;
         hash = 41 * hash + this.y1;
-        hash = 41 * hash + this.x2;
+        hash = 47 * hash + this.x2;
         hash = 41 * hash + this.y2;
         return hash;
     }

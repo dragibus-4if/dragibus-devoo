@@ -99,7 +99,7 @@ public class DeliveryMap extends JPanel {
                     mapNodes.get(i).setMode(MODE.DELIVERY);
                 }
             }
-            
+     
             for (RoadNode neighbor : rn.getNeighbors()) {
                 ArcView temp = new ArcView(rn.getX(), rn.getY(), neighbor.getX(), neighbor.getY(), 0);
                 if (mapArcs.containsKey(temp.hashCode())) {

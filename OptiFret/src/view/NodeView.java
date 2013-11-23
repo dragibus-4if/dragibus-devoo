@@ -63,7 +63,7 @@ public class NodeView {
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 47 * hash + this.x1;
+        hash = 41 * hash + this.x1;
         hash = 47 * hash + this.y1;
         return hash;
     }

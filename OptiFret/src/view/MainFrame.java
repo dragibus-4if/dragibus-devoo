@@ -115,32 +115,38 @@ public class MainFrame extends JFrame {
         rnTemp2.setX(160);
         rnTemp2.setY(180);
         RoadSection sec = new RoadSection(rnTemp, rnTemp2, 1, 10);
+        RoadSection sec3 = new RoadSection(rnTemp, rnTemp2, 1, 10);
+        RoadSection sec4 = new RoadSection(rnTemp, rnTemp2, 1, 10);
 
-        RoadNode rnTemp3 = new RoadNode(3);
-        rnTemp3.setX(200);
-        rnTemp3.setY(400);
-        RoadNode rnTemp4 = new RoadNode(4);
-        rnTemp4.setX(600);
-        rnTemp4.setY(450);
-        RoadSection sec2 = new RoadSection(rnTemp3, rnTemp4, 1, 10);
-        RoadSection sec3 = new RoadSection(rnTemp2, rnTemp4, 1, 10);
-        RoadSection sec4 = new RoadSection(rnTemp4, rnTemp2, 1, 10);
-        RoadSection sec5 = new RoadSection(rnTemp4, rnTemp3, 1, 10);
-        RoadSection sec6 = new RoadSection(rnTemp4, rnTemp, 1, 10);
 
-        
-        rnTemp.addNeighbor(sec);
-        rnTemp2.addNeighbor(sec3);
-        rnTemp3.addNeighbor(sec2);
-        rnTemp4.addNeighbor(sec4);
-        rnTemp4.addNeighbor(sec5);
-        rnTemp4.addNeighbor(sec6);
-        rnTemp4.addNeighbor(sec6);
+//
+//        RoadNode rnTemp3 = new RoadNode(3);
+//        rnTemp3.setX(200);
+//        rnTemp3.setY(400);
+//        RoadNode rnTemp4 = new RoadNode(4);
+//        rnTemp4.setX(600);
+//        rnTemp4.setY(450);
+//        RoadSection sec2 = new RoadSection(rnTemp3, rnTemp4, 1, 10);
+//        RoadSection sec3 = new RoadSection(rnTemp2, rnTemp4, 1, 10);
+//        RoadSection sec4 = new RoadSection(rnTemp4, rnTemp2, 1, 10);
+//        RoadSection sec5 = new RoadSection(rnTemp4, rnTemp3, 1, 10);
+//        RoadSection sec6 = new RoadSection(rnTemp4, rnTemp, 1, 10);
+//
+//        
+          rnTemp.addNeighbor(sec);
+          rnTemp.addNeighbor(sec3);
+          rnTemp.addNeighbor(sec4);
 
-        temp.add(rnTemp);
-        temp.add(rnTemp2);
-        temp.add(rnTemp3);
-        temp.add(rnTemp4);
+//        rnTemp3.addNeighbor(sec2);
+//        rnTemp4.addNeighbor(sec4);
+//        rnTemp4.addNeighbor(sec5);
+//        rnTemp4.addNeighbor(sec6);
+//        rnTemp4.addNeighbor(sec6);
+//
+          temp.add(rnTemp);
+          temp.add(rnTemp2);
+//        temp.add(rnTemp3);
+//        temp.add(rnTemp4);
         return temp;
     }
 
