@@ -10,13 +10,14 @@ public class TimeSlotTest extends TestCase {
 
     public void testConstructionFromDateAndDuration() {
         // Test des cas valides
-        TimeSlot t = new TimeSlot(new Date(), new Long(0));
+        Date d = new Date();
+        TimeSlot t = new TimeSlot(d, new Long(0));
         assertNotNull(t);
         assertNotNull(t.getBegin());
         assertNotNull(t.getEnd());
         assertNotNull(t.getDuration());
         assertEquals(t.getDuration(), new Long(0));
-        assertEquals(t.getBegin(), new Date());
+        assertEquals(t.getBegin(), d);
         assertEquals(t.getEnd(), t.getBegin());
         
         // Test des cas invalides
@@ -41,13 +42,14 @@ public class TimeSlotTest extends TestCase {
 
     public void testConstructionFromTwoDates() {
         // Test des cas valides
-        TimeSlot t = new TimeSlot(new Date(), new Date());
+        Date d = new Date();
+        TimeSlot t = new TimeSlot(d, d);
         assertNotNull(t);
         assertNotNull(t.getBegin());
         assertNotNull(t.getEnd());
         assertNotNull(t.getDuration());
         assertEquals(t.getDuration(), new Long(0));
-        assertEquals(t.getBegin(), new Date());
+        assertEquals(t.getBegin(), d);
         assertEquals(t.getEnd(), t.getBegin());
         
         // Test des cas invalides
