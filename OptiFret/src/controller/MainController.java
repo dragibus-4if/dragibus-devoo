@@ -282,6 +282,18 @@ public class MainController implements Listener {
     }
 
     public void onMapNodeSelected(DeliveryMap map) {
+        if (map == null) {
+            System.err.println("map null");
+            return;
+        }
+        if (map.getSelectedNode() == null) {
+            System.err.println("map.getSelectedNode() null");
+            return;
+        }
+         if (map.getSelectedNode().get()== null) {
+            System.err.println("map.getSelectedNode().get() null");
+            return;
+        }
         mainFrame.getDeliveryList().setSelectionById(map.getSelectedNode().get().getAddress());
     }
 

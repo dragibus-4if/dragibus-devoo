@@ -43,11 +43,15 @@ public class DeliveryList extends JScrollPane {
 
     public void setSelected(DeliveryCollapsiblePane selected) {
         this.selected = selected;
-        fireChangeEvent();
     }
+        
     public void setSelectionById(long id){
+        if(panelList.get(id)==null){
+            System.err.println("panelList.get(id) null");
+            return;
+        }
         panelList.get(id).select();
-    }
+        }
 
     public void addListener(Listener l) {
         this.listeners.add(l);
