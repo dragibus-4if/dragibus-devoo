@@ -1,14 +1,12 @@
 package tsp;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import model.Delivery;
-import model.DeliveryRound;
 import model.RoadNetwork;
 import model.RoadNode;
 
@@ -24,13 +22,8 @@ public class RegularGraph implements Graph {
     private final int[][] cost;
     private final ArrayList<ArrayList<Integer>> succ;
     private final Map<Integer, RoadNode> index2Node;
-
-    /**
-     *
-     * @param net
-     * @return
-     */
-    public static RegularGraph loadFromRoadNetwork(RoadNetwork net, DeliveryRound thatRound) {
+    
+    public static RegularGraph loadFromRoadNetwork(RoadNetwork net, List<Delivery> objectives) {
         if (net == null) {
             throw new NullPointerException();
         }
@@ -54,8 +47,8 @@ public class RegularGraph implements Graph {
             }
             indexMap.put(index, current);
             index++;
-        }    
-        
+        }
+
         //Ancien calcul du RegularGraph
 //        open = new HashSet<>();
 //        open.add(net.getRoot());
@@ -101,59 +94,53 @@ public class RegularGraph implements Graph {
 //                    max = (double) section.getCost();
 //            }
 //        }
-        
-        
         //Nouveau calcul du RegularGraph (limité aux livraisons)
-        
-        List<RoadNode> path = thatRound.getPath();
-        List<Delivery> objectives = thatRound.getDeliveries();
-        
-        
+        List<RoadNode> path = null; // TODO
+
         int size = objectives.size();
         int min = Integer.MAX_VALUE;
         int max = 0;
-        int [][] distances = new int [size][size];
+        int[][] distances = new int[size][size];
         open = new HashSet<>();
         close = new HashSet<>();
         ArrayList<ArrayList<Integer>> succ = new ArrayList<>();
-        ArrayList<Integer> tsList = new ArrayList <>();
-        
+        ArrayList<Integer> tsList = new ArrayList<>();
+
         /*
          * Cette List n'est pas read pour le moment, 
          * mais fait correspondre des Id de livraisons 
          * (dans la DeliveryRound) avec leurs adresses      
-        */
-        ArrayList<Long> adrList = new ArrayList <>();
-        
+         */
+        ArrayList<Long> adrList = new ArrayList<>();
+
         //Premier parsing des timeslots + adresses
         adrList.add(objectives.get(0).getAddress());
         long currentTimeSlot = objectives.get(1).getTimeSlot().getBegin().getTime();
         tsList.add(1);
         adrList.add(objectives.get(1).getAddress());
-        for (int j = 2 ; j < size ; j++ ) {
+        for (int j = 2; j < size; j++) {
             adrList.add(objectives.get(j).getAddress());
-            if (objectives.get(j).getTimeSlot().getBegin().getTime()!= 
-                    currentTimeSlot) {
+            if (objectives.get(j).getTimeSlot().getBegin().getTime()
+                    != currentTimeSlot) {
                 tsList.add(j);
                 currentTimeSlot = objectives.get(j).getTimeSlot().
                         getBegin().getTime();
             }
         }
-        
-        
+
         //Etablissement de la liste des successeurs (parmis les livraisons)
         int progress = 0;   //Progres general dans la liste des livraisons
         int progTSB = 0;    //Debut des timeSlot a pointer pour une adresse
         int progNTS = 1;    //Prochaine timeSlot a traiter
         int progTSE = 2;    //Fin des timeSlot a pointer pour une adresse
-        
-        while ( progress < size ) {
+
+        while (progress < size) {
             //Pour chaque livraison, on fait une liste de successeurs
             succ.add(new ArrayList<Integer>());
             //On parcourt les livraisons au sein des timeSlots ciblées.
-            for (int j = tsList.get(progTSB) ; j < tsList.get(progTSE) ; j++ ) {
+            for (int j = tsList.get(progTSB); j < tsList.get(progTSE); j++) {
                 //Ne doit pas pointer vers sois même
-                if ( j != progress ) {
+                if (j != progress) {
                     succ.get(progress).add(j);
                 }
             }
@@ -164,25 +151,22 @@ public class RegularGraph implements Graph {
                 progTSE++;
             }
         }
-        
-        
+
         // Calcul du Dijstrak pour chaque "paire de livraison" parmis les successeurs
-        for ( int i = 0 ; i < succ.size() ; i++ ) {
-            for ( int j = 0 ; j < succ.get(i).size() ; j++ ) {
+        for (int i = 0; i < succ.size(); i++) {
+            for (int j = 0; j < succ.get(i).size(); j++) {
                 // Effectuer le AStar
                 // AStar entre indexMap[i] et indexMap[j].
                 // Récupérer la longueur qui correspond au cout de cheminement.
                 List<RoadNode> pathNode = AStar.findPath(indexMap.get(i), indexMap.get(j));
                 Double c = new Double(0);
-                for(int k = 1 ; k < pathNode.size() ; k++) {
+                for (int k = 1; k < pathNode.size(); k++) {
                     c += AStar.cost(pathNode.get(i - 1), pathNode.get(i));
                 }
                 distances[i][j] = c.intValue();
             }
         }
-        
-        
-        
+
         return new RegularGraph(indexMap.size(), new Double(max).intValue(), new Double(min).intValue(), distances, succ, indexMap);
     }
 
@@ -196,10 +180,10 @@ public class RegularGraph implements Graph {
         this.succ = succ;
         this.index2Node = index2Node;
     }
-    
+
     public List<RoadNode> getLsNode(int[] indexes) {
         List<RoadNode> l = new ArrayList<>();
-        for(int i : indexes) {
+        for (int i : indexes) {
             l.add(index2Node.get(new Integer(i)));
         }
         return l;
