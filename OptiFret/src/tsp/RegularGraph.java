@@ -1,6 +1,7 @@
 package tsp;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -171,6 +172,12 @@ public class RegularGraph implements Graph {
                 // Effectuer le AStar
                 // AStar entre indexMap[i] et indexMap[j].
                 // Récupérer la longueur qui correspond au cout de cheminement.
+                List<RoadNode> pathNode = AStar.findPath(indexMap.get(i), indexMap.get(j));
+                Double c = new Double(0);
+                for(int k = 1 ; k < pathNode.size() ; k++) {
+                    c += AStar.cost(pathNode.get(i - 1), pathNode.get(i));
+                }
+                distances[i][j] = c.intValue();
             }
         }
         

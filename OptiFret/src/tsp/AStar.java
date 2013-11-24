@@ -7,23 +7,23 @@
 package tsp;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import model.RoadNode;
 
 public class AStar {
-    static public Double cost(RoadNode a, RoadNode b) {
+    public static Double cost(RoadNode a, RoadNode b) {
         return Math.sqrt(Math.pow(a.getX() - b.getX(), 2) + Math.pow(a.getY() - b.getY(), 2));
     }
     
-    static public Double heuristicCost(RoadNode a, RoadNode b) {
+    private static Double heuristicCost(RoadNode a, RoadNode b) {
         return cost(a, b);
     }
     
-    static public Collection<RoadNode> findPath(RoadNode start, RoadNode goal) {
+    static public List<RoadNode> findPath(RoadNode start, RoadNode goal) {
         Set<RoadNode> open = new HashSet<>();
         Set<RoadNode> close = new HashSet<>();
         Map<RoadNode, RoadNode> cameFrom = new HashMap<>();
@@ -63,13 +63,13 @@ public class AStar {
         return null;
     }
 
-    private static Collection<RoadNode> reconstructPath(Map<RoadNode, RoadNode> cameFrom, RoadNode goal) {
+    private static List<RoadNode> reconstructPath(Map<RoadNode, RoadNode> cameFrom, RoadNode goal) {
         if(cameFrom.containsKey(goal)) {
-            Collection<RoadNode> p = reconstructPath(cameFrom, cameFrom.get(goal));
+            List<RoadNode> p = reconstructPath(cameFrom, cameFrom.get(goal));
             p.add(goal);
             return p;
         }
-        Collection<RoadNode> p = new ArrayList<>();
+        List<RoadNode> p = new ArrayList<>();
         p.add(goal);
         return p;
     }
