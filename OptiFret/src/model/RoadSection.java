@@ -28,6 +28,11 @@ public class RoadSection {
         this.length = length;
     }
 
+    public RoadSection(RoadNode roadNodeBegin, RoadNode roadNodeEnd, double speed, double length, String roadName) {
+        this(roadNodeBegin, roadNodeEnd, speed, length);
+        this.roadName = roadName;
+    }
+
     public double getCost() {
         if (speed == 0) {
             throw new RuntimeErrorException(new Error("Coût indéfini, vitesse de 0"));

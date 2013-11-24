@@ -225,6 +225,10 @@ public class RoadNetwork {
     public RoadNode getRoot() {
         return root;
     }
+    
+    public void setRoot(RoadNode root) {
+        this.root = root;
+    }
 
     public List<RoadNode> getNodes() {
         if (root == null) {
