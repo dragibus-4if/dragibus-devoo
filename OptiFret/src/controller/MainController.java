@@ -293,10 +293,11 @@ public class MainController implements Listener {
         }
          if (map.getSelectedNode().get()== null) {
             System.err.println("map.getSelectedNode().get() null");
-            return;
+            mainFrame.getDeliveryList().setSelectionById(-1);
         }
+         else{
         mainFrame.getDeliveryList().setSelectionById(map.getSelectedNode().get().getAddress());
-    }
+    }}
 
     private void onListDeliverySelected(DeliveryList deliveryList) {
         if (deliveryList == null) {
