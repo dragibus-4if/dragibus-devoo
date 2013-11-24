@@ -1,16 +1,13 @@
 package model;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.io.Writer;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -38,8 +35,11 @@ public class DeliverySheet {
     private static final String TIMESLOT_DEBUT = "heureDebut";
     private static final String TIMESLOT_FIN = "heureFin";
 
-    private DeliveryRound deliveryRound = new DeliveryRound();
+    private final DeliveryRound deliveryRound = new DeliveryRound();
     private DeliveryEmployee deliveryEmployee = new DeliveryEmployee();
+    
+    private static final double CONE_FRONT = 15;
+    private static final double CONE_BACK = 15;
 
     /**
      * Constructeur standard.
@@ -70,6 +70,115 @@ public class DeliverySheet {
      */
     public void setDeliveryEmployee(DeliveryEmployee deliveryEmployee) {
         this.deliveryEmployee = deliveryEmployee;
+    }
+
+    public void export(Writer output) throws IOException {
+        if(output == null)
+            throw new NullPointerException();
+        
+        List<Delivery> delv = deliveryRound.getDeliveries(); 
+        List<RoadNode> path = deliveryRound.getPath();
+        
+        if(path == null)
+            return;
+
+        int index_delv = 0;
+        RoadNode old = null;
+        RoadSection oldRs = null;
+        
+        String bufferRoad = "";      //Buffer de toute la route à effectuer
+        
+        for(RoadNode liv : path) {
+            if(old == null) {
+                old = liv;
+                continue;
+            }
+            Iterator secI = old.getSections().iterator();
+            RoadSection rs = null;
+            
+            int gauche = 0;
+            int droite = 0;
+            
+            while(secI.hasNext()) {
+                rs = (RoadSection)secI.next();
+                if(rs.getRoadNodeEnd() == liv) {
+                    
+                    //Première rue à prendre
+                    if ( oldRs == null ) { 
+                        bufferRoad += "Prendre la rue ";
+                        bufferRoad += rs.getRoadName(); 
+                        bufferRoad += "\n\n";
+                    }
+                    //Calcul du "Prenez à gauche/droite, sur"
+                    else {
+                        //Calcul de la longeur
+                        bufferRoad += "Dans ";
+                        bufferRoad += (int) rs.getLength();
+                        bufferRoad += " mètres : \n";
+                        
+                        int v1X = oldRs.getRoadNodeEnd().getX() - 
+                                oldRs.getRoadNodeBegin().getX();
+                        int v1Y = oldRs.getRoadNodeEnd().getY() - 
+                                oldRs.getRoadNodeBegin().getY();
+                        int v2X = rs.getRoadNodeEnd().getX() - 
+                                rs.getRoadNodeBegin().getX();
+                        int v2Y = rs.getRoadNodeEnd().getY() - 
+                                rs.getRoadNodeBegin().getY();
+                        
+                        double angle1 = Math.atan2(v1Y,v1X);
+                        double angle2 = Math.atan2(v2Y,v2X);
+                        double angle = angle2 - angle1;
+                        
+                        if ( angle < -CONE_FRONT && angle > -CONE_BACK) {
+                            bufferRoad += "Prenez à gauche ";
+                        }
+                        else if (angle > CONE_FRONT && angle < CONE_BACK) {
+                            bufferRoad += "Prenez à droite ";
+                        }
+                        else if (angle >= CONE_BACK  ||
+                                angle <= -CONE_BACK) {
+                            bufferRoad += "Faites demi-tour ";
+                        }
+                        else {
+                            bufferRoad += "Prenez tout droit ";
+                        }
+                           
+                        System.out.println(rs.getRoadName() + angle);
+                        
+                        bufferRoad += "sur la rue ";
+                        bufferRoad += rs.getRoadName(); 
+                        bufferRoad += "\n\n";
+                    }
+                    
+                    oldRs = rs;
+                    break;
+                }
+            }
+            if(rs == null)
+                throw new RuntimeException();
+            if(index_delv < delv.size() && liv.getId().equals(
+                    delv.get(index_delv).getAddress())) {
+                
+                output.write("Prochaine livraison : ");
+                output.write(rs.getRoadName() + "\n\n");
+                output.write(bufferRoad);
+                output.write("Arrivée à la livraison : ");
+                output.write(rs.getRoadName());
+                output.write("\n\n***\n\n");
+                bufferRoad = "";
+                index_delv++;
+            }
+            else if (index_delv == delv.size()) {
+                output.write(bufferRoad);
+                bufferRoad = "";
+            }
+            old = liv;
+        }
+        if(index_delv != delv.size()) { 
+            // On est pas passé par toutes les livraisons
+            throw new RuntimeException();
+        }
+        output.flush();
     }
 
     /**
