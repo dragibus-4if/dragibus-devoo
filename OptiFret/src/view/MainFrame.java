@@ -3,8 +3,9 @@ package view;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.event.KeyEvent;
-import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import static javax.swing.JFrame.EXIT_ON_CLOSE;
@@ -29,6 +30,7 @@ public class MainFrame extends JFrame {
     private JMenuItem exportRound;
     private JMenuItem undo;
     private JMenuItem redo;
+    private JButton addDeliveryButton;
     private DeliveryMap deliveryMap;
     private DeliveryList deliveryList;
     
@@ -52,7 +54,6 @@ public class MainFrame extends JFrame {
         setJMenuBar(makeMenu());
         add(makeDeliveryMap(), BorderLayout.CENTER);
         add(makeDeliveryList(), BorderLayout.LINE_START);
-        add(makeDeliveryAdding(), BorderLayout.PAGE_END);
     }
 
     private JMenuBar makeMenu() {
@@ -78,22 +79,21 @@ public class MainFrame extends JFrame {
     }
 
     private Component makeDeliveryMap() {
+        JPanel panel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
         deliveryMap = new DeliveryMap();
         deliveryMap.setPreferredSize(new Dimension(DELIVERY_MAP_WIDTH, getHeight()));
-        deliveryMap.setVisible(true);
-        return deliveryMap;
+        addDeliveryButton = new JButton(ADD_DELIVERY_TOOLTIP);
+        addDeliveryButton.setPreferredSize(new Dimension(100, 70));
+        panel.add(deliveryMap, gbc);
+        panel.add(addDeliveryButton, gbc);
+        return panel;
     }
 
     private Component makeDeliveryList() {
         deliveryList = new DeliveryList();
         deliveryList.setPreferredSize(new Dimension(DELIVERY_LIST_WIDTH, deliveryMap.getMaxY()));
         return deliveryList;
-    }
-
-    private Component makeDeliveryAdding() {
-        JPanel panel = new JPanel();
-        panel.add(new JButton(ADD_DELIVERY_TOOLTIP));
-        return panel;
     }
 
     public JMenuItem getLoadRound() {
