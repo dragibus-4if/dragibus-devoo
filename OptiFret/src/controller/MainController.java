@@ -44,7 +44,7 @@ public class MainController implements Listener {
 
     private void loadRoadNetwork() {
         final JFileChooser fc = new JFileChooser();
-        fc.setDialogTitle(mainFrame.getLoadMap().getText());
+        fc.setDialogTitle(MainFrame.LOAD_MAP_TOOLTIP);
         if (fc.showOpenDialog(mainFrame) == JFileChooser.APPROVE_OPTION) {
             try {
                 final RoadNetwork loadedNetwork = RoadNetwork.loadFromXML(new FileReader(fc.getSelectedFile()));
@@ -107,7 +107,7 @@ public class MainController implements Listener {
 
     private void loadDeliverySheet() {
         JFileChooser fc = new JFileChooser();
-        fc.setDialogTitle(mainFrame.getLoadRound().getText());
+        fc.setDialogTitle(MainFrame.LOAD_ROUND_TOOLTIP);
         if (fc.showOpenDialog(mainFrame) == JFileChooser.APPROVE_OPTION) {
             try {
                 final DeliverySheet loadedDeliverySheet = DeliverySheet
@@ -154,7 +154,7 @@ public class MainController implements Listener {
 
     private void exportRound() {
         JFileChooser fc = new JFileChooser();
-        fc.setDialogTitle(mainFrame.getExportRound().getText());
+        fc.setDialogTitle(MainFrame.EXPORT_ROUND_TOOLTIP);
         if (fc.showSaveDialog(mainFrame) == JFileChooser.APPROVE_OPTION) {
             try {
                 deliverySheet.export(new FileWriter(fc.getSelectedFile()));

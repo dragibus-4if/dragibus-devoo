@@ -4,12 +4,15 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.KeyEvent;
+import javax.swing.Icon;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import static javax.swing.JFrame.EXIT_ON_CLOSE;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import static javax.swing.JOptionPane.showMessageDialog;
+import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 
 /**
@@ -18,8 +21,9 @@ import javax.swing.KeyStroke;
  */
 public class MainFrame extends JFrame {
 
-    private JMenuBar bar;
-    private JMenu menuFile, menuEdit;
+    private JMenuBar menuBar;
+    private JMenu menuFile;
+    private JMenu menuEdit;
     private JMenuItem loadRound;
     private JMenuItem loadMap;
     private JMenuItem exportRound;
@@ -27,52 +31,69 @@ public class MainFrame extends JFrame {
     private JMenuItem redo;
     private DeliveryMap deliveryMap;
     private DeliveryList deliveryList;
+    
+    private static final int DELIVERY_MAP_WIDTH = 600;
+    private static final int DELIVERY_LIST_WIDTH = 200;
+    
+    public static final String REDO_TOOLTIP = "Redo";
+    public static final String UNDO_TOOLTIP = "Undo";
+    public static final String MENU_EDIT_TOOLTIP = "Edition";
+    public static final String EXPORT_ROUND_TOOLTIP = "Exporter une tournée";
+    public static final String LOAD_MAP_TOOLTIP = "Charger un plan";
+    public static final String MENU_FILE_TOOLTIP = "Fichier";
+    public static final String LOAD_ROUND_TOOLTIP = "Charger une tournée";
+    public static final String ADD_DELIVERY_TOOLTIP = "Ajouter";
 
     public MainFrame() {
         super("Optifret");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setSize(800, 600);
+        setSize(800, DELIVERY_MAP_WIDTH);
         setLayout(new BorderLayout());
         setJMenuBar(makeMenu());
         add(makeDeliveryMap(), BorderLayout.CENTER);
-        add(makeDeliveryList(), BorderLayout.WEST);
-        deliveryList.setPreferredSize(new Dimension(deliveryList.getPreferredSize().width, deliveryMap.getMaxY() + 20));
-
+        add(makeDeliveryList(), BorderLayout.LINE_START);
+        add(makeDeliveryAdding(), BorderLayout.PAGE_END);
     }
 
     private JMenuBar makeMenu() {
-        bar = new JMenuBar();
-        menuFile = new JMenu("Fichier");
-        loadRound = new JMenuItem("Charger une tournée");
-        loadMap = new JMenuItem("Charger un plan");
-        exportRound = new JMenuItem("Exporter une tournée");
+        menuBar = new JMenuBar();
+        menuFile = new JMenu(MENU_FILE_TOOLTIP);
+        loadRound = new JMenuItem(LOAD_ROUND_TOOLTIP);
+        loadMap = new JMenuItem(LOAD_MAP_TOOLTIP);
+        exportRound = new JMenuItem(EXPORT_ROUND_TOOLTIP);
         menuFile.add(loadMap);
         menuFile.add(loadRound);
         menuFile.add(exportRound);
-        bar.add(menuFile);
+        menuBar.add(menuFile);
 
-        menuEdit = new JMenu("Edition");
-        undo = new JMenuItem("Undo");
+        menuEdit = new JMenu(MENU_EDIT_TOOLTIP);
+        undo = new JMenuItem(UNDO_TOOLTIP);
         undo.setAccelerator(KeyStroke.getKeyStroke('Z', KeyEvent.CTRL_DOWN_MASK));
-        redo = new JMenuItem("Redo");
+        redo = new JMenuItem(REDO_TOOLTIP);
         redo.setAccelerator(KeyStroke.getKeyStroke('Z', KeyEvent.CTRL_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK));
         menuEdit.add(undo);
         menuEdit.add(redo);
-        bar.add(menuEdit);
-        return bar;
+        menuBar.add(menuEdit);
+        return menuBar;
     }
 
     private Component makeDeliveryMap() {
         deliveryMap = new DeliveryMap();
-        deliveryMap.setPreferredSize(new Dimension(600, getHeight()));
+        deliveryMap.setPreferredSize(new Dimension(DELIVERY_MAP_WIDTH, getHeight()));
         deliveryMap.setVisible(true);
         return deliveryMap;
     }
 
     private Component makeDeliveryList() {
         deliveryList = new DeliveryList();
-        deliveryList.setPreferredSize(new Dimension(200, getHeight()));
+        deliveryList.setPreferredSize(new Dimension(DELIVERY_LIST_WIDTH, deliveryMap.getMaxY()));
         return deliveryList;
+    }
+
+    private Component makeDeliveryAdding() {
+        JPanel panel = new JPanel();
+        panel.add(new JButton(ADD_DELIVERY_TOOLTIP));
+        return panel;
     }
 
     public JMenuItem getLoadRound() {
