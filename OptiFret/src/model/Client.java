@@ -12,14 +12,14 @@ package model;
  */
 public class Client {
 
-    /**
-     * ID du client
-     */
     private Long id;
     private String phoneNum;
     private String address;
     private String name;
 
+    /**
+     * Valeur par défaut de l'ID d'un client
+     */
     public static final long DEFAULT_ID = 0;
 
     /**
@@ -139,7 +139,7 @@ public class Client {
 
     /**
      * Redéfinition de toString() pour un client.
-     * 
+     *
      * @return la représentation String du client
      */
     @Override

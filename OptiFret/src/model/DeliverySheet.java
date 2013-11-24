@@ -20,6 +20,16 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+/**
+ * Feuille de route d'un livreur.
+ *
+ * {@code DeliverySheet} encapsule le chargement XML des demandes de livraisons
+ * pour définir la tournée (représentée par {@code DeliveryRound}) et le livreur
+ * associé (représentée par {@code DeliveryEmployee}).
+ *
+ * @author Patrizia
+ * @author Jean-Marie
+ */
 public class DeliverySheet {
 
     private static final String ROOT_ELEM = "JourneeType";
@@ -37,7 +47,7 @@ public class DeliverySheet {
 
     private final DeliveryRound deliveryRound = new DeliveryRound();
     private DeliveryEmployee deliveryEmployee = new DeliveryEmployee();
-    
+
     private static final double CONE_FRONT = 15;
     private static final double CONE_BACK = 15;
 
@@ -49,6 +59,7 @@ public class DeliverySheet {
 
     /**
      * Getteur pour l'instance de DeliveryRound.
+     *
      * @return l'instance de DeliveryRound
      */
     public DeliveryRound getDeliveryRound() {
@@ -57,6 +68,7 @@ public class DeliverySheet {
 
     /**
      * Getteur pour l'instance du DeliveryEmployee.
+     *
      * @return l'instance du DeliveryEmployee
      */
     public DeliveryEmployee getDeliveryEmployee() {
@@ -65,131 +77,136 @@ public class DeliverySheet {
 
     /**
      * Setteur pour l'instance de DeliveryEmployee.
-     * @param deliveryEmployee une instance de DeliveryEmployee representant un
-     *                         livreur
+     *
+     * @param deliveryEmployee
      */
     public void setDeliveryEmployee(DeliveryEmployee deliveryEmployee) {
         this.deliveryEmployee = deliveryEmployee;
     }
 
-    public void export(Writer output) throws IOException {
-        if(output == null)
+    /**
+     * Méthode d'export d'une feuille de route en format texte.
+     *
+     * @param writer
+     * @throws IOException
+     */
+    public void export(Writer writer) throws IOException {
+        if (writer == null) {
             throw new NullPointerException();
-        
-        List<Delivery> delv = deliveryRound.getDeliveries(); 
+        }
+
+        List<Delivery> delv = deliveryRound.getDeliveries();
         List<RoadNode> path = deliveryRound.getPath();
-        
-        if(path == null)
+
+        if (path == null) {
             return;
+        }
 
         int index_delv = 0;
         RoadNode old = null;
         RoadSection oldRs = null;
-        
+
         String bufferRoad = "";      //Buffer de toute la route à effectuer
-        
-        for(RoadNode liv : path) {
-            if(old == null) {
+
+        for (RoadNode liv : path) {
+            if (old == null) {
                 old = liv;
                 continue;
             }
             Iterator secI = old.getSections().iterator();
             RoadSection rs = null;
-            
+
             int gauche = 0;
             int droite = 0;
-            
-            while(secI.hasNext()) {
-                rs = (RoadSection)secI.next();
-                if(rs.getRoadNodeEnd() == liv) {
-                    
+
+            while (secI.hasNext()) {
+                rs = (RoadSection) secI.next();
+                if (rs.getRoadNodeEnd() == liv) {
+
                     //Première rue à prendre
-                    if ( oldRs == null ) { 
+                    if (oldRs == null) {
                         bufferRoad += "Prendre la rue ";
-                        bufferRoad += rs.getRoadName(); 
+                        bufferRoad += rs.getRoadName();
                         bufferRoad += "\n\n";
-                    }
-                    //Calcul du "Prenez à gauche/droite, sur"
+                    } //Calcul du "Prenez à gauche/droite, sur"
                     else {
                         //Calcul de la longeur
                         bufferRoad += "Dans ";
                         bufferRoad += (int) rs.getLength();
                         bufferRoad += " mètres : \n";
-                        
-                        int v1X = oldRs.getRoadNodeEnd().getX() - 
-                                oldRs.getRoadNodeBegin().getX();
-                        int v1Y = oldRs.getRoadNodeEnd().getY() - 
-                                oldRs.getRoadNodeBegin().getY();
-                        int v2X = rs.getRoadNodeEnd().getX() - 
-                                rs.getRoadNodeBegin().getX();
-                        int v2Y = rs.getRoadNodeEnd().getY() - 
-                                rs.getRoadNodeBegin().getY();
-                        
-                        double angle1 = Math.atan2(v1Y,v1X);
-                        double angle2 = Math.atan2(v2Y,v2X);
+
+                        int v1X = oldRs.getRoadNodeEnd().getX()
+                                - oldRs.getRoadNodeBegin().getX();
+                        int v1Y = oldRs.getRoadNodeEnd().getY()
+                                - oldRs.getRoadNodeBegin().getY();
+                        int v2X = rs.getRoadNodeEnd().getX()
+                                - rs.getRoadNodeBegin().getX();
+                        int v2Y = rs.getRoadNodeEnd().getY()
+                                - rs.getRoadNodeBegin().getY();
+
+                        double angle1 = Math.atan2(v1Y, v1X);
+                        double angle2 = Math.atan2(v2Y, v2X);
                         double angle = angle2 - angle1;
-                        
-                        if ( angle < -CONE_FRONT && angle > -CONE_BACK) {
+
+                        if (angle < -CONE_FRONT && angle > -CONE_BACK) {
                             bufferRoad += "Prenez à gauche ";
-                        }
-                        else if (angle > CONE_FRONT && angle < CONE_BACK) {
+                        } else if (angle > CONE_FRONT && angle < CONE_BACK) {
                             bufferRoad += "Prenez à droite ";
-                        }
-                        else if (angle >= CONE_BACK  ||
-                                angle <= -CONE_BACK) {
+                        } else if (angle >= CONE_BACK
+                                || angle <= -CONE_BACK) {
                             bufferRoad += "Faites demi-tour ";
-                        }
-                        else {
+                        } else {
                             bufferRoad += "Prenez tout droit ";
                         }
-                           
+
                         System.out.println(rs.getRoadName() + angle);
-                        
+
                         bufferRoad += "sur la rue ";
-                        bufferRoad += rs.getRoadName(); 
+                        bufferRoad += rs.getRoadName();
                         bufferRoad += "\n\n";
                     }
-                    
+
                     oldRs = rs;
                     break;
                 }
             }
-            if(rs == null)
+            if (rs == null) {
                 throw new RuntimeException();
-            if(index_delv < delv.size() && liv.getId().equals(
+            }
+            if (index_delv < delv.size() && liv.getId().equals(
                     delv.get(index_delv).getAddress())) {
-                
-                output.write("Prochaine livraison : ");
-                output.write(rs.getRoadName() + "\n\n");
-                output.write(bufferRoad);
-                output.write("Arrivée à la livraison : ");
-                output.write(rs.getRoadName());
-                output.write("\n\n***\n\n");
+
+                writer.write("Prochaine livraison : ");
+                writer.write(rs.getRoadName() + "\n\n");
+                writer.write(bufferRoad);
+                writer.write("Arrivée à la livraison : ");
+                writer.write(rs.getRoadName());
+                writer.write("\n\n***\n\n");
                 bufferRoad = "";
                 index_delv++;
-            }
-            else if (index_delv == delv.size()) {
-                output.write(bufferRoad);
+            } else if (index_delv == delv.size()) {
+                writer.write(bufferRoad);
                 bufferRoad = "";
             }
             old = liv;
         }
-        if(index_delv != delv.size()) { 
+        if (index_delv != delv.size()) {
             // On est pas passé par toutes les livraisons
             throw new RuntimeException();
         }
-        output.flush();
+        writer.flush();
     }
 
     /**
      * Cette methode charger une liste de livraisons pour un plage horaire a
      * partir d'un fichier XML. Elle prend un Reader representant le fichier, le
      * parse et cree les entrepots et livraisons précisés dedans. En suite, ils
-     * sont ajoute a l'instance de DeliveryRound du nouveau DeliverySheet.
-     * Si le reader est null, une exception sera lance ainsi aue pour les
-     * erreurs de structure du fichier XML.
+     * sont ajoute a l'instance de DeliveryRound du nouveau DeliverySheet. Si le
+     * reader est null, une exception sera lance ainsi aue pour les erreurs de
+     * structure du fichier XML.
+     *
      * @param reader un Reader contenant le fichier XML a charger
-     * @return le nouveau DeliverySheet avec les entrepots et les livraisons 
+     * @return le nouveau DeliverySheet avec les entrepots et les livraisons
      */
     public static DeliverySheet loadFromXML(Reader reader) {
         if (reader == null) {
@@ -247,6 +264,7 @@ public class DeliverySheet {
 
     /**
      * Cette methode prend une NodeList d'entrepots et en cree des RoadNodes.
+     *
      * @param entrepots la NodeList contenant les donnees pour les entrepots
      */
     private static List<RoadNode> treatWarehouse(NodeList entrepots) {
@@ -259,7 +277,7 @@ public class DeliverySheet {
             NamedNodeMap attributs = entrepots.item(i).getAttributes();
             Node adresse = attributs.getNamedItem(ROADNODE_ID);
             String adresseString = adresse.getNodeValue();
-            
+
             // creer un nouveau RoadNode avec l'adresse lu
             RoadNode entrepot = new RoadNode(Long.parseLong(adresseString));
 
@@ -275,12 +293,11 @@ public class DeliverySheet {
     /**
      * Cette methode s'occupe du traitement des elements d'une tournee. Elle
      * traverse le DOM du document XML à partir les elements "plage" pour
-     * recuperer les details sur l'entrepot et le plage horaire.
-     * Elle cree tous les plages d'apres les infos dans l'element XML
-     * correspondant ainsi que les livraisons de chaque plage en transformant
-     * les childNodes des plage et en les transformant en Element pour pouvoir
-     * acceder aux livraisons facilement.
-     * Puis, le plage correspondant est ajoute a la livraison.
+     * recuperer les details sur l'entrepot et le plage horaire. Elle cree tous
+     * les plages d'apres les infos dans l'element XML correspondant ainsi que
+     * les livraisons de chaque plage en transformant les childNodes des plage
+     * et en les transformant en Element pour pouvoir acceder aux livraisons
+     * facilement. Puis, le plage correspondant est ajoute a la livraison.
      *
      * @param journeyNodes la NodeListe de plages
      * @return la liste de livraisons creee
@@ -354,7 +371,7 @@ public class DeliverySheet {
 
         // creer un nouveau Date representant le jour actuel
         Date today = new Date();
-        
+
         // creer un GregorianCalendar a partir de la date today et l'heure
         // les minutes et les secondes lus
         // on prend un GregorianCalendar parce que Date va changer la date en

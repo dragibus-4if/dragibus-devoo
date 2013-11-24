@@ -48,7 +48,7 @@ public class RoadNode {
         return sections;
     }
 
-    public final Collection<RoadNode> getNeighbors() {
+    public Collection<RoadNode> getNeighbors() {
         Collection<RoadNode> ls = new ArrayList<>(sections.size());
         for (RoadSection section : getSections()) {
             ls.add(section.getRoadNodeEnd());
@@ -97,6 +97,7 @@ public class RoadNode {
         }
     }
     
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("RoadNode ")

@@ -5,7 +5,6 @@ import java.io.Reader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import javax.xml.parsers.DocumentBuilder;
@@ -225,6 +224,10 @@ public class RoadNetwork {
     public RoadNode getRoot() {
         return root;
     }
+    
+    public void setRoot(RoadNode root) {
+        this.root = root;
+    }
 
     public List<RoadNode> getNodes() {
         if (root == null) {
@@ -248,8 +251,8 @@ public class RoadNetwork {
         return l;
     }
 
-    public List<RoadNode> makeRoute(List<RoadNode> objectives) {
-        RegularGraph graph = RegularGraph.loadFromRoadNetwork(this);
+    public List<RoadNode> makeRoute(List<Delivery> deliveries) {
+        RegularGraph graph = RegularGraph.loadFromRoadNetwork(this, deliveries);
         TSP tsp = new TSP(graph);
         SolutionState s = tsp.solve(1000000, 100000);
         if (s == SolutionState.OPTIMAL_SOLUTION_FOUND || s == SolutionState.SOLUTION_FOUND) {
