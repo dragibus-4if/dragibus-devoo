@@ -303,23 +303,4 @@ public class DeliverySheet {
             throw new UnsupportedOperationException("Not supported yet.");
         }
     }
-
-    /**
-     * TODO - a supprimer après le testing
-     * @param args
-     */
-    public static void main(String[] args) {
-        File testfile = null;
-        try {
-            testfile = new File("/Users/pellerpatrizia/Documents/INSA_Lyon/DevOO/fixtures/livraison20x20-2.xml");
-        } catch (Exception e) {
-            System.out.println("Sorry, file could not be created, try another path.");
-        }
-
-        try {
-            DeliverySheet dsm = DeliverySheet.loadFromXML(new FileReader(testfile));
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(DeliverySheet.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
 }
