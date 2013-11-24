@@ -23,7 +23,7 @@ import view.NodeView.MODE;
 public class DeliveryMap extends JPanel {
 
     private Map<Integer, ArcView> mapArcs;
-    private Map<Long,NodeView> mapNodes;
+    private Map<Long, NodeView> mapNodes;
     private WeakReference<NodeView> selectedNode;
     private int maxX = 0;
     private int maxY = 0;
@@ -35,7 +35,7 @@ public class DeliveryMap extends JPanel {
         this.setDoubleBuffered(true);
         mapArcs = new LinkedHashMap<>();
         mapNodes = new LinkedHashMap<>();
-        selectedNode=new WeakReference<>(null);
+        selectedNode = new WeakReference<>(null);
         addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -78,22 +78,27 @@ public class DeliveryMap extends JPanel {
 
     }
 
-    public void setSelectedNodeById(Long id){
-        if(selectedNode.get()!=null){
+    public void setSelectedNodeById(Long id) {
+        if (selectedNode.get() != null) {
             selectedNode.get().setSelection(false);
         }
+        if (id == -1l) {
+            this.setSelectedNode(new WeakReference<NodeView>(null));
+            repaint();
+            return;
+        }
         mapNodes.get(id).setSelection(true);
-        this.setSelectedNode(new WeakReference<NodeView>(mapNodes.get(id)));
-        this.invalidate();
+        this.setSelectedNode(new WeakReference<>(mapNodes.get(id)));
         repaint();
     }
-    
+
     public void updateNetwork(List<RoadNode> nodes) {
         if (nodes == null) {
             return;
         }
         mapArcs.clear();
         mapNodes.clear();
+        selectedNode.clear();
         for (RoadNode rn : nodes) {
             if (rn.getNeighbors() == null) {
                 break;
@@ -104,9 +109,9 @@ public class DeliveryMap extends JPanel {
             if (rn.getY() > maxY) {
                 maxY = rn.getY();
             }
-            NodeView tempNode = new NodeView(rn.getX(), rn.getY(),rn.getId(), new WeakReference<>(this), MODE.CLASSIC);
+            NodeView tempNode = new NodeView(rn.getX(), rn.getY(), rn.getId(), new WeakReference<>(this), MODE.CLASSIC);
             if (!mapNodes.containsKey(rn.getId())) {
-                mapNodes.put(rn.getId(),tempNode);
+                mapNodes.put(rn.getId(), tempNode);
             }
             for (RoadNode neighbor : rn.getNeighbors()) {
                 ArcView temp = new ArcView(rn.getX(), rn.getY(), neighbor.getX(), neighbor.getY(), 0);
@@ -122,13 +127,15 @@ public class DeliveryMap extends JPanel {
         if (nodes == null) {
             return;
         }
-
+        for (ArcView arc : mapArcs.values()) {
+            arc.resetNbLines();
+        }
         for (RoadNode rn : nodes) {
             if (rn.getNeighbors() == null) {
                 break;
             }
-            NodeView tempNode = new NodeView(rn.getX(), rn.getY(),rn.getId(), new WeakReference<>(this), MODE.CLASSIC);
-            for (int i = 0; i < mapNodes.size(); i++) {
+            NodeView tempNode = new NodeView(rn.getX(), rn.getY(), rn.getId(), new WeakReference<>(this), MODE.CLASSIC);
+            for (Long i = 0l; i < mapNodes.size(); i++) {
                 if (tempNode.equals(mapNodes.get(i))) {
                     mapNodes.get(i).setMode(MODE.DELIVERY);
                 }
@@ -145,9 +152,18 @@ public class DeliveryMap extends JPanel {
 
     public void notifyPressed(MouseEvent e) {
         System.out.println("Début parcours nodes Pressed");
+        boolean voidClic = true;
         for (NodeView node : mapNodes.values()) {
-            node.onMouseDown(e.getX(), e.getY());
+            if (!node.onMouseDown(e.getX(), e.getY())) {
+                voidClic = false;
+            }
         }
+        if (voidClic) {
+            if (getSelectedNode().get() != null) {
+                getSelectedNode().clear();
+            }
+        }
+        fireChangeEvent();
         System.out.println("Fin parcours nodes Pressed");
         repaint();
     }
@@ -189,7 +205,6 @@ public class DeliveryMap extends JPanel {
 
     public void setSelectedNode(WeakReference<NodeView> selectedNode) {
         this.selectedNode = selectedNode;
-        fireChangeEvent();
     }
 
     public int getMaxX() {

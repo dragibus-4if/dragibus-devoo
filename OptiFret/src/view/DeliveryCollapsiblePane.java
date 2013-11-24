@@ -163,18 +163,17 @@ public class DeliveryCollapsiblePane extends JPanel {
         }
     }
 
+    public void onEventSelect(){minimal.setBackground(MINIMAL_BG_SELECT_COLOR);
+
+        parent.setSelected(this);
+        
+    }
     public void select() {
         minimal.setBackground(MINIMAL_BG_SELECT_COLOR);
 
-        if (parent.getSelected() != null) {
-            parent.getSelected().unselect();
-        }
-
-        if (parent.getSelected() != this) {
-            parent.setSelected(this);
-        } else {
-            parent.setSelected(null);
-        }
+        parent.setSelected(this);
+        
+        parent.fireChangeEvent();
 
     }
 

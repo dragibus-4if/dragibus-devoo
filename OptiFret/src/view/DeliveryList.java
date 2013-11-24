@@ -14,11 +14,12 @@ public class DeliveryList extends JScrollPane {
     private final JPanel panel;
     private DeliveryCollapsiblePane selected;
     private final CopyOnWriteArrayList<Listener> listeners;
-    private Map<Long,DeliveryCollapsiblePane> panelList;
+    private Map<Long, DeliveryCollapsiblePane> panelList;
+
     public DeliveryList() {
         super();
         this.listeners = new CopyOnWriteArrayList<>();
-        this.panelList= new LinkedHashMap<>();
+        this.panelList = new LinkedHashMap<>();
         panel = new JPanel(new VerticalLayout());
         getViewport().add(panel);
     }
@@ -34,19 +35,37 @@ public class DeliveryList extends JScrollPane {
             panelList.put(d.getAddress(), dcp);
             panel.add(dcp);
         }
-        repaint();
+        validate();
+        //repaint();
     }
 
     public DeliveryCollapsiblePane getSelected() {
         return selected;
     }
 
-    public void setSelected(DeliveryCollapsiblePane selected) {
-        this.selected = selected;
-        fireChangeEvent();
+    public void setSelected(DeliveryCollapsiblePane newSelected) {
+
+        if (selected == null) {
+            selected = newSelected;
+        } else {
+            if (selected == newSelected) {
+                selected.unselect();
+                selected = null;
+            } else {
+                selected.unselect();
+                selected = newSelected;
+            }
+        }
     }
-    public void setSelectionById(long id){
-        panelList.get(id).select();
+
+    public void setSelectionById(long id) {
+        DeliveryCollapsiblePane newSelected = panelList.get(id);
+
+        if (newSelected != null) {
+            newSelected.onEventSelect();
+        } else {
+            setSelected(null);
+        }
     }
 
     public void addListener(Listener l) {
