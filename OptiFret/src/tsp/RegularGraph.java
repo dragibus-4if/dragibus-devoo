@@ -24,7 +24,7 @@ public class RegularGraph implements Graph {
     private final Map<Integer, RoadNode> index2Node;
     
     public static RegularGraph loadFromRoadNetwork(RoadNetwork net, List<Delivery> objectives) {
-        if (net == null) {
+        if (net == null || objectives == null) {
             throw new NullPointerException();
         }
         if (net.getRoot() == null) {

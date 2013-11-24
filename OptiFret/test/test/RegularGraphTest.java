@@ -13,6 +13,7 @@ import junit.framework.TestCase;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.TreeMap;
+import model.Delivery;
 import model.RoadNetwork;
 import model.RoadNode;
 import model.RoadSection;
@@ -53,7 +54,7 @@ public class RegularGraphTest extends TestCase {
         RegularGraph graphZero = new RegularGraph(0, 0, 0, new int[0][0],
                 new ArrayList<ArrayList<Integer>>(),
                 new TreeMap<Integer, RoadNode>());
-        RegularGraph graphGZero = RegularGraph.loadFromRoadNetwork(netNR);
+        RegularGraph graphGZero = RegularGraph.loadFromRoadNetwork(netNR, new ArrayList<Delivery>());
         assertEquals(graphZero.getNbVertices(), graphGZero.getNbVertices());
         assertEquals(graphZero.getMaxArcCost(), graphGZero.getMaxArcCost());
         assertEquals(graphZero.getMinArcCost(), graphGZero.getMinArcCost());
@@ -90,7 +91,7 @@ public class RegularGraphTest extends TestCase {
 
         RegularGraph graphCB = new RegularGraph(2, 88, 0, costCB, succCB,
                 treeCB);
-        RegularGraph graphGCB = RegularGraph.loadFromRoadNetwork(netCB);
+        RegularGraph graphGCB = RegularGraph.loadFromRoadNetwork(netCB, null);
         assertEquals(graphCB.getNbVertices(), graphGCB.getNbVertices());
         assertEquals(graphCB.getMaxArcCost(), graphGCB.getMaxArcCost());
         assertEquals(graphCB.getMinArcCost(), graphGCB.getMinArcCost());
