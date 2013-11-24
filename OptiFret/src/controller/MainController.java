@@ -3,6 +3,7 @@ package controller;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.EmptyStackException;
@@ -24,7 +25,7 @@ public class MainController implements Listener {
     private final Stack<Command> history = new Stack<>();
     private final Stack<Command> redoneHistory = new Stack<>();
     private RoadNetwork roadNetwork;
-    private DeliverySheet deliverySheetModel;
+    private DeliverySheet deliverySheet;
     private MainFrame mainFrame;
 
     public MainController(MainFrame frame) {
@@ -59,7 +60,7 @@ public class MainController implements Listener {
                     public void execute() {
                         // recuperer l'etat courant du network et de la listLivs
                         currentNetwork = roadNetwork;
-                        currentDeliverySheet = deliverySheetModel;
+                        currentDeliverySheet = deliverySheet;
 
                         roadNetwork = loadedNetwork;
                         mainFrame.getLoadRound().setEnabled(true);
@@ -75,7 +76,7 @@ public class MainController implements Listener {
                     public void undo() {
 
                         roadNetwork = currentNetwork;
-                        deliverySheetModel = currentDeliverySheet;
+                        deliverySheet = currentDeliverySheet;
 
                         // verifier si un reseau a deja ete charge
                         if (roadNetwork == null) {
@@ -87,11 +88,11 @@ public class MainController implements Listener {
                         }
 
                         // verifier si une liste de livraisons a deja ete charge
-                        if (deliverySheetModel == null) {
+                        if (deliverySheet == null) {
                             mainFrame.getDeliveryList().setDeliveries(null);
                         } else {
                             mainFrame.getDeliveryList().setDeliveries(
-                                    deliverySheetModel
+                                    deliverySheet
                                     .getDeliveryRound()
                                     .getDeliveries());
                         }
@@ -119,10 +120,10 @@ public class MainController implements Listener {
                     @Override
                     public void execute() {
                         // sauvegarder l'état courant de la liste de livraisons
-                        currentDeliverySheet = deliverySheetModel;
+                        currentDeliverySheet = deliverySheet;
 
-                        deliverySheetModel = loadedDeliverySheet;
-                        DeliveryRound dr = deliverySheetModel.getDeliveryRound();
+                        deliverySheet = loadedDeliverySheet;
+                        DeliveryRound dr = deliverySheet.getDeliveryRound();
                         mainFrame.getDeliveryList().setDeliveries(dr.getDeliveries());
                         mainFrame.getExportRound().setEnabled(true);
                         mainFrame.repaint();
@@ -130,14 +131,14 @@ public class MainController implements Listener {
 
                     @Override
                     public void undo() {
-                        deliverySheetModel = currentDeliverySheet;
+                        deliverySheet = currentDeliverySheet;
 
                         // verifier si un DeliverySheet a deja ete charge
-                        if (deliverySheetModel == null) {
+                        if (deliverySheet == null) {
                             mainFrame.getDeliveryList().setDeliveries(new ArrayList<Delivery>());
                             mainFrame.getExportRound().setEnabled(false);
                         } else {
-                            DeliveryRound dr = deliverySheetModel.getDeliveryRound();
+                            DeliveryRound dr = deliverySheet.getDeliveryRound();
                             mainFrame.getDeliveryList().setDeliveries(dr.getDeliveries());
                         }
                         mainFrame.repaint();
@@ -152,7 +153,15 @@ public class MainController implements Listener {
     }
 
     private void exportRound() {
-        // TODO save as dialog
+        JFileChooser fc = new JFileChooser();
+        fc.setDialogTitle(mainFrame.getExportRound().getText());
+        if (fc.showSaveDialog(mainFrame) == JFileChooser.APPROVE_OPTION) {
+            try {
+                deliverySheet.export(new FileWriter(fc.getSelectedFile()));
+            } catch (IOException e) {
+                mainFrame.showErrorMessage(e.getMessage());
+            }
+        }
     }
 
     /**
