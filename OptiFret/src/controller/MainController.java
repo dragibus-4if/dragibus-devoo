@@ -288,6 +288,7 @@ public class MainController implements Listener {
         }
         if (map.getSelectedNode() == null) {
             System.err.println("map.getSelectedNode() null");
+            
             return;
         }
          if (map.getSelectedNode().get()== null) {
@@ -303,14 +304,18 @@ public class MainController implements Listener {
             return;
         }
         if (deliveryList.getSelected() == null) {
+            mainFrame.getDeliveryMap().setSelectedNodeById(-1l);
             System.err.println("deliveryList.getSelected() null");
             return;
+        }
+        else{
+        mainFrame.getDeliveryMap().setSelectedNodeById(deliveryList.getSelected().getDelivery().getAddress());    
         }
          if (deliveryList.getSelected().getDelivery() == null) {
             System.err.println("deliveryList.getSelected.getDelivery null");
             return;
         }
-        mainFrame.getDeliveryMap().setSelectedNodeById(deliveryList.getSelected().getDelivery().getAddress());
+        
     }
 
     private interface Command {
