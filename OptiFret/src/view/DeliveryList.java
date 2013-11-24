@@ -35,7 +35,8 @@ public class DeliveryList extends JScrollPane {
             panelList.put(d.getAddress(), dcp);
             panel.add(dcp);
         }
-        repaint();
+        validate();
+        //repaint();
     }
 
     public DeliveryCollapsiblePane getSelected() {
@@ -44,18 +45,13 @@ public class DeliveryList extends JScrollPane {
 
     public void setSelected(DeliveryCollapsiblePane newSelected) {
 
-        if(selected == null){
+        if (selected == null) {
             selected = newSelected;
-                    }
-        else
-        {
-            if (selected == newSelected)
-            {
+        } else {
+            if (selected == newSelected) {
                 selected.unselect();
-                selected=null;
-            }
-            else
-            {
+                selected = null;
+            } else {
                 selected.unselect();
                 selected = newSelected;
             }
@@ -65,11 +61,9 @@ public class DeliveryList extends JScrollPane {
     public void setSelectionById(long id) {
         DeliveryCollapsiblePane newSelected = panelList.get(id);
 
-        if(newSelected != null)
-        {
+        if (newSelected != null) {
             newSelected.onEventSelect();
-        }
-        else{
+        } else {
             setSelected(null);
         }
     }

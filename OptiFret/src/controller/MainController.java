@@ -21,13 +21,13 @@ import view.MyChangeEvent;
 import view.DeliveryList;
 
 public class MainController implements Listener {
-
+    
     private final Stack<Command> history = new Stack<>();
     private final Stack<Command> redoneHistory = new Stack<>();
     private RoadNetwork roadNetwork;
     private DeliverySheet deliverySheet;
     private MainFrame mainFrame;
-
+    
     public MainController(MainFrame frame) {
         if (frame == null) {
             throw new NullPointerException("'view' ne doit pas être nul");
@@ -36,12 +36,12 @@ public class MainController implements Listener {
         setupNewView();
         setupListeners();
     }
-
+    
     private void setupListeners() {
         mainFrame.getDeliveryMap().addListener(this);
         mainFrame.getDeliveryList().addListener(this);
     }
-
+    
     private void loadRoadNetwork() {
         final JFileChooser fc = new JFileChooser();
         fc.setDialogTitle(MainFrame.LOAD_MAP_TOOLTIP);
@@ -53,13 +53,13 @@ public class MainController implements Listener {
                     private RoadNetwork currentNetwork;
                     // instance de DeliverySheet pour stocker l'etat courant
                     private DeliverySheet currentDeliverySheet;
-
+                    
                     @Override
                     public void execute() {
                         // recuperer l'etat courant du network et de la listLivs
                         currentNetwork = roadNetwork;
                         currentDeliverySheet = deliverySheet;
-
+                        
                         roadNetwork = loadedNetwork;
                         mainFrame.getLoadRound().setEnabled(true);
                         mainFrame.getDeliveryMap()
@@ -69,10 +69,10 @@ public class MainController implements Listener {
                         mainFrame.pack();
                         mainFrame.repaint();
                     }
-
+                    
                     @Override
                     public void undo() {
-
+                        
                         roadNetwork = currentNetwork;
                         deliverySheet = currentDeliverySheet;
 
@@ -102,7 +102,7 @@ public class MainController implements Listener {
             }
         }
     }
-
+    
     private void loadDeliverySheet() {
         JFileChooser fc = new JFileChooser();
         fc.setDialogTitle(MainFrame.LOAD_ROUND_TOOLTIP);
@@ -110,22 +110,22 @@ public class MainController implements Listener {
             try {
                 final DeliverySheet loadedDeliverySheet = DeliverySheet
                         .loadFromXML(new FileReader(fc.getSelectedFile()));
-
+                
                 executeCommand(new Command() {
                     private DeliverySheet currentDeliverySheet;
-
+                    
                     @Override
                     public void execute() {
                         // sauvegarder l'état courant de la liste de livraisons
                         currentDeliverySheet = deliverySheet;
-
+                        
                         deliverySheet = loadedDeliverySheet;
                         DeliveryRound dr = deliverySheet.getDeliveryRound();
                         mainFrame.getDeliveryList().setDeliveries(dr.getDeliveries());
                         mainFrame.getExportRound().setEnabled(true);
                         mainFrame.repaint();
                     }
-
+                    
                     @Override
                     public void undo() {
                         deliverySheet = currentDeliverySheet;
@@ -141,14 +141,14 @@ public class MainController implements Listener {
                         mainFrame.repaint();
                     }
                 });
-
+                
                 mainFrame.getDeliveryMap().updateDeliveryNodes(roadNetwork.getNodes());
             } catch (IOException e) {
                 mainFrame.showErrorMessage(e.getMessage());
             }
         }
     }
-
+    
     private void exportRound() {
         JFileChooser fc = new JFileChooser();
         fc.setDialogTitle(MainFrame.EXPORT_ROUND_TOOLTIP);
@@ -215,7 +215,7 @@ public class MainController implements Listener {
         cmd.undo();
         redoneHistory.add(cmd);
     }
-
+    
     private void setupNewView() {
         // Historique
         history.clear();
@@ -229,7 +229,7 @@ public class MainController implements Listener {
         //loadRoadNetwork();
         //loadDeliverySheet();
     }
-
+    
     private void setupViewListeners() {
         // "charger la carte"
         mainFrame.getLoadMap().addActionListener(new ActionListener() {
@@ -271,7 +271,7 @@ public class MainController implements Listener {
             }
         });
     }
-
+    
     @Override
     public void changeEventReceived(MyChangeEvent evt) {
         if (evt.getSource() instanceof DeliveryMap) {
@@ -280,7 +280,7 @@ public class MainController implements Listener {
             onListDeliverySelected(((DeliveryList) (evt.getSource())));
         }
     }
-
+    
     public void onMapNodeSelected(DeliveryMap map) {
         if (map == null) {
             System.err.println("map null");
@@ -291,14 +291,14 @@ public class MainController implements Listener {
             
             return;
         }
-         if (map.getSelectedNode().get()== null) {
+        if (map.getSelectedNode().get() == null) {
             System.err.println("map.getSelectedNode().get() null");
             mainFrame.getDeliveryList().setSelectionById(-1);
+        } else {
+            mainFrame.getDeliveryList().setSelectionById(map.getSelectedNode().get().getAddress());
         }
-         else{
-        mainFrame.getDeliveryList().setSelectionById(map.getSelectedNode().get().getAddress());
-    }}
-
+    }
+    
     private void onListDeliverySelected(DeliveryList deliveryList) {
         if (deliveryList == null) {
             System.err.println("deliveryList null");
@@ -308,21 +308,20 @@ public class MainController implements Listener {
             mainFrame.getDeliveryMap().setSelectedNodeById(-1l);
             System.err.println("deliveryList.getSelected() null");
             return;
+        } else {
+            mainFrame.getDeliveryMap().setSelectedNodeById(deliveryList.getSelected().getDelivery().getAddress());            
         }
-        else{
-        mainFrame.getDeliveryMap().setSelectedNodeById(deliveryList.getSelected().getDelivery().getAddress());    
-        }
-         if (deliveryList.getSelected().getDelivery() == null) {
+        if (deliveryList.getSelected().getDelivery() == null) {
             System.err.println("deliveryList.getSelected.getDelivery null");
             return;
         }
         
     }
-
+    
     private interface Command {
-
+        
         void execute();
-
+        
         void undo();
     }
 }
