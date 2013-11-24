@@ -19,7 +19,7 @@ import java.awt.geom.AffineTransform;
 public class ArcView {
 
     private static final int STROKE = 2;
-    private static final int ARR_SIZE = 6;
+    private static final int ARR_SIZE = 4;
     private int x1;
     private int y1;
     private int x2;
@@ -98,11 +98,11 @@ public class ArcView {
         g.drawLine(0, 0, len, 0);
         g.setColor(new Color(0, 0, 0));
         //  g.drawLine(1, -2, len - 1, -2);
-        g.drawLine(1, 2, len - 1, 2);
+        g.drawLine(0, 2, len , 2);
          if (nbLines > 0) {
             for (int i = 0; i < nbLines; i++) {
                 g.fillPolygon(new int[]{len, len - ARR_SIZE, len - ARR_SIZE, len},
-                        new int[]{2, (-ARR_SIZE / 2)+2, ARR_SIZE+2, 2}, 4);
+                        new int[]{3, (-ARR_SIZE / 2)+3, ARR_SIZE+3, 3}, 4);
                 g.translate(-ARR_SIZE - 1, 0);
             }
         }
@@ -111,6 +111,10 @@ public class ArcView {
 
     }
 
+    public void resetNbLines(){
+        nbLines=0;
+    }
+    
     public int getX1() {
         return x1;
     }

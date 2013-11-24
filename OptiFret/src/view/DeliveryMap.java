@@ -82,6 +82,11 @@ public class DeliveryMap extends JPanel {
         if (selectedNode.get() != null) {
             selectedNode.get().setSelection(false);
         }
+        if(id==-1l){
+            this.setSelectedNode(new WeakReference<NodeView>(null));
+            repaint();
+            return;
+        }
         mapNodes.get(id).setSelection(true);
         this.setSelectedNode(new WeakReference<>(mapNodes.get(id)));
         this.invalidate();
@@ -94,6 +99,7 @@ public class DeliveryMap extends JPanel {
         }
         mapArcs.clear();
         mapNodes.clear();
+        selectedNode.clear();
         for (RoadNode rn : nodes) {
             if (rn.getNeighbors() == null) {
                 break;
@@ -122,7 +128,9 @@ public class DeliveryMap extends JPanel {
         if (nodes == null) {
             return;
         }
-
+        for(ArcView arc:mapArcs.values()){
+            arc.resetNbLines();
+        }
         for (RoadNode rn : nodes) {
             if (rn.getNeighbors() == null) {
                 break;
