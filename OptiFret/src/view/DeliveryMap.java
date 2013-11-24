@@ -23,7 +23,7 @@ import view.NodeView.MODE;
 public class DeliveryMap extends JPanel {
 
     private Map<Integer, ArcView> mapArcs;
-    private Map<Long,NodeView> mapNodes;
+    private Map<Long, NodeView> mapNodes;
     private WeakReference<NodeView> selectedNode;
     private int maxX = 0;
     private int maxY = 0;
@@ -35,7 +35,7 @@ public class DeliveryMap extends JPanel {
         this.setDoubleBuffered(true);
         mapArcs = new LinkedHashMap<>();
         mapNodes = new LinkedHashMap<>();
-        selectedNode=new WeakReference<>(null);
+        selectedNode = new WeakReference<>(null);
         addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -78,16 +78,16 @@ public class DeliveryMap extends JPanel {
 
     }
 
-    public void setSelectedNodeById(Long id){
-        if(selectedNode.get()!=null){
+    public void setSelectedNodeById(Long id) {
+        if (selectedNode.get() != null) {
             selectedNode.get().setSelection(false);
         }
         mapNodes.get(id).setSelection(true);
-        this.setSelectedNode(new WeakReference<NodeView>(mapNodes.get(id)));
+        this.onEventChangeSelection(new WeakReference<>(mapNodes.get(id)));
         this.invalidate();
         repaint();
     }
-    
+
     public void updateNetwork(List<RoadNode> nodes) {
         if (nodes == null) {
             return;
@@ -104,9 +104,9 @@ public class DeliveryMap extends JPanel {
             if (rn.getY() > maxY) {
                 maxY = rn.getY();
             }
-            NodeView tempNode = new NodeView(rn.getX(), rn.getY(),rn.getId(), new WeakReference<>(this), MODE.CLASSIC);
+            NodeView tempNode = new NodeView(rn.getX(), rn.getY(), rn.getId(), new WeakReference<>(this), MODE.CLASSIC);
             if (!mapNodes.containsKey(rn.getId())) {
-                mapNodes.put(rn.getId(),tempNode);
+                mapNodes.put(rn.getId(), tempNode);
             }
             for (RoadNode neighbor : rn.getNeighbors()) {
                 ArcView temp = new ArcView(rn.getX(), rn.getY(), neighbor.getX(), neighbor.getY(), 0);
@@ -127,7 +127,7 @@ public class DeliveryMap extends JPanel {
             if (rn.getNeighbors() == null) {
                 break;
             }
-            NodeView tempNode = new NodeView(rn.getX(), rn.getY(),rn.getId(), new WeakReference<>(this), MODE.CLASSIC);
+            NodeView tempNode = new NodeView(rn.getX(), rn.getY(), rn.getId(), new WeakReference<>(this), MODE.CLASSIC);
             for (int i = 0; i < mapNodes.size(); i++) {
                 if (tempNode.equals(mapNodes.get(i))) {
                     mapNodes.get(i).setMode(MODE.DELIVERY);
@@ -190,6 +190,10 @@ public class DeliveryMap extends JPanel {
     public void setSelectedNode(WeakReference<NodeView> selectedNode) {
         this.selectedNode = selectedNode;
         fireChangeEvent();
+    }
+
+    public void onEventChangeSelection(WeakReference<NodeView> selectedNode) {
+        this.selectedNode = selectedNode;
     }
 
     public int getMaxX() {
