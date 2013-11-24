@@ -8,13 +8,9 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Observable;
-import java.util.Observer;
 import java.util.concurrent.CopyOnWriteArrayList;
 import javax.swing.JPanel;
 import model.RoadNode;
@@ -39,6 +35,7 @@ public class DeliveryMap extends JPanel {
         this.setDoubleBuffered(true);
         mapArcs = new LinkedHashMap<>();
         mapNodes = new LinkedHashMap<>();
+        selectedNode=new WeakReference<>(null);
         addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {

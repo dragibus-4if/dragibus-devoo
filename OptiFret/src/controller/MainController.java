@@ -1,15 +1,19 @@
 package controller;
 
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.EmptyStackException;
 import java.util.Stack;
 import javax.swing.JFileChooser;
+import model.Delivery;
 import model.DeliveryRound;
 import model.DeliverySheet;
 import model.RoadNetwork;
+import model.RoadNode;
 import view.DeliveryMap;
 import view.Listener;
 import view.MainFrame;
@@ -18,10 +22,10 @@ import view.DeliveryList;
 
 public class MainController implements Listener {
 
-    private Stack<DeliverySheetCommand> history = new Stack<>();
-    private Stack<DeliverySheetCommand> redoneHistory = new Stack<>();
+    private final Stack<Command> history = new Stack<>();
+    private final Stack<Command> redoneHistory = new Stack<>();
     private RoadNetwork roadNetwork;
-    private DeliverySheet deliverySheetModel;
+    private DeliverySheet deliverySheet;
     private MainFrame mainFrame;
 
     public MainController(MainFrame frame) {
@@ -32,23 +36,67 @@ public class MainController implements Listener {
         setupNewView();
         setupListeners();
     }
-    
-    public void setupListeners(){
+
+    private void setupListeners() {
         mainFrame.getDeliveryMap().addListener(this);
         mainFrame.getDeliveryList().addListener(this);
     }
-    
+
     private void loadRoadNetwork() {
-        JFileChooser fc = new JFileChooser();
+        final JFileChooser fc = new JFileChooser();
         fc.setDialogTitle(mainFrame.getLoadMap().getText());
         if (fc.showOpenDialog(mainFrame) == JFileChooser.APPROVE_OPTION) {
             try {
-                roadNetwork = RoadNetwork.loadFromXML(new FileReader(fc.getSelectedFile()));
-                mainFrame.getLoadRound().setEnabled(true);
-                mainFrame.getDeliveryMap().updateNetwork(roadNetwork.getNodes());
-               // mainFrame.getDeliveryList().setDeliveries(new ArrayList<Delivery>());
-                mainFrame.pack();
-                mainFrame.repaint();
+                final RoadNetwork loadedNetwork = RoadNetwork.loadFromXML(new FileReader(fc.getSelectedFile()));
+                executeCommand(new Command() {
+                    // instance de RoadNetwork pour stocker l'etat courant
+                    private RoadNetwork currentNetwork;
+                    // instance de DeliverySheet pour stocker l'etat courant
+                    private DeliverySheet currentDeliverySheet;
+
+                    @Override
+                    public void execute() {
+                        // recuperer l'etat courant du network et de la listLivs
+                        currentNetwork = roadNetwork;
+                        currentDeliverySheet = deliverySheet;
+
+                        roadNetwork = loadedNetwork;
+                        mainFrame.getLoadRound().setEnabled(true);
+                        mainFrame.getDeliveryMap()
+                                .updateNetwork(roadNetwork.getNodes());
+                        mainFrame.getDeliveryList()
+                                .setDeliveries(new ArrayList<Delivery>());
+                        mainFrame.pack();
+                        mainFrame.repaint();
+                    }
+
+                    @Override
+                    public void undo() {
+
+                        roadNetwork = currentNetwork;
+                        deliverySheet = currentDeliverySheet;
+
+                        // verifier si un reseau a deja ete charge
+                        if (roadNetwork == null) {
+                            mainFrame.getLoadRound().setEnabled(false);
+                            mainFrame.getDeliveryMap().updateNetwork(new ArrayList<RoadNode>());
+                        } else {
+                            mainFrame.getDeliveryMap().updateNetwork(
+                                    roadNetwork.getNodes());
+                        }
+
+                        // verifier si une liste de livraisons a deja ete charge
+                        if (deliverySheet == null) {
+                            mainFrame.getDeliveryList().setDeliveries(null);
+                        } else {
+                            mainFrame.getDeliveryList().setDeliveries(
+                                    deliverySheet
+                                    .getDeliveryRound()
+                                    .getDeliveries());
+                        }
+                        mainFrame.repaint();
+                    }
+                });
             } catch (IOException e) {
                 mainFrame.showErrorMessage(e.getMessage());
             }
@@ -60,10 +108,40 @@ public class MainController implements Listener {
         fc.setDialogTitle(mainFrame.getLoadRound().getText());
         if (fc.showOpenDialog(mainFrame) == JFileChooser.APPROVE_OPTION) {
             try {
-                deliverySheetModel = DeliverySheet.loadFromXML(new FileReader(fc.getSelectedFile()));
-                DeliveryRound dr = deliverySheetModel.getDeliveryRound();
-                mainFrame.getDeliveryList().setDeliveries(dr.getDeliveries());
-                mainFrame.getExportRound().setEnabled(true);             
+                final DeliverySheet loadedDeliverySheet = DeliverySheet
+                        .loadFromXML(new FileReader(fc.getSelectedFile()));
+
+                executeCommand(new Command() {
+                    private DeliverySheet currentDeliverySheet;
+
+                    @Override
+                    public void execute() {
+                        // sauvegarder l'état courant de la liste de livraisons
+                        currentDeliverySheet = deliverySheet;
+
+                        deliverySheet = loadedDeliverySheet;
+                        DeliveryRound dr = deliverySheet.getDeliveryRound();
+                        mainFrame.getDeliveryList().setDeliveries(dr.getDeliveries());
+                        mainFrame.getExportRound().setEnabled(true);
+                        mainFrame.repaint();
+                    }
+
+                    @Override
+                    public void undo() {
+                        deliverySheet = currentDeliverySheet;
+
+                        // verifier si un DeliverySheet a deja ete charge
+                        if (deliverySheet == null) {
+                            mainFrame.getDeliveryList().setDeliveries(new ArrayList<Delivery>());
+                            mainFrame.getExportRound().setEnabled(false);
+                        } else {
+                            DeliveryRound dr = deliverySheet.getDeliveryRound();
+                            mainFrame.getDeliveryList().setDeliveries(dr.getDeliveries());
+                        }
+                        mainFrame.repaint();
+                    }
+                });
+
                 //mainFrame.getDeliveryMap().updateDeliveryNodes(roadNetwork.makeRoute(dr.getPath()));
             } catch (IOException e) {
                 mainFrame.showErrorMessage(e.getMessage());
@@ -72,7 +150,15 @@ public class MainController implements Listener {
     }
 
     private void exportRound() {
-        // TODO save as dialog
+        JFileChooser fc = new JFileChooser();
+        fc.setDialogTitle(mainFrame.getExportRound().getText());
+        if (fc.showSaveDialog(mainFrame) == JFileChooser.APPROVE_OPTION) {
+            try {
+                deliverySheet.export(new FileWriter(fc.getSelectedFile()));
+            } catch (IOException e) {
+                mainFrame.showErrorMessage(e.getMessage());
+            }
+        }
     }
 
     /**
@@ -97,7 +183,6 @@ public class MainController implements Listener {
      */
     private void redoLastCommand() throws EmptyStackException {
         executeCommand(redoneHistory.pop());
-        mainFrame.getUndo().setEnabled(true);
         if (redoneHistory.size() == 0) {
             mainFrame.getRedo().setEnabled(false);
         }
@@ -111,8 +196,9 @@ public class MainController implements Listener {
      *
      * @param cmd
      */
-    private void executeCommand(DeliverySheetCommand cmd) {
+    private void executeCommand(Command cmd) {
         cmd.execute();
+        mainFrame.getUndo().setEnabled(true);
         history.add(cmd);
         redoneHistory.clear();
     }
@@ -125,7 +211,7 @@ public class MainController implements Listener {
      *
      * @param cmd
      */
-    private void undoCommand(DeliverySheetCommand cmd) {
+    private void undoCommand(Command cmd) {
         cmd.undo();
         redoneHistory.add(cmd);
     }
@@ -137,7 +223,7 @@ public class MainController implements Listener {
         mainFrame.getRedo().setEnabled(false);
         mainFrame.getLoadRound().setEnabled(false);
         mainFrame.getExportRound().setEnabled(false);
-        
+
         // Listeners
         setupViewListeners();
         //loadRoadNetwork();
@@ -146,46 +232,41 @@ public class MainController implements Listener {
 
     private void setupViewListeners() {
         // "charger la carte"
-        mainFrame.getLoadMap().addMouseListener(new MenuItemClickListener() {
-
+        mainFrame.getLoadMap().addActionListener(new ActionListener() {
             @Override
-            public void click() {
+            public void actionPerformed(ActionEvent e) {
                 loadRoadNetwork();
             }
         });
 
         // "charger des demandes de livraison"
-        mainFrame.getLoadRound().addMouseListener(new MenuItemClickListener() {
-
+        mainFrame.getLoadRound().addActionListener(new ActionListener() {
             @Override
-            public void click() {
+            public void actionPerformed(ActionEvent e) {
                 loadDeliverySheet();
             }
         });
 
         // "exporter l'itinéraire"
-        mainFrame.getExportRound().addMouseListener(new MenuItemClickListener() {
-
+        mainFrame.getExportRound().addActionListener(new ActionListener() {
             @Override
-            public void click() {
+            public void actionPerformed(ActionEvent e) {
                 exportRound();
             }
         });
 
         // "undo"
-        mainFrame.getUndo().addMouseListener(new MenuItemClickListener() {
-
+        mainFrame.getUndo().addActionListener(new ActionListener() {
             @Override
-            public void click() {
+            public void actionPerformed(ActionEvent e) {
                 undoLastCommand();
             }
         });
 
         // "redo"
-        mainFrame.getRedo().addMouseListener(new MenuItemClickListener() {
-
+        mainFrame.getRedo().addActionListener(new ActionListener() {
             @Override
-            public void click() {
+            public void actionPerformed(ActionEvent e) {
                 redoLastCommand();
             }
         });
@@ -193,50 +274,37 @@ public class MainController implements Listener {
 
     @Override
     public void changeEventReceived(MyChangeEvent evt) {
-        if(evt.getSource() instanceof DeliveryMap){
-            onMapNodeSelected(((DeliveryMap)(evt.getSource())));
-        } 
-        else if (evt.getSource() instanceof DeliveryList){
-            onListDeliverySelected( ( (DeliveryList)(evt.getSource())));
+        if (evt.getSource() instanceof DeliveryMap) {
+            onMapNodeSelected(((DeliveryMap) (evt.getSource())));
+        } else if (evt.getSource() instanceof DeliveryList) {
+            onListDeliverySelected(((DeliveryList) (evt.getSource())));
         }
     }
-    
-    public void onMapNodeSelected(DeliveryMap map){
+
+    public void onMapNodeSelected(DeliveryMap map) {
         mainFrame.getDeliveryList().setSelectionById(map.getSelectedNode().get().getAddress());
     }
 
     private void onListDeliverySelected(DeliveryList deliveryList) {
+        if (deliveryList == null) {
+            System.err.println("deliveryList null");
+            return;
+        }
+        if (deliveryList.getSelected() == null) {
+            System.err.println("deliveryList.getSelected() null");
+            return;
+        }
+         if (deliveryList.getSelected().getDelivery() == null) {
+            System.err.println("deliveryList.getSelected.getDelivery null");
+            return;
+        }
         mainFrame.getDeliveryMap().setSelectedNodeById(deliveryList.getSelected().getDelivery().getAddress());
     }
-    
-    private abstract class MenuItemClickListener implements MouseListener {
 
-        /**
-         * Méthode abstraite correspondant au click sur un item du menu
-         */
-        public abstract void click();
+    private interface Command {
 
-        @Override
-        public void mouseClicked(MouseEvent e) {
-        }
+        void execute();
 
-        @Override
-        public void mousePressed(MouseEvent e) {
-            click();
-        }
-
-        @Override
-        public void mouseReleased(MouseEvent e) {
-        }
-
-        @Override
-        public void mouseEntered(MouseEvent e) {
-        }
-
-        @Override
-        public void mouseExited(MouseEvent e) {
-        }
-
+        void undo();
     }
-
 }
