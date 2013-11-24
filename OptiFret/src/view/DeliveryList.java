@@ -49,6 +49,7 @@ public class DeliveryList extends JScrollPane {
         fireChangeEvent();
 
     }
+    
     public void setSelectionById(long id){
         for(DeliveryCollapsiblePane d : (DeliveryCollapsiblePane[])panel.getComponents()){
             if( d.getDelivery().getAddress() == id)

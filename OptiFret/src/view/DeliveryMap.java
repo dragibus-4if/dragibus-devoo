@@ -82,8 +82,12 @@ public class DeliveryMap extends JPanel {
     }
 
     public void setSelectedNodeById(Long id){
+        if(selectedNode.get()!=null){
+            selectedNode.get().setSelection(false);
+        }
         mapNodes.get(id).setSelection(true);
         this.setSelectedNode(new WeakReference<NodeView>(mapNodes.get(id)));
+        this.invalidate();
         repaint();
     }
     
