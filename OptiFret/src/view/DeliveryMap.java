@@ -128,7 +128,7 @@ public class DeliveryMap extends JPanel {
                 break;
             }
             NodeView tempNode = new NodeView(rn.getX(), rn.getY(), rn.getId(), new WeakReference<>(this), MODE.CLASSIC);
-            for (int i = 0; i < mapNodes.size(); i++) {
+            for (Long i = 0l; i < mapNodes.size(); i++) {
                 if (tempNode.equals(mapNodes.get(i))) {
                     mapNodes.get(i).setMode(MODE.DELIVERY);
                 }
@@ -148,6 +148,7 @@ public class DeliveryMap extends JPanel {
         for (NodeView node : mapNodes.values()) {
             node.onMouseDown(e.getX(), e.getY());
         }
+        fireChangeEvent();
         System.out.println("Fin parcours nodes Pressed");
         repaint();
     }
@@ -190,7 +191,6 @@ public class DeliveryMap extends JPanel {
     public void setSelectedNode(WeakReference<NodeView> selectedNode) {
         this.selectedNode = selectedNode;
     }
-
 
     public int getMaxX() {
         return maxX;

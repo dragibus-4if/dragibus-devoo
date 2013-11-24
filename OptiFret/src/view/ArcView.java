@@ -92,21 +92,23 @@ public class ArcView {
         AffineTransform at = AffineTransform.getTranslateInstance(x1, y1);
         at.concatenate(AffineTransform.getRotateInstance(angle));
         g.transform(at);
+       
         g.setStroke(myStroke);
         g.setColor(new Color(255, 255, 255));
         g.drawLine(0, 0, len, 0);
         g.setColor(new Color(0, 0, 0));
-        g.drawLine(1, -2, len - 1, -2);
+        //  g.drawLine(1, -2, len - 1, -2);
         g.drawLine(1, 2, len - 1, 2);
-
-        if (nbLines > 0) {
+         if (nbLines > 0) {
             for (int i = 0; i < nbLines; i++) {
                 g.fillPolygon(new int[]{len, len - ARR_SIZE, len - ARR_SIZE, len},
-                        new int[]{0, -ARR_SIZE, ARR_SIZE, 0}, 4);
-                g.translate(-ARR_SIZE, 0);
-
+                        new int[]{2, (-ARR_SIZE / 2)+2, ARR_SIZE+2, 2}, 4);
+                g.translate(-ARR_SIZE - 1, 0);
             }
         }
+
+
+
     }
 
     public int getX1() {
