@@ -165,10 +165,12 @@ public class RegularGraph implements Graph {
         }
         
         
-        //Calcul du Dijstrak pour chaque "paire de livraison" parmis les successeurs
-        for ( int i=0 ; i < succ.size() ; i++ ) {
-            for ( int j=0 ; j < succ.get(i).size() ; j++ ) {
-                //Effectuer le Dijstrak
+        // Calcul du Dijstrak pour chaque "paire de livraison" parmis les successeurs
+        for ( int i = 0 ; i < succ.size() ; i++ ) {
+            for ( int j = 0 ; j < succ.get(i).size() ; j++ ) {
+                // Effectuer le AStar
+                // AStar entre indexMap[i] et indexMap[j].
+                // Récupérer la longueur qui correspond au cout de cheminement.
             }
         }
         
