@@ -161,6 +161,7 @@ public class NodeView {
                 parent.get().getSelectedNode().clear();
             }
         }
+        parent.get().fireChangeEvent();
     }
 
     public void onMouseUp(int x, int y) {

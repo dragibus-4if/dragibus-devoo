@@ -83,7 +83,7 @@ public class DeliveryMap extends JPanel {
             selectedNode.get().setSelection(false);
         }
         mapNodes.get(id).setSelection(true);
-        this.onEventChangeSelection(new WeakReference<>(mapNodes.get(id)));
+        this.setSelectedNode(new WeakReference<>(mapNodes.get(id)));
         this.invalidate();
         repaint();
     }
@@ -189,12 +189,8 @@ public class DeliveryMap extends JPanel {
 
     public void setSelectedNode(WeakReference<NodeView> selectedNode) {
         this.selectedNode = selectedNode;
-        fireChangeEvent();
     }
 
-    public void onEventChangeSelection(WeakReference<NodeView> selectedNode) {
-        this.selectedNode = selectedNode;
-    }
 
     public int getMaxX() {
         return maxX;
