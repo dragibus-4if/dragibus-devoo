@@ -148,19 +148,19 @@ public class NodeView {
         return selected;
     }
 
-    void onMouseDown(int x, int y) {
+    public boolean onMouseDown(int x, int y) {
+        boolean voidClic=true;
         if (circle.contains(x + DIAMETER / 2, y + DIAMETER / 2) && (parent.get() != null)) {
             selected = true;
+            voidClic=false;
             if (parent.get().getSelectedNode() != null) {
                 parent.get().getSelectedNode().clear();
             }
             parent.get().setSelectedNode(new WeakReference<>(this));
         } else {
-            selected = false;
-            if (parent.get().getSelectedNode() != null) {
-                parent.get().getSelectedNode().clear();
-            }
+            selected = false;            
         }
+        return voidClic;
     }
 
     public void onMouseUp(int x, int y) {

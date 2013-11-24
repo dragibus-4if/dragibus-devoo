@@ -82,14 +82,13 @@ public class DeliveryMap extends JPanel {
         if (selectedNode.get() != null) {
             selectedNode.get().setSelection(false);
         }
-        if(id==-1l){
+        if (id == -1l) {
             this.setSelectedNode(new WeakReference<NodeView>(null));
             repaint();
             return;
         }
         mapNodes.get(id).setSelection(true);
         this.setSelectedNode(new WeakReference<>(mapNodes.get(id)));
-        this.invalidate();
         repaint();
     }
 
@@ -128,7 +127,7 @@ public class DeliveryMap extends JPanel {
         if (nodes == null) {
             return;
         }
-        for(ArcView arc:mapArcs.values()){
+        for (ArcView arc : mapArcs.values()) {
             arc.resetNbLines();
         }
         for (RoadNode rn : nodes) {
@@ -153,8 +152,16 @@ public class DeliveryMap extends JPanel {
 
     public void notifyPressed(MouseEvent e) {
         System.out.println("Début parcours nodes Pressed");
+        boolean voidClic = true;
         for (NodeView node : mapNodes.values()) {
-            node.onMouseDown(e.getX(), e.getY());
+            if (!node.onMouseDown(e.getX(), e.getY())) {
+                voidClic = false;
+            }
+        }
+        if (voidClic) {
+            if (getSelectedNode().get() != null) {
+                getSelectedNode().clear();
+            }
         }
         fireChangeEvent();
         System.out.println("Fin parcours nodes Pressed");
