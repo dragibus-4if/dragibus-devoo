@@ -45,6 +45,10 @@ public class DeliveryList extends JScrollPane {
         this.selected = selected;
     }
     public void setSelectionById(long id){
+        if(panelList.get(id)==null){
+            System.err.println("panelList.get(id) null");
+            return;
+        }
         panelList.get(id).select();
         }
 
