@@ -52,8 +52,8 @@ public class RoadNetwork {
         return l;
     }
     
-    public List<RoadNode> makeRoute(List<RoadNode> objectives) {
-        RegularGraph graph = RegularGraph.loadFromRoadNetwork(this);
+    public List<RoadNode> makeRoute(DeliveryRound thatRound) {
+        RegularGraph graph = RegularGraph.loadFromRoadNetwork(this, thatRound);
         TSP tsp = new TSP(graph);
         SolutionState s = tsp.solve(1000000, 100000);
         if(s == SolutionState.OPTIMAL_SOLUTION_FOUND || s == SolutionState.SOLUTION_FOUND) {
