@@ -13,10 +13,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import model.RoadNode;
+import model.RoadSection;
 
 public class AStar {
     public static Double cost(RoadNode a, RoadNode b) {
-        return Math.sqrt(Math.pow(a.getX() - b.getX(), 2) + Math.pow(a.getY() - b.getY(), 2));
+        for(RoadSection s : a.getSections()) {
+            if(b == s.getRoadNodeEnd()) {
+                return s.getCost();
+            }
+        }
+        return Double.MAX_VALUE;
     }
     
     private static Double heuristicCost(RoadNode a, RoadNode b) {

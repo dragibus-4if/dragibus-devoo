@@ -24,7 +24,7 @@ public class RegularGraph implements Graph {
     private final Map<Integer, RoadNode> index2Node;
     
     public static RegularGraph loadFromRoadNetwork(RoadNetwork net, List<Delivery> objectives) {
-        if (net == null) {
+        if (net == null || objectives == null) {
             throw new NullPointerException();
         }
         if (net.getRoot() == null) {
@@ -128,29 +128,42 @@ public class RegularGraph implements Graph {
             }
         }
 
-        //Etablissement de la liste des successeurs (parmis les livraisons)
-        int progress = 0;   //Progres general dans la liste des livraisons
-        int progTSB = 0;    //Debut des timeSlot a pointer pour une adresse
-        int progNTS = 1;    //Prochaine timeSlot a traiter
-        int progTSE = 2;    //Fin des timeSlot a pointer pour une adresse
-
-        while (progress < size) {
-            //Pour chaque livraison, on fait une liste de successeurs
-            succ.add(new ArrayList<Integer>());
-            //On parcourt les livraisons au sein des timeSlots ciblées.
-            for (int j = tsList.get(progTSB); j < tsList.get(progTSE); j++) {
-                //Ne doit pas pointer vers sois même
-                if (j != progress) {
-                    succ.get(progress).add(j);
+//        //Etablissement de la liste des successeurs (parmi les livraisons)
+//        int progress = 0;   //Progres general dans la liste des livraisons
+//        int progTSB = 0;    //Debut des timeSlot a pointer pour une adresse
+//        int progNTS = 1;    //Prochaine timeSlot a traiter
+//        int progTSE = 2;    //Fin des timeSlot a pointer pour une adresse
+        
+        for(Delivery d1 : objectives) {
+            ArrayList<Integer> l = new ArrayList<>();
+            for(Delivery d2 : objectives) {
+                if(d1 != d2) {
+                    if(d1.getTimeSlot().getEnd().before(d2.getTimeSlot().getBegin())
+                    || d1.getTimeSlot().getEnd().equals(d2.getTimeSlot().getBegin())) {
+                        l.add(new Integer(d2.getId().intValue()));
+                    }
                 }
             }
-            progress++;
-            if (progress == tsList.get(progNTS)) {
-                progTSB++;
-                progNTS++;
-                progTSE++;
-            }
+            succ.add(l);
         }
+
+//        while (progress < size) {
+//            //Pour chaque livraison, on fait une liste de successeurs
+//            succ.add(new ArrayList<Integer>());
+//            //On parcourt les livraisons au sein des timeSlots ciblées.
+//            for (int j = tsList.get(progTSB); j < tsList.get(progTSE); j++) {
+//                //Ne doit pas pointer vers sois même
+//                if (j != progress) {
+//                    succ.get(progress).add(j);
+//                }
+//            }
+//            progress++;
+//            if (progress == tsList.get(progNTS)) {
+//                progTSB++;
+//                progNTS++;
+//                progTSE++;
+//            }
+//        }
 
         // Calcul du Dijstrak pour chaque "paire de livraison" parmis les successeurs
         for (int i = 0; i < succ.size(); i++) {
@@ -158,12 +171,18 @@ public class RegularGraph implements Graph {
                 // Effectuer le AStar
                 // AStar entre indexMap[i] et indexMap[j].
                 // Récupérer la longueur qui correspond au cout de cheminement.
-                List<RoadNode> pathNode = AStar.findPath(indexMap.get(i), indexMap.get(j));
+                List<RoadNode> pathNode = AStar.findPath(indexMap.get(i), indexMap.get(succ.get(i).get(j)));
                 Double c = new Double(0);
                 for (int k = 1; k < pathNode.size(); k++) {
-                    c += AStar.cost(pathNode.get(i - 1), pathNode.get(i));
+                    c += AStar.cost(pathNode.get(k - 1), pathNode.get(k));
                 }
-                distances[i][j] = c.intValue();
+                distances[i][succ.get(i).get(j)] = c.intValue();
+                if(distances[i][succ.get(i).get(j)] > max) {
+                    max = distances[i][succ.get(i).get(j)];
+                }
+                if(distances[i][succ.get(i).get(j)] < min) {
+                    min = distances[i][succ.get(i).get(j)];
+                }
             }
         }
 
