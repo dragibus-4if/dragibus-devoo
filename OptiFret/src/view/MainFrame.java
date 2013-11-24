@@ -13,6 +13,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import static javax.swing.JOptionPane.showMessageDialog;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
 
 /**
@@ -50,7 +51,9 @@ public class MainFrame extends JFrame {
         setSize(800, DELIVERY_MAP_WIDTH);
         setLayout(new BorderLayout());
         setJMenuBar(makeMenu());
-        add(makeDeliveryMap(), BorderLayout.CENTER);
+        DeliveryMap map=(DeliveryMap)makeDeliveryMap();
+        JScrollPane scrollPane =new JScrollPane(map);
+        add(scrollPane, BorderLayout.CENTER);
         add(makeDeliveryList(), BorderLayout.LINE_START);
         add(makeDeliveryAdding(), BorderLayout.PAGE_END);
     }
