@@ -151,20 +151,6 @@ public class DeliveryMap extends JPanel {
         vX = vY = 0;
     }
 
-    public void setSelectedNodeById(Long id) {
-        if (selectedNode.get() != null) {
-            selectedNode.get().setSelection(false);
-        }
-        if (id == -1l) {
-            this.setSelectedNode(new WeakReference<NodeView>(null));
-            repaint();
-            return;
-        }
-        mapNodes.get(id).setSelection(true);
-        this.setSelectedNode(new WeakReference<>(mapNodes.get(id)));
-        repaint();
-    }
-
     public void updateNetwork(List<RoadNode> nodes) {
         if (nodes == null) {
             reset();
@@ -262,6 +248,8 @@ public class DeliveryMap extends JPanel {
 
     private void notifyScrolled(MouseWheelEvent e) {
         double diff = SCALE_INC * (double) e.getWheelRotation();
+        offX += SCALE_INC * ((getWidth() / 2 - e.getX()) - offX);
+        offY += SCALE_INC * ((getHeight() / 2 - e.getY()) - offY);
         if (diff < 0) {
             scale = Math.min(SCALE_MAX, scale - diff);
         } else {
@@ -289,7 +277,6 @@ public class DeliveryMap extends JPanel {
         super.paintComponent(g);
         g.drawRect(2, 2, getWidth() - 5, getHeight() - 5);
         Graphics2D g2d = (Graphics2D) g;
-        //g2d.translate(getWidth() / 2, getWidth() / 2);
         g2d.translate(offX, offY);
         g2d.scale(scale, scale);
         draw(g);
@@ -306,6 +293,20 @@ public class DeliveryMap extends JPanel {
 
     public WeakReference<NodeView> getSelectedNode() {
         return selectedNode;
+    }
+
+    public void setSelectedNodeById(Long id) {
+        if (selectedNode.get() != null) {
+            selectedNode.get().setSelection(false);
+        }
+        if (id == -1l) {
+            this.setSelectedNode(new WeakReference<NodeView>(null));
+            repaint();
+            return;
+        }
+        mapNodes.get(id).setSelection(true);
+        this.setSelectedNode(new WeakReference<>(mapNodes.get(id)));
+        repaint();
     }
 
     public void setSelectedNode(WeakReference<NodeView> selectedNode) {
@@ -332,11 +333,11 @@ public class DeliveryMap extends JPanel {
     }
 
     public void addListener(Listener l) {
-        this.listeners.add(l);
+        listeners.add(l);
     }
 
     public void removeListener(Listener l) {
-        this.listeners.remove(l);
+        listeners.remove(l);
     }
 
     // Event firing method.  Called internally by other class methods.
