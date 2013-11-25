@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.EmptyStackException;
 import java.util.Stack;
@@ -22,6 +23,7 @@ import view.Listener;
 import view.MainFrame;
 import view.MyChangeEvent;
 import view.DeliveryList;
+import view.NodeView;
 
 public class MainController implements Listener {
 
@@ -325,19 +327,20 @@ public class MainController implements Listener {
 
     public void onMapNodeSelected(DeliveryMap map) {
         if (map == null) {
-            System.err.println("map null");
+            System.out.println("map null");
             return;
         }
-        if (map.getSelectedNode() == null) {
-            System.err.println("map.getSelectedNode() null");
-
+        WeakReference<NodeView> selectedNodeRef = map.getSelectedNode();
+        if (selectedNodeRef == null) {
+            System.out.println("map.getSelectedNode() null");
             return;
         }
-        if (map.getSelectedNode().get() == null) {
-            System.err.println("map.getSelectedNode().get() null");
+        NodeView selectedNode = selectedNodeRef.get();
+        if (selectedNode == null) {
+            System.out.println("map.getSelectedNode().get() null");
             mainFrame.getDeliveryList().setSelectionById(-1);
         } else {
-            mainFrame.getDeliveryList().setSelectionById(map.getSelectedNode().get().getAddress());
+            mainFrame.getDeliveryList().setSelectionById(selectedNode.getAddress());
         }
     }
 
@@ -359,7 +362,7 @@ public class MainController implements Listener {
         }
 
     }
-
+    
     private abstract class Command {
 
         private String name;
