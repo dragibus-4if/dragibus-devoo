@@ -1,6 +1,10 @@
 package controller;
 
+import config.Entry;
+import config.Helper;
 import config.Manager;
+import config.MissingAttributeException;
+import config.MissingEntryException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -44,8 +48,37 @@ public class MainController implements Listener {
     }
 
     public void run() {
-        //configureStartup(Manager.getInstance().registerEntry("startup"));
+        String startupConfigEntryName = "startup";
+        try {
+            configureStartup(Manager.getInstance().registerEntry(startupConfigEntryName));
+        } catch (MissingEntryException e) {
+            System.out.println("Aucune configuration trouvée pour " + startupConfigEntryName);
+        }
         mainFrame.setVisible(true);
+    }
+
+    private void configureStartup(Entry entry) {
+        Helper helper = new Helper(entry);
+        try {
+            String rnFilename = helper.getString("load-road-network");
+            roadNetwork = RoadNetwork.loadFromXML(new FileReader(rnFilename));
+            mainFrame.getLoadRound().setEnabled(true);
+            mainFrame.getDeliveryMap().updateNetwork(roadNetwork.getNodes());
+            try {
+                String dsFilename = helper.getString("load-delivery-sheet");
+                deliverySheet = DeliverySheet.loadFromXML(new FileReader(dsFilename));
+                mainFrame.getDeliveryList().setDeliveries(deliverySheet.getDeliveryRound().getDeliveries());
+                mainFrame.getExportRound().setEnabled(true);
+            } catch (MissingAttributeException ex) {
+                System.out.println("Aucune configuration trouvée pour les demandes de livraison");
+            } catch (IOException ex) {
+                System.err.println(ex.getMessage());
+            }
+        } catch (MissingAttributeException ex) {
+            System.out.println("Aucune configuration trouvée pour la carte");
+        } catch (IOException ex) {
+            System.err.println(ex.getMessage());
+        }
     }
 
     private void loadRoadNetwork() {
