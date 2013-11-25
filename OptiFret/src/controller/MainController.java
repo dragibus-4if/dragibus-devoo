@@ -47,14 +47,19 @@ public class MainController implements Listener {
     }
     
     private void addDelivery() {
+        // TODO - "" doit etre remplace par le nom du dialogue de saisie d'une
+        // livraison
+        
         executeCommand(new Command("") {
             
             private DeliverySheet currentDeliverySheet;
+            private RoadNetwork currentNetwork;
 
             @Override
             public void execute() {
                 // stocker l'etat courant
                 currentDeliverySheet = deliverySheet;
+                currentNetwork = roadNetwork;
                 
                 // TODO - ouvrir la fenetre avec le formulair pour les livs et
                 // recuperer les valeurs
@@ -69,6 +74,10 @@ public class MainController implements Listener {
                 // ajouter la nouvelle liste a la fenetre et mettre a jour
                 mainFrame.getDeliveryList().setDeliveries(dr.getDeliveries());
                 mainFrame.getExportRound().setEnabled(true);
+                
+                // recalculer le chemin et mettre a jour le plan
+                mainFrame.getDeliveryMap()
+                                .updateNetwork(roadNetwork.getNodes());
                 mainFrame.repaint();
             }
 
@@ -76,9 +85,13 @@ public class MainController implements Listener {
             public void undo() {
                 // revenir a l'ancien DeliverySheet
                 deliverySheet = currentDeliverySheet;
+                roadNetwork = currentNetwork;
                 
                 // TODO - ajouter fonctionnalite
                 DeliveryRound dr = deliverySheet.getDeliveryRound();
+                mainFrame.getDeliveryMap()
+                                .updateNetwork(roadNetwork.getNodes());
+                
                 if (dr.getDeliveries() == null) {
                     mainFrame.getDeliveryList().setDeliveries(new ArrayList<Delivery>());
                     mainFrame.getExportRound().setEnabled(false);
@@ -89,6 +102,33 @@ public class MainController implements Listener {
                 mainFrame.repaint();
             }
         });
+    }
+    
+    private void deleteDelivery() {
+        executeCommand(new Command("") {
+            
+            private DeliverySheet currentDeliverySheet;
+            private RoadNetwork currentNetwork;
+            
+            @Override
+            public void execute() {
+                // stocker l'etat courant de la liste de livraisons
+                currentDeliverySheet = deliverySheet;
+                currentNetwork = roadNetwork;
+                
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+            
+            @Override
+            public void undo() {
+                // revenir a l'ancien etat
+                deliverySheet = currentDeliverySheet;
+                roadNetwork = currentNetwork;                        
+               
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+        });
+        
     }
 
     private void loadRoadNetwork() {
