@@ -106,7 +106,7 @@ public class MainFrame extends JFrame {
 
     private Component makeDeliveryList() {
         deliveryList = new DeliveryList();
-        deliveryList.setPreferredSize(new Dimension(DELIVERY_LIST_WIDTH, deliveryMap.getMaxY()));
+        deliveryList.setPreferredSize(new Dimension(DELIVERY_LIST_WIDTH, getHeight()));
         return deliveryList;
     }
 

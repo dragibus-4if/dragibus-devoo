@@ -1,6 +1,5 @@
 package view;
 
-import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.lang.ref.WeakReference;
@@ -20,9 +19,8 @@ public class DeliveryMap extends NavigablePanel {
     private Map<Integer, ArcView> mapArcs;
     private Map<Long, NodeView> mapNodes;
     private WeakReference<NodeView> selectedNode;
-    private int maxX = 0;
-    private int maxY = 0;
     private CopyOnWriteArrayList<Listener> listeners;
+    
     public static final int PADDING = 20;
 
     public DeliveryMap() {
@@ -52,24 +50,19 @@ public class DeliveryMap extends NavigablePanel {
             if (rn.getNeighbors() == null) {
                 break;
             }
-            if (rn.getX() > maxX) {
-                maxX = rn.getX();
-            }
-            if (rn.getY() > maxY) {
-                maxY = rn.getY();
-            }
-            NodeView tempNode = new NodeView(rn.getX(), rn.getY(), rn.getId(), new WeakReference<>(this), MODE.CLASSIC);
+            NodeView tempNode = new NodeView(rn.getX(), rn.getY(), rn.getId(),
+                    new WeakReference<>(this), MODE.CLASSIC);
             if (!mapNodes.containsKey(rn.getId())) {
                 mapNodes.put(rn.getId(), tempNode);
             }
             for (RoadNode neighbor : rn.getNeighbors()) {
-                ArcView temp = new ArcView(rn.getX(), rn.getY(), neighbor.getX(), neighbor.getY(), 0);
+                ArcView temp = new ArcView(rn.getX(), rn.getY(),
+                        neighbor.getX(), neighbor.getY(), 0);
                 if (!mapArcs.containsKey(temp.hashCode())) {
                     mapArcs.put(temp.hashCode(), temp);
                 }
             }
         }
-        setPreferredSize(new Dimension(maxX + PADDING, maxY + PADDING));
     }
 
     public void updateDeliveryNodes(List<RoadNode> nodes) {
@@ -83,7 +76,8 @@ public class DeliveryMap extends NavigablePanel {
             if (rn.getNeighbors() == null) {
                 break;
             }
-            NodeView tempNode = new NodeView(rn.getX(), rn.getY(), rn.getId(), new WeakReference<>(this), MODE.CLASSIC);
+            NodeView tempNode = new NodeView(rn.getX(), rn.getY(), rn.getId(),
+                    new WeakReference<>(this), MODE.CLASSIC);
             for (Long i = 0l; i < mapNodes.size(); i++) {
                 if (tempNode.equals(mapNodes.get(i))) {
                     mapNodes.get(i).setMode(MODE.DELIVERY);
@@ -157,25 +151,17 @@ public class DeliveryMap extends NavigablePanel {
             selectedNode.get().setSelection(false);
         }
         if (id == -1l) {
-            this.setSelectedNode(new WeakReference<NodeView>(null));
+            setSelectedNode(new WeakReference<NodeView>(null));
             repaint();
             return;
         }
         mapNodes.get(id).setSelection(true);
-        this.setSelectedNode(new WeakReference<>(mapNodes.get(id)));
+        setSelectedNode(new WeakReference<>(mapNodes.get(id)));
         repaint();
     }
 
     public void setSelectedNode(WeakReference<NodeView> selectedNode) {
         this.selectedNode = selectedNode;
-    }
-
-    public int getMaxX() {
-        return maxX;
-    }
-
-    public int getMaxY() {
-        return maxY;
     }
 
     public void addListener(Listener l) {
