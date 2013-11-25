@@ -5,53 +5,67 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.util.Calendar;
+import java.util.Date;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
+import javax.swing.SpinnerDateModel;
 import javax.swing.WindowConstants;
+import model.Client;
+import model.Delivery;
+import model.TimeSlot;
 
 /**
  *
  * @author jmcomets
  */
 public class CreateDeliveryDialog extends JDialog {
-    private final JSpinner id;
-    private final JComboBox address;
+    
+    private final long id;
+    private final long address;
+    private Delivery delivery;
+    
     private final JSpinner clientId;
     private final JTextField clientName;
     private final JTextField clientPhoneNum;
     private final JButton createButton;
     private final JButton cancelButton;
-    private final JSpinner timeSlotHours;
-    private final JSpinner timeSlotMinutes;
-
-    public CreateDeliveryDialog(Frame parent, boolean modal) {
-        super(parent, modal);
+    private final JSpinner timeSlotBegin;
+    private final JSpinner timeSlotEnd;
+    
+    public CreateDeliveryDialog(Frame parent, long id, long address) {
+        super(parent, true);
 
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Créer une Livraison");
-        setModal(true);
         setResizable(false);
+        
+        this.address = address;
+        delivery = null;
 
-        id = new JSpinner();
-        address = new JComboBox();
+        this.id = id;
+        timeSlotBegin = new JSpinner();
+        timeSlotEnd = new JSpinner();
         clientId = new JSpinner();
         clientName = new JTextField();
         clientPhoneNum = new JTextField();
         createButton = new JButton("Créer");
         cancelButton = new JButton("Annuler");
-        timeSlotHours = new JSpinner();
-        timeSlotMinutes = new JSpinner();
-        
+
         setupConstraints();
         setupLayout();
+        setupListeners();
     }
-    
+
     private void setupLayout() {
         getContentPane().setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
@@ -59,40 +73,20 @@ public class CreateDeliveryDialog extends JDialog {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.insets = new Insets(5, 5, 5, 5);
         
-        // Panel livraison
-        JPanel deliveryPanel = new JPanel();
-        deliveryPanel.setBorder(BorderFactory.createTitledBorder("Livraison"));
-        deliveryPanel.setLayout(new GridLayout(2, 2, 10, 5));
-        // id
-        JLabel idLabel = new JLabel("ID");
-        deliveryPanel.add(idLabel);
-        deliveryPanel.add(id);
-        // adresse
-        JLabel addressLabel = new JLabel("Adresse");
-        deliveryPanel.add(addressLabel);
-        deliveryPanel.add(address);
-        // layout
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.gridwidth = 1;
-        getContentPane().add(deliveryPanel, gbc);
-        
         // Panel créneau horaire
         JPanel timeSlotPanel = new JPanel();
         timeSlotPanel.setBorder(BorderFactory.createTitledBorder("Créneau Horaire"));
         timeSlotPanel.setLayout(new GridLayout(2, 2, 10, 5));
-        // heures
-        JLabel hoursLabel = new JLabel("Heures");
-        timeSlotPanel.add(hoursLabel);
-        timeSlotPanel.add(timeSlotHours);
-        // minutes
-        JLabel minutesLabel = new JLabel("Minutes");
-        timeSlotPanel.add(minutesLabel);
-        timeSlotPanel.add(timeSlotMinutes);
+        // début
+        timeSlotPanel.add(new JLabel("Début"));
+        timeSlotPanel.add(timeSlotBegin);
+        // début
+        timeSlotPanel.add(new JLabel("Fin"));
+        timeSlotPanel.add(timeSlotEnd);
         // layout
-        gbc.gridx = 1;
+        gbc.gridx = 0;
         gbc.gridy = 0;
-        gbc.gridwidth = 2;
+        gbc.gridwidth = 3;
         getContentPane().add(timeSlotPanel, gbc);
 
         // Panel client
@@ -112,9 +106,7 @@ public class CreateDeliveryDialog extends JDialog {
         clientPanel.add(clientPhoneNumLabel);
         clientPanel.add(clientPhoneNum);
         // layout
-        gbc.gridx = 0;
         gbc.gridy = 2;
-        gbc.gridwidth = 3;
         getContentPane().add(clientPanel, gbc);
 
         // Boutons
@@ -129,10 +121,79 @@ public class CreateDeliveryDialog extends JDialog {
     }
 
     private void setupConstraints() {
-        // TODO
+        // Créneau horaire
+        timeSlotBegin.setModel(new SpinnerDateModel(new Date(), null, null, Calendar.MINUTE));
+        timeSlotBegin.setEditor(new JSpinner.DateEditor(timeSlotBegin, "HH:mm"));
+        timeSlotEnd.setModel(new SpinnerDateModel(new Date(), null, null, Calendar.MINUTE));
+        timeSlotEnd.setEditor(new JSpinner.DateEditor(timeSlotBegin, "HH:mm"));
     }
-    
-    public static void main(String [] args) {
-        new CreateDeliveryDialog(null, true).setVisible(true);
+
+    private void setupListeners() {
+        final CreateDeliveryDialog that = this;
+        
+        // créer
+        createButton.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    delivery = validateDelivery();
+                    setVisible(false);
+                } catch (ValidationError ex) {
+                    String message = ex.getMessage();
+                    JOptionPane.showMessageDialog(that, "Erreur de validation",
+                            message, JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+        
+        // annuler
+        cancelButton.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                that.setVisible(false);
+                that.dispatchEvent(new WindowEvent(that, WindowEvent.WINDOW_CLOSING));
+            }
+        });
+    }
+
+    private Delivery validateDelivery() throws ValidationError {
+        // Créneau horaire
+        TimeSlot timeSlot;
+        try {
+            Date begin = ((SpinnerDateModel) timeSlotBegin.getModel()).getDate();
+            Date end = ((SpinnerDateModel) timeSlotEnd.getModel()).getDate();
+            timeSlot = new TimeSlot(begin, end);
+        } catch (IllegalArgumentException e) {
+            throw new ValidationError("Créneau horaire invalide");
+        }
+        
+        // Client
+        Client client = new Client(((Number) clientId.getModel()).longValue());
+        client.setName(clientName.getText());
+        client.setPhoneNum(clientPhoneNum.getText());
+        
+        // Livraison
+        Delivery retDelivery = new Delivery(id);
+        retDelivery.setAddress(address);
+        retDelivery.setClient(client);
+        retDelivery.setTimeSlot(timeSlot);
+        return retDelivery;
+    }
+
+    public Delivery getDelivery() {
+        return delivery;
+    }
+
+    private static class ValidationError extends Exception {
+        
+        public ValidationError(String message) {
+            super(message);
+        }
+    }
+
+    public static void main(String[] args) {
+        new CreateDeliveryDialog(null, 5, 5).setVisible(true);
     }
 }
