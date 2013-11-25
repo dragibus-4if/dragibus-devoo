@@ -174,13 +174,13 @@ public class MainController implements Listener {
         JMenuItem redo = mainFrame.getRedo();
         JMenuItem undo = mainFrame.getUndo();
         redo.setEnabled(true);
-        redo.setText(MainFrame.REDO_TOOLTIP + '"' + cmd.getName() + '"');
+        redo.setText(MainFrame.REDO_TOOLTIP + " \"" + cmd.getName() + '"');
         if (history.size() == 0) {
             undo.setEnabled(false);
             undo.setText(MainFrame.UNDO_TOOLTIP);
         } else {
             Command cmd2 = history.peek();
-            undo.setText(MainFrame.UNDO_TOOLTIP + '"' + cmd2.getName() + '"');
+            undo.setText(MainFrame.UNDO_TOOLTIP + " \"" + cmd2.getName() + '"');
         }
     }
 
@@ -198,7 +198,7 @@ public class MainController implements Listener {
             redo.setText(MainFrame.REDO_TOOLTIP);
         } else {
             Command cmd2 = redoneHistory.peek();
-            redo.setText(MainFrame.REDO_TOOLTIP + '"' + cmd2.getName() + '"');
+            redo.setText(MainFrame.REDO_TOOLTIP + " \"" + cmd2.getName() + '"');
         }
     }
 
@@ -216,7 +216,7 @@ public class MainController implements Listener {
         history.add(cmd);
         JMenuItem undo = mainFrame.getUndo();
         undo.setEnabled(true);
-        undo.setText(MainFrame.UNDO_TOOLTIP + '"' + cmd.getName() + '"');
+        undo.setText(MainFrame.UNDO_TOOLTIP + " \"" + cmd.getName() + '"');
 
         // Empêcher de revenir en avant dans l'historique
         if (clearRedoHistory) {
