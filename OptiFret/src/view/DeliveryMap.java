@@ -3,19 +3,11 @@ package view;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
 import java.lang.ref.WeakReference;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
-import javax.swing.JPanel;
 import model.RoadNode;
 import view.NodeView.MODE;
 
@@ -23,7 +15,7 @@ import view.NodeView.MODE;
  *
  * @author jmcomets
  */
-public class DeliveryMap extends JPanel {
+public class DeliveryMap extends NavigablePanel {
 
     private Map<Integer, ArcView> mapArcs;
     private Map<Long, NodeView> mapNodes;
@@ -31,114 +23,13 @@ public class DeliveryMap extends JPanel {
     private int maxX = 0;
     private int maxY = 0;
     private CopyOnWriteArrayList<Listener> listeners;
-    private static final double SCALE_MAX = 3;
-    private static final double SCALE_MIN = 0.1;
-    private static final double SCALE_INC = 0.1;
-    private static final double SCROLL_SPEED = 5;
     public static final int PADDING = 20;
-
-    private double scale;
-    private double vX;
-    private double vY;
-    private double offX;
-    private double offY;
 
     public DeliveryMap() {
         super();
         setDoubleBuffered(true);
         setFocusable(true);
         reset();
-        addMouseListener(new MouseListener() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-            }
-
-            @Override
-            public void mousePressed(MouseEvent e) {
-                notifyPressed(e);
-            }
-
-            @Override
-            public void mouseReleased(MouseEvent e) {
-                notifyReleased(e);
-            }
-
-            @Override
-            public void mouseEntered(MouseEvent e) {
-            }
-
-            @Override
-            public void mouseExited(MouseEvent e) {
-            }
-        });
-        addMouseMotionListener(new MouseMotionListener() {
-            @Override
-            public void mouseDragged(MouseEvent e) {
-            }
-
-            @Override
-            public void mouseMoved(MouseEvent e) {
-                notifyMoved(e);
-            }
-        });
-        addMouseWheelListener(new MouseWheelListener() {
-
-            @Override
-            public void mouseWheelMoved(MouseWheelEvent e) {
-                notifyScrolled(e);
-            }
-        });
-        addKeyListener(new KeyListener() {
-
-            @Override
-            public void keyTyped(KeyEvent e) {
-            }
-
-            @Override
-            public void keyPressed(KeyEvent e) {
-                int keyCode = e.getKeyCode();
-                switch (keyCode) {
-                    case KeyEvent.VK_UP:
-                        vY -= SCROLL_SPEED;
-                        break;
-
-                    case KeyEvent.VK_DOWN:
-                        vY += SCROLL_SPEED;
-                        break;
-
-                    case KeyEvent.VK_LEFT:
-                        vX += SCROLL_SPEED;
-                        break;
-
-                    case KeyEvent.VK_RIGHT:
-                        vX -= SCROLL_SPEED;
-                        break;
-                }
-                updateOffset();
-            }
-
-            @Override
-            public void keyReleased(KeyEvent e) {
-                int keyCode = e.getKeyCode();
-                switch (keyCode) {
-                    case KeyEvent.VK_UP:
-                        vY -= -SCROLL_SPEED;
-                        break;
-
-                    case KeyEvent.VK_DOWN:
-                        vY += -SCROLL_SPEED;
-                        break;
-
-                    case KeyEvent.VK_LEFT:
-                        vX += -SCROLL_SPEED;
-                        break;
-
-                    case KeyEvent.VK_RIGHT:
-                        vX -= -SCROLL_SPEED;
-                        break;
-                }
-            }
-        });
     }
 
     private void reset() {
@@ -146,9 +37,7 @@ public class DeliveryMap extends JPanel {
         mapArcs = new LinkedHashMap<>();
         mapNodes = new LinkedHashMap<>();
         selectedNode = new WeakReference<>(null);
-        scale = 1;
-        offX = offY = 0;
-        vX = vY = 0;
+        resetTransform();
     }
 
     public void updateNetwork(List<RoadNode> nodes) {
@@ -210,12 +99,10 @@ public class DeliveryMap extends JPanel {
         }
     }
 
-    public void notifyPressed(MouseEvent e) {
-        System.out.println("Début parcours nodes Pressed");
+    @Override
+    public void notifyPressed(int x, int y) {
         boolean voidClic = true;
         for (NodeView node : mapNodes.values()) {
-            int x = getActualX(e.getX());
-            int y = getActualY(e.getY());
             if (!node.onMouseDown(x, y)) {
                 voidClic = false; // TODO also break loop ?
             }
@@ -229,56 +116,26 @@ public class DeliveryMap extends JPanel {
         repaint();
     }
 
-    private void notifyReleased(MouseEvent e) {
-        int x = getActualX(e.getX());
-        int y = getActualY(e.getY());
+    @Override
+    public void notifyReleased(int x, int y) {
         for (NodeView node : mapNodes.values()) {
             node.onMouseUp(x, y);
         }
     }
 
-    private void notifyMoved(MouseEvent e) {
-        int x = getActualX(e.getX());
-        int y = getActualY(e.getY());
+    @Override
+    public void notifyMoved(int x, int y) {
         for (NodeView node : mapNodes.values()) {
             node.onMouseOver(x, y);
         }
         repaint();
     }
 
-    private void notifyScrolled(MouseWheelEvent e) {
-        double diff = SCALE_INC * (double) e.getWheelRotation();
-        offX += SCALE_INC * ((getWidth() / 2 - e.getX()) - offX);
-        offY += SCALE_INC * ((getHeight() / 2 - e.getY()) - offY);
-        if (diff < 0) {
-            scale = Math.min(SCALE_MAX, scale - diff);
-        } else {
-            scale = Math.max(SCALE_MIN, scale - diff);
-        }
-        repaint();
-    }
-
-    private void updateOffset() {
-        offX += vX;
-        offY += vY;
-        repaint();
-    }
-
-    private int getActualX(int x) {
-        return (int) ((x - offX) / scale);
-    }
-
-    private int getActualY(int y) {
-        return (int) ((y - offY) / scale);
-    }
-
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         g.drawRect(2, 2, getWidth() - 5, getHeight() - 5);
-        Graphics2D g2d = (Graphics2D) g;
-        g2d.translate(offX, offY);
-        g2d.scale(scale, scale);
+        applyTransform((Graphics2D) g);
         draw(g);
     }
 
@@ -311,17 +168,6 @@ public class DeliveryMap extends JPanel {
 
     public void setSelectedNode(WeakReference<NodeView> selectedNode) {
         this.selectedNode = selectedNode;
-    }
-
-    public double getScale() {
-        return scale;
-    }
-
-    public void setScale(double scale) {
-        if (scale <= 0) {
-            throw new IllegalArgumentException("'scale' donnée ne doit pas être <= 0");
-        }
-        this.scale = scale;
     }
 
     public int getMaxX() {
