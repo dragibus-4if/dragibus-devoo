@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.EmptyStackException;
 import java.util.Stack;
 import javax.swing.JFileChooser;
+import javax.swing.JMenuItem;
 import model.Delivery;
 import model.DeliveryRound;
 import model.DeliverySheet;
@@ -21,13 +22,13 @@ import view.MyChangeEvent;
 import view.DeliveryList;
 
 public class MainController implements Listener {
-    
+
     private final Stack<Command> history = new Stack<>();
     private final Stack<Command> redoneHistory = new Stack<>();
     private RoadNetwork roadNetwork;
     private DeliverySheet deliverySheet;
     private MainFrame mainFrame;
-    
+
     public MainController(MainFrame frame) {
         if (frame == null) {
             throw new NullPointerException("'view' ne doit pas être nul");
@@ -36,30 +37,30 @@ public class MainController implements Listener {
         setupNewView();
         setupListeners();
     }
-    
+
     private void setupListeners() {
         mainFrame.getDeliveryMap().addListener(this);
         mainFrame.getDeliveryList().addListener(this);
     }
-    
+
     private void loadRoadNetwork() {
         final JFileChooser fc = new JFileChooser();
         fc.setDialogTitle(MainFrame.LOAD_MAP_TOOLTIP);
         if (fc.showOpenDialog(mainFrame) == JFileChooser.APPROVE_OPTION) {
             try {
                 final RoadNetwork loadedNetwork = RoadNetwork.loadFromXML(new FileReader(fc.getSelectedFile()));
-                executeCommand(new Command() {
+                executeCommand(new Command(fc.getDialogTitle()) {
                     // instance de RoadNetwork pour stocker l'etat courant
                     private RoadNetwork currentNetwork;
                     // instance de DeliverySheet pour stocker l'etat courant
                     private DeliverySheet currentDeliverySheet;
-                    
+
                     @Override
                     public void execute() {
                         // recuperer l'etat courant du network et de la listLivs
                         currentNetwork = roadNetwork;
                         currentDeliverySheet = deliverySheet;
-                        
+
                         roadNetwork = loadedNetwork;
                         mainFrame.getLoadRound().setEnabled(true);
                         mainFrame.getDeliveryMap()
@@ -69,10 +70,10 @@ public class MainController implements Listener {
                         mainFrame.pack();
                         mainFrame.repaint();
                     }
-                    
+
                     @Override
                     public void undo() {
-                        
+
                         roadNetwork = currentNetwork;
                         deliverySheet = currentDeliverySheet;
 
@@ -102,7 +103,7 @@ public class MainController implements Listener {
             }
         }
     }
-    
+
     private void loadDeliverySheet() {
         JFileChooser fc = new JFileChooser();
         fc.setDialogTitle(MainFrame.LOAD_ROUND_TOOLTIP);
@@ -110,22 +111,22 @@ public class MainController implements Listener {
             try {
                 final DeliverySheet loadedDeliverySheet = DeliverySheet
                         .loadFromXML(new FileReader(fc.getSelectedFile()));
-                
-                executeCommand(new Command() {
+
+                executeCommand(new Command(fc.getDialogTitle()) {
                     private DeliverySheet currentDeliverySheet;
-                    
+
                     @Override
                     public void execute() {
                         // sauvegarder l'état courant de la liste de livraisons
                         currentDeliverySheet = deliverySheet;
-                        
+
                         deliverySheet = loadedDeliverySheet;
                         DeliveryRound dr = deliverySheet.getDeliveryRound();
                         mainFrame.getDeliveryList().setDeliveries(dr.getDeliveries());
                         mainFrame.getExportRound().setEnabled(true);
                         mainFrame.repaint();
                     }
-                    
+
                     @Override
                     public void undo() {
                         deliverySheet = currentDeliverySheet;
@@ -141,14 +142,14 @@ public class MainController implements Listener {
                         mainFrame.repaint();
                     }
                 });
-                
-             //   mainFrame.getDeliveryMap().updateDeliveryNodes(roadNetwork.getNodes());
+
+                //   mainFrame.getDeliveryMap().updateDeliveryNodes(roadNetwork.getNodes());
             } catch (IOException e) {
                 mainFrame.showErrorMessage(e.getMessage());
             }
         }
     }
-    
+
     private void exportRound() {
         JFileChooser fc = new JFileChooser();
         fc.setDialogTitle(MainFrame.EXPORT_ROUND_TOOLTIP);
@@ -168,10 +169,18 @@ public class MainController implements Listener {
      * @throws EmptyStackException
      */
     private void undoLastCommand() throws EmptyStackException {
-        undoCommand(history.pop());
-        mainFrame.getRedo().setEnabled(true);
+        Command cmd = history.pop();
+        undoCommand(cmd);
+        JMenuItem redo = mainFrame.getRedo();
+        JMenuItem undo = mainFrame.getUndo();
+        redo.setEnabled(true);
+        redo.setText(MainFrame.REDO_TOOLTIP + '"' + cmd.getName() + '"');
         if (history.size() == 0) {
-            mainFrame.getUndo().setEnabled(false);
+            undo.setEnabled(false);
+            undo.setText(MainFrame.UNDO_TOOLTIP);
+        } else {
+            Command cmd2 = history.peek();
+            undo.setText(MainFrame.UNDO_TOOLTIP + '"' + cmd2.getName() + '"');
         }
     }
 
@@ -182,9 +191,14 @@ public class MainController implements Listener {
      * @throws EmptyStackException
      */
     private void redoLastCommand() throws EmptyStackException {
-        executeCommand(redoneHistory.pop());
+        executeCommand(redoneHistory.pop(), false);
+        JMenuItem redo = mainFrame.getRedo();
         if (redoneHistory.size() == 0) {
-            mainFrame.getRedo().setEnabled(false);
+            redo.setEnabled(false);
+            redo.setText(MainFrame.REDO_TOOLTIP);
+        } else {
+            Command cmd2 = redoneHistory.peek();
+            redo.setText(MainFrame.REDO_TOOLTIP + '"' + cmd2.getName() + '"');
         }
     }
 
@@ -196,11 +210,28 @@ public class MainController implements Listener {
      *
      * @param cmd
      */
-    private void executeCommand(Command cmd) {
+    private void executeCommand(Command cmd, boolean clearRedoHistory) {
+        // Exécuter la commande et l'ajouter à l'historique
         cmd.execute();
-        mainFrame.getUndo().setEnabled(true);
         history.add(cmd);
-        redoneHistory.clear();
+        JMenuItem undo = mainFrame.getUndo();
+        undo.setEnabled(true);
+        undo.setText(MainFrame.UNDO_TOOLTIP + '"' + cmd.getName() + '"');
+
+        // Empêcher de revenir en avant dans l'historique
+        if (clearRedoHistory) {
+            redoneHistory.clear();
+            mainFrame.getRedo().setText(MainFrame.REDO_TOOLTIP);
+        }
+    }
+
+    /**
+     * Surcharge spécifiant la valeur par défaut de {@code clearRedoHistory}.
+     *
+     * @param cmd
+     */
+    private void executeCommand(Command cmd) {
+        executeCommand(cmd, true);
     }
 
     /**
@@ -215,7 +246,7 @@ public class MainController implements Listener {
         cmd.undo();
         redoneHistory.add(cmd);
     }
-    
+
     private void setupNewView() {
         // Historique
         history.clear();
@@ -229,7 +260,7 @@ public class MainController implements Listener {
         //loadRoadNetwork();
         //loadDeliverySheet();
     }
-    
+
     private void setupViewListeners() {
         // "charger la carte"
         mainFrame.getLoadMap().addActionListener(new ActionListener() {
@@ -271,7 +302,7 @@ public class MainController implements Listener {
             }
         });
     }
-    
+
     @Override
     public void changeEventReceived(MyChangeEvent evt) {
         if (evt.getSource() instanceof DeliveryMap) {
@@ -280,7 +311,7 @@ public class MainController implements Listener {
             onListDeliverySelected(((DeliveryList) (evt.getSource())));
         }
     }
-    
+
     public void onMapNodeSelected(DeliveryMap map) {
         if (map == null) {
             System.err.println("map null");
@@ -288,7 +319,7 @@ public class MainController implements Listener {
         }
         if (map.getSelectedNode() == null) {
             System.err.println("map.getSelectedNode() null");
-            
+
             return;
         }
         if (map.getSelectedNode().get() == null) {
@@ -298,7 +329,7 @@ public class MainController implements Listener {
             mainFrame.getDeliveryList().setSelectionById(map.getSelectedNode().get().getAddress());
         }
     }
-    
+
     private void onListDeliverySelected(DeliveryList deliveryList) {
         if (deliveryList == null) {
             System.err.println("deliveryList null");
@@ -309,19 +340,29 @@ public class MainController implements Listener {
             System.err.println("deliveryList.getSelected() null");
             return;
         } else {
-            mainFrame.getDeliveryMap().setSelectedNodeById(deliveryList.getSelected().getDelivery().getAddress());            
+            mainFrame.getDeliveryMap().setSelectedNodeById(deliveryList.getSelected().getDelivery().getAddress());
         }
         if (deliveryList.getSelected().getDelivery() == null) {
             System.err.println("deliveryList.getSelected.getDelivery null");
             return;
         }
-        
+
     }
-    
-    private interface Command {
-        
-        void execute();
-        
-        void undo();
+
+    private abstract class Command {
+
+        private String name;
+
+        Command(String name) {
+            this.name = name;
+        }
+
+        public abstract void execute();
+
+        public abstract void undo();
+
+        public String getName() {
+            return name;
+        }
     }
 }

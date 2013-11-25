@@ -36,8 +36,8 @@ public class MainFrame extends JFrame {
     private static final int DELIVERY_MAP_WIDTH = 600;
     private static final int DELIVERY_LIST_WIDTH = 200;
     
-    public static final String REDO_TOOLTIP = "Redo";
-    public static final String UNDO_TOOLTIP = "Undo";
+    public static final String REDO_TOOLTIP = "Refaire";
+    public static final String UNDO_TOOLTIP = "Annuler";
     public static final String MENU_EDIT_TOOLTIP = "Edition";
     public static final String EXPORT_ROUND_TOOLTIP = "Exporter une tournée";
     public static final String LOAD_MAP_TOOLTIP = "Charger un plan";
