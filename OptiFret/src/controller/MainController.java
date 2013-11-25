@@ -143,7 +143,7 @@ public class MainController implements Listener {
                     }
                 });
 
-                  mainFrame.getDeliveryMap().updateDeliveryNodes(roadNetwork.getNodes());
+                mainFrame.getDeliveryMap().updateDeliveryNodes(roadNetwork.getNodes());
             } catch (IOException e) {
                 mainFrame.showErrorMessage(e.getMessage());
             }
@@ -347,6 +347,10 @@ public class MainController implements Listener {
             return;
         }
 
+    }
+
+    public void run() {
+        mainFrame.setVisible(true);
     }
 
     private abstract class Command {

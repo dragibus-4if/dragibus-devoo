@@ -3,6 +3,8 @@ package view;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -32,15 +34,19 @@ public class DeliveryMap extends JPanel {
     private static final double SCALE_MAX = 3;
     private static final double SCALE_MIN = 0.1;
     private static final double SCALE_INC = 0.1;
+    private static final double SCROLL_SPEED = 5;
     public static final int PADDING = 20;
 
-    private double scale = 1;
-    private double dX = 0;
-    private double dY = 0;
+    private double scale;
+    private double vX;
+    private double vY;
+    private double offX;
+    private double offY;
 
     public DeliveryMap() {
         super();
         setDoubleBuffered(true);
+        setFocusable(true);
         reset();
         addMouseListener(new MouseListener() {
             @Override
@@ -82,6 +88,57 @@ public class DeliveryMap extends JPanel {
                 notifyScrolled(e);
             }
         });
+        addKeyListener(new KeyListener() {
+
+            @Override
+            public void keyTyped(KeyEvent e) {
+            }
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+                int keyCode = e.getKeyCode();
+                switch (keyCode) {
+                    case KeyEvent.VK_UP:
+                        vY -= SCROLL_SPEED;
+                        break;
+
+                    case KeyEvent.VK_DOWN:
+                        vY += SCROLL_SPEED;
+                        break;
+
+                    case KeyEvent.VK_LEFT:
+                        vX += SCROLL_SPEED;
+                        break;
+
+                    case KeyEvent.VK_RIGHT:
+                        vX -= SCROLL_SPEED;
+                        break;
+                }
+                updateOffset();
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+                int keyCode = e.getKeyCode();
+                switch (keyCode) {
+                    case KeyEvent.VK_UP:
+                        vY -= -SCROLL_SPEED;
+                        break;
+
+                    case KeyEvent.VK_DOWN:
+                        vY += -SCROLL_SPEED;
+                        break;
+
+                    case KeyEvent.VK_LEFT:
+                        vX += -SCROLL_SPEED;
+                        break;
+
+                    case KeyEvent.VK_RIGHT:
+                        vX -= -SCROLL_SPEED;
+                        break;
+                }
+            }
+        });
     }
 
     private void reset() {
@@ -90,7 +147,8 @@ public class DeliveryMap extends JPanel {
         mapNodes = new LinkedHashMap<>();
         selectedNode = new WeakReference<>(null);
         scale = 1;
-        dX = dY = 0;
+        offX = offY = 0;
+        vX = vY = 0;
     }
 
     public void setSelectedNodeById(Long id) {
@@ -203,31 +261,27 @@ public class DeliveryMap extends JPanel {
     }
 
     private void notifyScrolled(MouseWheelEvent e) {
-        int dx = e.getX() - getSize().width / 2;
-        int dy = e.getY() - getSize().height / 2;
-        System.out.println("dx = " + dx);
-        System.out.println("dy = " + dy);
-        double l = Math.sqrt(dx * dx + dy * dy);
-        System.out.println("origX = " + dX);
-        System.out.println("origY = " + dY);
-        dX += SCALE_INC * dx / l;
-        dY += SCALE_INC * dy / l;
         double diff = SCALE_INC * (double) e.getWheelRotation();
         if (diff < 0) {
             scale = Math.min(SCALE_MAX, scale - diff);
         } else {
             scale = Math.max(SCALE_MIN, scale - diff);
         }
-        setSize(new Dimension(maxX + PADDING, maxY + PADDING));
+        repaint();
+    }
+
+    private void updateOffset() {
+        offX += vX;
+        offY += vY;
         repaint();
     }
 
     private int getActualX(int x) {
-        return (int) (x / scale);
+        return (int) ((x - offX) / scale);
     }
 
     private int getActualY(int y) {
-        return (int) (y / scale);
+        return (int) ((y - offY) / scale);
     }
 
     @Override
@@ -235,8 +289,8 @@ public class DeliveryMap extends JPanel {
         super.paintComponent(g);
         g.drawRect(2, 2, getWidth() - 5, getHeight() - 5);
         Graphics2D g2d = (Graphics2D) g;
-        g2d.translate(getWidth() / 2, getWidth() / 2);
-        g2d.translate(dX, dY);
+        //g2d.translate(getWidth() / 2, getWidth() / 2);
+        g2d.translate(offX, offY);
         g2d.scale(scale, scale);
         draw(g);
     }

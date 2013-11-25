@@ -51,9 +51,7 @@ public class MainFrame extends JFrame {
         setSize(800, DELIVERY_MAP_WIDTH);
         setLayout(new BorderLayout());
         setJMenuBar(makeMenu());
-        DeliveryMap map=(DeliveryMap)makeDeliveryMap();
-        JScrollPane scrollPane =new JScrollPane(map);
-        add(scrollPane, BorderLayout.CENTER);
+        add(makeDeliveryMap(), BorderLayout.CENTER);
         add(makeDeliveryList(), BorderLayout.LINE_START);
         add(makeDeliveryAdding(), BorderLayout.PAGE_END);
     }
