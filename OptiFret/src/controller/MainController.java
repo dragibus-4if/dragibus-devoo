@@ -390,7 +390,7 @@ public class MainController implements Listener {
 
     private abstract class Command {
 
-        private String name;
+        private final String name;
 
         Command(String name) {
             this.name = name;
