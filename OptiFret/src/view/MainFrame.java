@@ -32,6 +32,7 @@ public class MainFrame extends JFrame {
     private JMenuItem undo;
     private JMenuItem redo;
     private JButton addDeliveryButton;
+    private JButton delDeliveryButton;
     private DeliveryMap deliveryMap;
     private DeliveryList deliveryList;
     
@@ -46,6 +47,7 @@ public class MainFrame extends JFrame {
     public static final String MENU_FILE_TOOLTIP = "Fichier";
     public static final String LOAD_ROUND_TOOLTIP = "Charger une tournée";
     public static final String ADD_DELIVERY_TOOLTIP = "Ajouter";
+    public static final String DEL_DELIVERY_TOOLTIP = "Supprimer";
 
     public MainFrame() {
         super("Optifret");
@@ -88,8 +90,11 @@ public class MainFrame extends JFrame {
         deliveryMap.setPreferredSize(new Dimension(DELIVERY_MAP_WIDTH, getHeight()));
         addDeliveryButton = new JButton(ADD_DELIVERY_TOOLTIP);
         addDeliveryButton.setPreferredSize(new Dimension(100, 70));
+        delDeliveryButton = new JButton(DEL_DELIVERY_TOOLTIP);
+        addDeliveryButton.setPreferredSize(addDeliveryButton.getPreferredSize());
         panel.add(deliveryMap, gbc);
         panel.add(addDeliveryButton, gbc);
+        panel.add(delDeliveryButton, gbc);
         return panel;
     }
 
@@ -125,6 +130,10 @@ public class MainFrame extends JFrame {
 
     public DeliveryList getDeliveryList() {
         return deliveryList;
+    }
+
+    public JButton getAddDeliveryButton() {
+        return addDeliveryButton;
     }
 
     public void showErrorMessage(String msg) {
