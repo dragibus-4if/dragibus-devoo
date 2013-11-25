@@ -30,7 +30,7 @@ public class TimeSlot {
         if (end == null) {
             throw new NullPointerException("'end' ne doit pas être nul");
         } else if (end.before(begin)) {
-            throw new IllegalArgumentException("'end' doit être avant 'begin'");
+            throw new IllegalArgumentException("'end' doit être après 'begin'");
         }
         this.duration = new Long(end.getTime() - begin.getTime());
     }
