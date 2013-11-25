@@ -12,13 +12,14 @@ import org.jdesktop.swingx.VerticalLayout;
 public class DeliveryList extends JScrollPane {
 
     private final JPanel panel;
-    private DeliveryCollapsiblePane selected;
+    private DeliveryView selected;
     private final CopyOnWriteArrayList<Listener> listeners;
-    private Map<Long,DeliveryCollapsiblePane> panelList;
+    private Map<Long, DeliveryView> panelList;
+
     public DeliveryList() {
         super();
         this.listeners = new CopyOnWriteArrayList<>();
-        this.panelList= new LinkedHashMap<>();
+        this.panelList = new LinkedHashMap<>();
         panel = new JPanel(new VerticalLayout());
         getViewport().add(panel);
     }
@@ -29,24 +30,42 @@ public class DeliveryList extends JScrollPane {
         }
         panel.removeAll();
         for (Delivery d : deliveries) {
-            DeliveryCollapsiblePane dcp = new DeliveryCollapsiblePane(d, this);
+            DeliveryView dcp = new DeliveryView(d, this);
             dcp.toggle();
             panelList.put(d.getAddress(), dcp);
             panel.add(dcp);
         }
-        repaint();
+        validate();
+        //repaint();
     }
 
-    public DeliveryCollapsiblePane getSelected() {
+    public DeliveryView getSelected() {
         return selected;
     }
 
-    public void setSelected(DeliveryCollapsiblePane selected) {
-        this.selected = selected;
-        fireChangeEvent();
+    public void setSelected(DeliveryView newSelected) {
+
+        if (selected == null) {
+            selected = newSelected;
+        } else {
+            if (selected == newSelected) {
+                selected.unselect();
+                selected = null;
+            } else {
+                selected.unselect();
+                selected = newSelected;
+            }
+        }
     }
-    public void setSelectionById(long id){
-        panelList.get(id).select();
+
+    public void setSelectionById(long id) {
+        DeliveryView newSelected = panelList.get(id);
+
+        if (newSelected != null) {
+            newSelected.onEventSelect();
+        } else {
+            setSelected(null);
+        }
     }
 
     public void addListener(Listener l) {

@@ -31,7 +31,12 @@ import model.TimeSlot;
 public class DeliverySheetTest extends TestCase {
     public void testFile() {
         // Si le filename est null, la fonction retourne null.
-        assertNull(DeliverySheet.loadFromXML(null));
+        try {
+            DeliverySheet.loadFromXML(null);
+            fail("Chargement d'un reader nul");
+        }
+        catch(NullPointerException e) {
+        }
         
         try {
             // Si c'est un dossier, la fonction retourne Null

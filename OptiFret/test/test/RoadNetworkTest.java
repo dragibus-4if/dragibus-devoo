@@ -17,8 +17,13 @@ public class RoadNetworkTest extends TestCase {
 
     public void testFile() {
         try {
-            // Si le filename est null, la fonction retourne null.
-            assertNull(RoadNetwork.loadFromXML(null));
+            // Si le filename est null, la fonction renvoie un un NullPointerException
+            try {
+                RoadNetwork.loadFromXML(null);
+                fail("Chargement d'un reader nul");
+            }
+            catch(NullPointerException e) {
+            }
         } catch (IOException ex) {
             Logger.getLogger(RoadNetworkTest.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -85,11 +90,11 @@ public class RoadNetworkTest extends TestCase {
         RoadNetwork rn = null;
         try {
             rn = RoadNetwork.loadFromXML(new StringReader(s2));
+            assertNotNull(rn);
+            assertEquals(rn.getSize(), 0);
         } catch (IOException ex) {
             Logger.getLogger(RoadNetworkTest.class.getName()).log(Level.SEVERE, null, ex);
         }
-        assertNotNull(rn);
-        assertEquals(rn.getSize(), 0);
 
         // TODO tests sur l'intégrité du document
         // Voir le format des xmls à lire pour vérifier ça
