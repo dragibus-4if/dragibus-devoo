@@ -35,6 +35,14 @@ public class RoadNetwork {
     private static final String ID_ATTR = "id";
     private RoadNode root;
 
+    
+    
+    /**
+     * 
+     * @param input
+     * @return
+     * @throws IOException 
+     */
     public static RoadNetwork loadFromXML(Reader input) throws IOException {
         if (input == null) {
             throw new NullPointerException("Fichier chargé null");
@@ -154,7 +162,7 @@ public class RoadNetwork {
                     throw new IOException(
                             "Erreur roadNetwork.loadFromXML : \n"
                             + "Erreur syntaxique :\n"
-                            + "\tnom de noeud attend : TronconSortant\n"
+                            + "\tnom de noeud attendu : TronconSortant\n"
                             + "\tnom de noeud trouvé : "
                             + roadSectionNode.getNodeName());
                 }
