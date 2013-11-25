@@ -103,35 +103,23 @@ public abstract class NavigablePanel extends JPanel {
 
     private void doMousePressed(MouseEvent e) {
         notifyPressed(getActualX(e.getX()), getActualY(e.getY()));
-        startDragging(e.getX(), e.getY());
+        dragging = true;
+        grabX = e.getX() - offX;
+        grabY = e.getY() - offY;
     }
 
     private void doMouseReleased(MouseEvent e) {
         notifyReleased(getActualX(e.getX()), getActualY(e.getY()));
-        stopDragging();
+        dragging = false;
     }
 
     private void doMouseDragged(MouseEvent e) {
         notifyMoved(getActualX(e.getX()), getActualY(e.getY()));
         if (dragging) {
-            updateDragging(e.getX(), e.getY());
+            offX = e.getX() - grabX;
+            offY = e.getY() - grabY;
+            repaint();
         }
-    }
-
-    private void startDragging(int x, int y) {
-        dragging = true;
-        grabX = x - offX;
-        grabY = y - offY;
-    }
-
-    private void updateDragging(int x, int y) {
-        offX = x - grabX;
-        offY = y - grabY;
-        repaint();
-    }
-    
-    private void stopDragging() {
-        dragging = false;
     }
 
     private int getActualX(int x) {
