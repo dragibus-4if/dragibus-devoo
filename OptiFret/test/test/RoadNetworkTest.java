@@ -12,9 +12,15 @@ import junit.framework.TestCase;
 import model.RoadNetwork;
 import model.RoadNode;
 import model.RoadSection;
+import org.junit.rules.ExpectedException;
+import org.xml.sax.SAXException;
 
 public class RoadNetworkTest extends TestCase {
+    
+    public ExpectedException exception = ExpectedException.none();
 
+    
+/* // l'on ne prend pls de fichier mais un reader :)
     public void testFile() {
         try {
             // Si le filename est null, la fonction renvoie un un NullPointerException
@@ -95,6 +101,52 @@ public class RoadNetworkTest extends TestCase {
         } catch (IOException ex) {
             Logger.getLogger(RoadNetworkTest.class.getName()).log(Level.SEVERE, null, ex);
         }
+        assertNotNull(rn);
+        assertEquals(rn.getSize(), 0);
+*/
+    public void testXMLSyntax() throws IOException {
+        // Si la syntaxe XML est mauvaise, la fonction lance une SAXException
+      
+        // Test d'une fermeture de balise manquante
+        StringReader sr = new StringReader( "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n" +
+"<Reseau>");
+        RoadNetwork.loadFromXML( sr );
+        exception.expect(SAXException.class);
+    
+        // Test d'une ouverture de balise manquante
+        sr = new StringReader( "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n" +
+"<Reseau></Noeud><Reseau>");
+        RoadNetwork.loadFromXML( sr );
+        exception.expect(SAXException.class);
+
+        // Il n'y a pas tout les cas sur la syntaxe XML. La bibliothèque
+        // utilisée doit pouvoir détecter les erreurs. Nous l'utilisons et ces
+        // quelques tests permettent de montrer qu'on capte que la bibliothèque
+        // a détecté une erreur.
+    }
+
+    public void testXMLSemantic() throws IOException {
+        
+        // Si la balise racine est un élément quelconque (différent de ce qui
+        // est attendu), la fonction lance une erreur.
+        StringReader sr = new StringReader("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>"+
+                "<root></root>");
+        RoadNetwork.loadFromXML( sr );
+        exception.expect( IOException.class );
+        exception.expectMessage("Erreur roadNetwork.loadFromXML : \n"
+                    + "Erreur syntaxique :\n"
+                    + "\tLe noeud racine n'est pas <Reseau>");
+
+        // Si le document contient un élément non défini, la fonction renvoie
+        // null.
+        sr = new StringReader ("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>"+""
+                + "<Reseau><autre></autre></Reseau>");
+        RoadNetwork.loadFromXML(sr);
+        exception.expect( IOException.class );
+        exception.expectMessage("Erreur roadNetwork.loadFromXML : \n"
+                    + "Erreur syntaxique :\n"
+                    + "\tLe document ne contient pas de RoadNodes");
+        
 
         // TODO tests sur l'intégrité du document
         // Voir le format des xmls à lire pour vérifier ça
