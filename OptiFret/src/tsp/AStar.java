@@ -1,9 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package tsp;
 
 import java.util.ArrayList;
@@ -26,7 +20,7 @@ public class AStar {
     }
     
     private static Double heuristicCost(RoadNode a, RoadNode b) {
-        return cost(a, b);
+        return Math.sqrt(Math.pow(a.getX() - b.getX(), 2) + Math.pow(a.getY() - b.getY(), 2));
     }
     
     static public List<RoadNode> findPath(RoadNode start, RoadNode goal) {

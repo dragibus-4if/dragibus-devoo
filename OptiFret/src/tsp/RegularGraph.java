@@ -96,38 +96,38 @@ public class RegularGraph implements Graph {
 //            }
 //        }
         //Nouveau calcul du RegularGraph (limité aux livraisons)
-        List<RoadNode> path = null; // TODO
+        //List<RoadNode> path = null; // TODO
 
-        int size = objectives.size();
-        int min = Integer.MAX_VALUE;
-        int max = 0;
-        int[][] distances = new int[size][size];
-        open = new HashSet<>();
-        close = new HashSet<>();
-        ArrayList<ArrayList<Integer>> succ = new ArrayList<>();
-        ArrayList<Integer> tsList = new ArrayList<>();
+//        int size = objectives.size();
+//        int min = Integer.MAX_VALUE;
+//        int max = 0;
+//        int[][] distances = new int[size][size];
+//        open = new HashSet<>();
+//        close = new HashSet<>();
+//        ArrayList<ArrayList<Integer>> succ = new ArrayList<>();
+//        ArrayList<Integer> tsList = new ArrayList<>();
 
         /*
          * Cette List n'est pas read pour le moment, 
          * mais fait correspondre des Id de livraisons 
          * (dans la DeliveryRound) avec leurs adresses      
          */
-        ArrayList<Long> adrList = new ArrayList<>();
+        // ArrayList<Long> adrList = new ArrayList<>();
 
         //Premier parsing des timeslots + adresses
-        adrList.add(objectives.get(0).getAddress());
-        long currentTimeSlot = objectives.get(1).getTimeSlot().getBegin().getTime();
-        tsList.add(1);
-        adrList.add(objectives.get(1).getAddress());
-        for (int j = 2; j < size; j++) {
-            adrList.add(objectives.get(j).getAddress());
-            if (objectives.get(j).getTimeSlot().getBegin().getTime()
-                    != currentTimeSlot) {
-                tsList.add(j);
-                currentTimeSlot = objectives.get(j).getTimeSlot().
-                        getBegin().getTime();
-            }
-        }
+//        adrList.add(objectives.get(0).getAddress());
+//        long currentTimeSlot = objectives.get(1).getTimeSlot().getBegin().getTime();
+//        tsList.add(1);
+//        adrList.add(objectives.get(1).getAddress());
+//        for (int j = 2; j < size; j++) {
+//            adrList.add(objectives.get(j).getAddress());
+//            if (objectives.get(j).getTimeSlot().getBegin().getTime()
+//                    != currentTimeSlot) {
+//                tsList.add(j);
+//                currentTimeSlot = objectives.get(j).getTimeSlot().
+//                        getBegin().getTime();
+//            }
+//        }
 
 //        //Etablissement de la liste des successeurs (parmi les livraisons)
 //        int progress = 0;   //Progres general dans la liste des livraisons
@@ -135,6 +135,7 @@ public class RegularGraph implements Graph {
 //        int progNTS = 1;    //Prochaine timeSlot a traiter
 //        int progTSE = 2;    //Fin des timeSlot a pointer pour une adresse
         
+        ArrayList<ArrayList<Integer>> succ = new ArrayList<>();
         for(Delivery d1 : objectives) {
             ArrayList<Integer> succEq = new ArrayList<>();
             ArrayList<Integer> succNext = new ArrayList<>();
@@ -181,6 +182,10 @@ public class RegularGraph implements Graph {
 //        }
 
         // Calcul du Dijstrak pour chaque "paire de livraison" parmis les successeurs
+        int size = objectives.size();
+        int min = Integer.MAX_VALUE;
+        int max = 0;
+        int[][] distances = new int[size][size];
         for (int i = 0; i < succ.size(); i++) {
             for (int j = 0; j < succ.get(i).size(); j++) {
                 // Effectuer le AStar
