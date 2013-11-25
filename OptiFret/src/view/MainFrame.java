@@ -15,7 +15,6 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import static javax.swing.JOptionPane.showMessageDialog;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
 
 /**
@@ -37,6 +36,9 @@ public class MainFrame extends JFrame {
     private DeliveryMap deliveryMap;
     private DeliveryList deliveryList;
     
+    private static final int DEFAULT_WIDTH = 800;
+    private static final int DEFAULT_HEIGHT = 600;
+    
     private static final int DELIVERY_MAP_WIDTH = 600;
     private static final int DELIVERY_LIST_WIDTH = 200;
     
@@ -53,7 +55,7 @@ public class MainFrame extends JFrame {
     public MainFrame() {
         super("Optifret");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setSize(800, DELIVERY_MAP_WIDTH);
+        setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
         setLayout(new BorderLayout());
         setJMenuBar(makeMenu());
         add(makeDeliveryMap(), BorderLayout.CENTER);
