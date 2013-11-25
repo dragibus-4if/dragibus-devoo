@@ -295,7 +295,7 @@ public class DeliveryMap extends JPanel {
         return selectedNode;
     }
 
-    public void setSelectedNodeById(Long id) {
+    public void setSelectedNodeById(long id) {
         if (selectedNode.get() != null) {
             selectedNode.get().setSelection(false);
         }

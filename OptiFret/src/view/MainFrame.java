@@ -5,6 +5,7 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.KeyEvent;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -83,14 +84,21 @@ public class MainFrame extends JFrame {
 
     private Component makeDeliveryMap() {
         JPanel panel = new JPanel(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
         deliveryMap = new DeliveryMap();
         deliveryMap.setPreferredSize(new Dimension(DELIVERY_MAP_WIDTH, getHeight()));
         addDeliveryButton = new JButton(ADD_DELIVERY_TOOLTIP);
         addDeliveryButton.setPreferredSize(new Dimension(100, 70));
         delDeliveryButton = new JButton(DEL_DELIVERY_TOOLTIP);
         addDeliveryButton.setPreferredSize(addDeliveryButton.getPreferredSize());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.weightx = gbc.weighty = 1;
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
         panel.add(deliveryMap, gbc);
+        int padding = 10;
+        gbc.insets = new Insets(padding, padding, padding, padding);
+        gbc.gridwidth = 1;
+        gbc.weighty = 0.1;
         panel.add(addDeliveryButton, gbc);
         panel.add(delDeliveryButton, gbc);
         return panel;
@@ -132,6 +140,10 @@ public class MainFrame extends JFrame {
 
     public JButton getAddDeliveryButton() {
         return addDeliveryButton;
+    }
+
+    public JButton getDelDeliveryButton() {
+        return delDeliveryButton;
     }
 
     public void showErrorMessage(String msg) {

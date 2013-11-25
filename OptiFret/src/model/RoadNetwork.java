@@ -228,6 +228,38 @@ public class RoadNetwork {
     public void setRoot(RoadNode root) {
         this.root = root;
     }
+    
+    public RoadNode getNodeById(long id) {
+        return getNodeById(new Long(id));
+    }
+    
+    public RoadNode getNodeById(Long id) {
+        if (id == null) {
+            throw new NullPointerException("'id' ne doit pas être null");
+        }
+        
+        if (root == null) {
+            return null;
+        }
+        
+        Set<RoadNode> open = new HashSet<>();
+        Set<RoadNode> close = new HashSet<>();
+        open.add(root);
+        while (!open.isEmpty()) {
+            RoadNode current = open.iterator().next();
+            if (current.getId() == id) {
+                return current;
+            }
+            open.remove(current);
+            close.add(current);
+            for (RoadNode n : current.getNodes()) {
+                if (!close.contains(n)) {
+                    open.add(n);
+                }
+            }
+        }
+        return null;
+    }
 
     public List<RoadNode> getNodes() {
         if (root == null) {

@@ -23,6 +23,7 @@ import view.Listener;
 import view.MainFrame;
 import view.MyChangeEvent;
 import view.DeliveryList;
+import view.DeliveryView;
 import view.NodeView;
 
 public class MainController implements Listener {
@@ -33,18 +34,16 @@ public class MainController implements Listener {
     private DeliverySheet deliverySheet;
     private MainFrame mainFrame;
 
-    public MainController(MainFrame frame) {
-        if (frame == null) {
+    public MainController(MainFrame mainFrame) {
+        if (mainFrame == null) {
             throw new NullPointerException("'view' ne doit pas être nul");
         }
-        this.mainFrame = frame;
+        this.mainFrame = mainFrame;
         setupNewView();
-        setupListeners();
     }
 
-    private void setupListeners() {
-        mainFrame.getDeliveryMap().addListener(this);
-        mainFrame.getDeliveryList().addListener(this);
+    public void run() {
+        mainFrame.setVisible(true);
     }
 
     private void loadRoadNetwork() {
@@ -115,6 +114,14 @@ public class MainController implements Listener {
             try {
                 final DeliverySheet loadedDeliverySheet = DeliverySheet
                         .loadFromXML(new FileReader(fc.getSelectedFile()));
+
+                // Vérification comme quoi toutes les livraisons sont présentes sur la carte
+                for (Delivery delivery : loadedDeliverySheet.getDeliveryRound().getDeliveries()) {
+                    if (roadNetwork.getNodeById(delivery.getAddress()) == null) {
+                        throw new IOException("Addresse '" + delivery.getAddress()
+                                + "' indéfinie,\nchargement annulé.");
+                    }
+                }
 
                 executeCommand(new Command(fc.getDialogTitle()) {
                     private DeliverySheet currentDeliverySheet;
@@ -268,13 +275,19 @@ public class MainController implements Listener {
         mainFrame.getLoadRound().setEnabled(false);
         mainFrame.getExportRound().setEnabled(false);
 
+        // Boutons pour ajouter/supprimer une livraison
+        mainFrame.getAddDeliveryButton().setEnabled(false);
+        mainFrame.getDelDeliveryButton().setEnabled(false);
+
         // Listeners
         setupViewListeners();
-        //loadRoadNetwork();
-        //loadDeliverySheet();
     }
 
     private void setupViewListeners() {
+        // sélectionner un noeud/une livraison
+        mainFrame.getDeliveryMap().addListener(this);
+        mainFrame.getDeliveryList().addListener(this);
+
         // "charger la carte"
         mainFrame.getLoadMap().addActionListener(new ActionListener() {
             @Override
@@ -327,44 +340,52 @@ public class MainController implements Listener {
 
     public void onMapNodeSelected(DeliveryMap map) {
         if (map == null) {
-            System.out.println("map null");
             return;
         }
+
         WeakReference<NodeView> selectedNodeRef = map.getSelectedNode();
         if (selectedNodeRef == null) {
-            System.out.println("map.getSelectedNode() null");
             return;
         }
+
         NodeView selectedNode = selectedNodeRef.get();
         if (selectedNode == null) {
-            System.out.println("map.getSelectedNode().get() null");
             mainFrame.getDeliveryList().setSelectionById(-1);
+            mainFrame.getAddDeliveryButton().setEnabled(false);
         } else {
             mainFrame.getDeliveryList().setSelectionById(selectedNode.getAddress());
+            if (selectedNode.getMode() == NodeView.MODE.DELIVERY) {
+                mainFrame.getDelDeliveryButton().setEnabled(true);
+                mainFrame.getAddDeliveryButton().setEnabled(false);
+            } else {
+                mainFrame.getDelDeliveryButton().setEnabled(false);
+                mainFrame.getAddDeliveryButton().setEnabled(true);
+            }
         }
     }
 
     private void onListDeliverySelected(DeliveryList deliveryList) {
         if (deliveryList == null) {
-            System.err.println("deliveryList null");
             return;
         }
-        if (deliveryList.getSelected() == null) {
-            mainFrame.getDeliveryMap().setSelectedNodeById(-1l);
-            System.err.println("deliveryList.getSelected() null");
+
+        DeliveryView selectedDeliveryView = deliveryList.getSelected();
+        if (selectedDeliveryView == null) {
+            mainFrame.getDeliveryMap().setSelectedNodeById(-1);
+            mainFrame.getDelDeliveryButton().setEnabled(false);
             return;
+        }
+
+        Delivery selectedDelivery = selectedDeliveryView.getDelivery();
+        if (selectedDelivery == null) {
+            mainFrame.getDeliveryMap().setSelectedNodeById(-1);
+            mainFrame.getDelDeliveryButton().setEnabled(false);
         } else {
-            mainFrame.getDeliveryMap().setSelectedNodeById(deliveryList.getSelected().getDelivery().getAddress());
-        }
-        if (deliveryList.getSelected().getDelivery() == null) {
-            System.err.println("deliveryList.getSelected.getDelivery null");
-            return;
+            mainFrame.getDeliveryMap().setSelectedNodeById(selectedDelivery.getAddress());
+            mainFrame.getAddDeliveryButton().setEnabled(false);
+            mainFrame.getDelDeliveryButton().setEnabled(true);
         }
 
-    }
-
-    public void run() {
-        mainFrame.setVisible(true);
     }
 
     private abstract class Command {
