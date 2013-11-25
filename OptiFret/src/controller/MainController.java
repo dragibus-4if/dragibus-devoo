@@ -2,6 +2,7 @@ package controller;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -10,6 +11,7 @@ import java.util.EmptyStackException;
 import java.util.Stack;
 import javax.swing.JFileChooser;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import model.Delivery;
 import model.DeliveryRound;
 import model.DeliverySheet;
@@ -155,7 +157,16 @@ public class MainController implements Listener {
         fc.setDialogTitle(MainFrame.EXPORT_ROUND_TOOLTIP);
         if (fc.showSaveDialog(mainFrame) == JFileChooser.APPROVE_OPTION) {
             try {
-                deliverySheet.export(new FileWriter(fc.getSelectedFile()));
+                File file = fc.getSelectedFile();
+                if (file.exists()) {
+                    if (JOptionPane.showConfirmDialog(mainFrame,
+                            "Le fichier '" + file.getName() + "' existe déjà.\n"
+                            + "L'écraser ?", MainFrame.EXPORT_ROUND_TOOLTIP,
+                            JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
+                        return;
+                    }
+                }
+                deliverySheet.export(new FileWriter(file));
             } catch (IOException e) {
                 mainFrame.showErrorMessage(e.getMessage());
             }
