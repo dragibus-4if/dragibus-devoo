@@ -143,7 +143,7 @@ public class MainController implements Listener {
                     }
                 });
 
-                //   mainFrame.getDeliveryMap().updateDeliveryNodes(roadNetwork.getNodes());
+                  mainFrame.getDeliveryMap().updateDeliveryNodes(roadNetwork.getNodes());
             } catch (IOException e) {
                 mainFrame.showErrorMessage(e.getMessage());
             }

@@ -35,8 +35,8 @@ public class DeliveryMap extends JPanel {
     public static final int PADDING = 20;
 
     private double scale = 1;
-    //private int origX = 0;
-    //private int origY = 0;
+    private double dX = 0;
+    private double dY = 0;
 
     public DeliveryMap() {
         super();
@@ -89,6 +89,8 @@ public class DeliveryMap extends JPanel {
         mapArcs = new LinkedHashMap<>();
         mapNodes = new LinkedHashMap<>();
         selectedNode = new WeakReference<>(null);
+        scale = 1;
+        dX = dY = 0;
     }
 
     public void setSelectedNodeById(Long id) {
@@ -135,13 +137,6 @@ public class DeliveryMap extends JPanel {
             }
         }
         setPreferredSize(new Dimension(maxX + PADDING, maxY + PADDING));
-    }
-
-    @Override
-    public void setPreferredSize(Dimension preferredSize) {
-        super.setPreferredSize(preferredSize);
-        //origX = -preferredSize.width / 2;
-        //origX = -preferredSize.height / 2;
     }
 
     public void updateDeliveryNodes(List<RoadNode> nodes) {
@@ -208,13 +203,15 @@ public class DeliveryMap extends JPanel {
     }
 
     private void notifyScrolled(MouseWheelEvent e) {
-        //origX = e.getX();
-        //origY = e.getY();
-        //int dx = e.getX() - origX;
-        //int dy = e.getY() - origY;
-        //double l = Math.sqrt(dx * dx + dy * dy);
-        //origX += SCALE_INC * dx / l;
-        //origY += SCALE_INC * dy / l;
+        int dx = e.getX() - getSize().width / 2;
+        int dy = e.getY() - getSize().height / 2;
+        System.out.println("dx = " + dx);
+        System.out.println("dy = " + dy);
+        double l = Math.sqrt(dx * dx + dy * dy);
+        System.out.println("origX = " + dX);
+        System.out.println("origY = " + dY);
+        dX += SCALE_INC * dx / l;
+        dY += SCALE_INC * dy / l;
         double diff = SCALE_INC * (double) e.getWheelRotation();
         if (diff < 0) {
             scale = Math.min(SCALE_MAX, scale - diff);
@@ -238,8 +235,8 @@ public class DeliveryMap extends JPanel {
         super.paintComponent(g);
         g.drawRect(2, 2, getWidth() - 5, getHeight() - 5);
         Graphics2D g2d = (Graphics2D) g;
-        //g2d.translate(getWidth() / 2, getWidth() / 2);
-        //g2d.translate(-origX, -origY);
+        g2d.translate(getWidth() / 2, getWidth() / 2);
+        g2d.translate(dX, dY);
         g2d.scale(scale, scale);
         draw(g);
     }
