@@ -47,7 +47,7 @@ public class MainController implements Listener {
     }
     
     private void addDelivery() {
-        executeCommand(new Command() {
+        executeCommand(new Command("") {
             
             private DeliverySheet currentDeliverySheet;
 
