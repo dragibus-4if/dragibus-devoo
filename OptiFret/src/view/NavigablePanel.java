@@ -1,5 +1,10 @@
 package view;
 
+import config.Entry;
+import config.Helper;
+import config.Manager;
+import config.MissingAttributeException;
+import config.MissingEntryException;
 import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -15,11 +20,13 @@ import javax.swing.JPanel;
  * @author jmcomets
  */
 public abstract class NavigablePanel extends JPanel {
+    
+    private static final String CONFIG_ENTRY = "navigable-panel";
 
-    private static final double SCALE_MAX = 3;
-    private static final double SCALE_MIN = 0.1;
-    private static final double SCALE_INC = 0.1;
-    private static final double SCROLL_SPEED = 5;
+    private double SCALE_MAX = 3;
+    private double SCALE_MIN = 0.1;
+    private double SCALE_INC = 0.1;
+    private double SCROLL_SPEED = 5;
 
     private double scale;
 
@@ -127,6 +134,19 @@ public abstract class NavigablePanel extends JPanel {
                 }
             }
         });
+        try {
+            configure(Manager.getInstance().registerEntry(CONFIG_ENTRY));
+        } catch (MissingEntryException e) {
+            System.err.println("Aucune configuration trouvée pour " + CONFIG_ENTRY);
+        }
+    }
+    
+    private void configure(Entry entry) {
+        Helper helper = new Helper(entry);
+        SCALE_MAX = helper.getDouble("scale-max", SCALE_MAX);
+        SCALE_MIN = helper.getDouble("scale-min", SCALE_MIN);
+        SCALE_INC = helper.getDouble("scale-inc", SCALE_INC);
+        SCROLL_SPEED = helper.getDouble("scroll-speed", SCROLL_SPEED);
     }
 
     public void resetTransform() {

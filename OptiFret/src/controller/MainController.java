@@ -1,5 +1,6 @@
 package controller;
 
+import config.Manager;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -43,6 +44,7 @@ public class MainController implements Listener {
     }
 
     public void run() {
+        //configureStartup(Manager.getInstance().registerEntry("startup"));
         mainFrame.setVisible(true);
     }
 
