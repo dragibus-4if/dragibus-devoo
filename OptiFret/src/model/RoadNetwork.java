@@ -297,8 +297,14 @@ public class RoadNetwork {
         SolutionState s = tsp.solve(1000000, 100000);
         if (s == SolutionState.OPTIMAL_SOLUTION_FOUND || s == SolutionState.SOLUTION_FOUND) {
             int[] ls = tsp.getNext();
+            System.out.print("Solution : ");
+            for(int i : ls) {
+                System.out.print(i);
+            }
+            System.out.println();
             return graph.getLsNode(ls);
         }
+        System.out.println("Pas de solution trouvé");
         return new ArrayList<>();
     }
 
