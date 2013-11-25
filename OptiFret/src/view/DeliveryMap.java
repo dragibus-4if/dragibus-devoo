@@ -1,12 +1,15 @@
-/*
- */
 package view;
 
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import java.lang.ref.WeakReference;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -27,15 +30,24 @@ public class DeliveryMap extends JPanel {
     private WeakReference<NodeView> selectedNode;
     private int maxX = 0;
     private int maxY = 0;
-    private final CopyOnWriteArrayList<Listener> listeners;
+    private CopyOnWriteArrayList<Listener> listeners;
+    private static final double SCALE_MAX = 3;
+    private static final double SCALE_MIN = 0.1;
+    private static final double SCALE_INC = 0.1;
+    private static final double SCROLL_SPEED = 5;
+    public static final int PADDING = 20;
+
+    private double scale;
+    private double vX;
+    private double vY;
+    private double offX;
+    private double offY;
 
     public DeliveryMap() {
         super();
-        this.listeners = new CopyOnWriteArrayList<>();
-        this.setDoubleBuffered(true);
-        mapArcs = new LinkedHashMap<>();
-        mapNodes = new LinkedHashMap<>();
-        selectedNode = new WeakReference<>(null);
+        setDoubleBuffered(true);
+        setFocusable(true);
+        reset();
         addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -43,17 +55,11 @@ public class DeliveryMap extends JPanel {
 
             @Override
             public void mousePressed(MouseEvent e) {
-                System.out.println(String.valueOf(e.getX()));
-                System.out.println(String.valueOf(e.getY()));
-
                 notifyPressed(e);
             }
 
             @Override
             public void mouseReleased(MouseEvent e) {
-                System.out.println(String.valueOf(e.getX()));
-                System.out.println(String.valueOf(e.getY()));
-
                 notifyReleased(e);
             }
 
@@ -75,25 +81,79 @@ public class DeliveryMap extends JPanel {
                 notifyMoved(e);
             }
         });
+        addMouseWheelListener(new MouseWheelListener() {
 
+            @Override
+            public void mouseWheelMoved(MouseWheelEvent e) {
+                notifyScrolled(e);
+            }
+        });
+        addKeyListener(new KeyListener() {
+
+            @Override
+            public void keyTyped(KeyEvent e) {
+            }
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+                int keyCode = e.getKeyCode();
+                switch (keyCode) {
+                    case KeyEvent.VK_UP:
+                        vY -= SCROLL_SPEED;
+                        break;
+
+                    case KeyEvent.VK_DOWN:
+                        vY += SCROLL_SPEED;
+                        break;
+
+                    case KeyEvent.VK_LEFT:
+                        vX += SCROLL_SPEED;
+                        break;
+
+                    case KeyEvent.VK_RIGHT:
+                        vX -= SCROLL_SPEED;
+                        break;
+                }
+                updateOffset();
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+                int keyCode = e.getKeyCode();
+                switch (keyCode) {
+                    case KeyEvent.VK_UP:
+                        vY -= -SCROLL_SPEED;
+                        break;
+
+                    case KeyEvent.VK_DOWN:
+                        vY += -SCROLL_SPEED;
+                        break;
+
+                    case KeyEvent.VK_LEFT:
+                        vX += -SCROLL_SPEED;
+                        break;
+
+                    case KeyEvent.VK_RIGHT:
+                        vX -= -SCROLL_SPEED;
+                        break;
+                }
+            }
+        });
     }
 
-    public void setSelectedNodeById(Long id) {
-        if (selectedNode.get() != null) {
-            selectedNode.get().setSelection(false);
-        }
-        if (id == -1l) {
-            this.setSelectedNode(new WeakReference<NodeView>(null));
-            repaint();
-            return;
-        }
-        mapNodes.get(id).setSelection(true);
-        this.setSelectedNode(new WeakReference<>(mapNodes.get(id)));
-        repaint();
+    private void reset() {
+        listeners = new CopyOnWriteArrayList<>();
+        mapArcs = new LinkedHashMap<>();
+        mapNodes = new LinkedHashMap<>();
+        selectedNode = new WeakReference<>(null);
+        scale = 1;
+        offX = offY = 0;
+        vX = vY = 0;
     }
 
     public void updateNetwork(List<RoadNode> nodes) {
         if (nodes == null) {
+            reset();
             return;
         }
         mapArcs.clear();
@@ -120,7 +180,7 @@ public class DeliveryMap extends JPanel {
                 }
             }
         }
-        this.setPreferredSize(new Dimension(maxX + 20, maxY + 20));
+        setPreferredSize(new Dimension(maxX + PADDING, maxY + PADDING));
     }
 
     public void updateDeliveryNodes(List<RoadNode> nodes) {
@@ -154,8 +214,10 @@ public class DeliveryMap extends JPanel {
         System.out.println("Début parcours nodes Pressed");
         boolean voidClic = true;
         for (NodeView node : mapNodes.values()) {
-            if (!node.onMouseDown(e.getX(), e.getY())) {
-                voidClic = false;
+            int x = getActualX(e.getX());
+            int y = getActualY(e.getY());
+            if (!node.onMouseDown(x, y)) {
+                voidClic = false; // TODO also break loop ?
             }
         }
         if (voidClic) {
@@ -164,29 +226,59 @@ public class DeliveryMap extends JPanel {
             }
         }
         fireChangeEvent();
-        System.out.println("Fin parcours nodes Pressed");
         repaint();
     }
 
     private void notifyReleased(MouseEvent e) {
-        System.out.println("Début parcours nodes Released");
+        int x = getActualX(e.getX());
+        int y = getActualY(e.getY());
         for (NodeView node : mapNodes.values()) {
-            node.onMouseUp(e.getX(), e.getY());
+            node.onMouseUp(x, y);
         }
-        System.out.println("Fin parcours nodes Released");
     }
 
     private void notifyMoved(MouseEvent e) {
+        int x = getActualX(e.getX());
+        int y = getActualY(e.getY());
         for (NodeView node : mapNodes.values()) {
-            node.onMouseOver(e.getX(), e.getY());
+            node.onMouseOver(x, y);
         }
         repaint();
+    }
+
+    private void notifyScrolled(MouseWheelEvent e) {
+        double diff = SCALE_INC * (double) e.getWheelRotation();
+        offX += SCALE_INC * ((getWidth() / 2 - e.getX()) - offX);
+        offY += SCALE_INC * ((getHeight() / 2 - e.getY()) - offY);
+        if (diff < 0) {
+            scale = Math.min(SCALE_MAX, scale - diff);
+        } else {
+            scale = Math.max(SCALE_MIN, scale - diff);
+        }
+        repaint();
+    }
+
+    private void updateOffset() {
+        offX += vX;
+        offY += vY;
+        repaint();
+    }
+
+    private int getActualX(int x) {
+        return (int) ((x - offX) / scale);
+    }
+
+    private int getActualY(int y) {
+        return (int) ((y - offY) / scale);
     }
 
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         g.drawRect(2, 2, getWidth() - 5, getHeight() - 5);
+        Graphics2D g2d = (Graphics2D) g;
+        g2d.translate(offX, offY);
+        g2d.scale(scale, scale);
         draw(g);
     }
 
@@ -203,8 +295,33 @@ public class DeliveryMap extends JPanel {
         return selectedNode;
     }
 
+    public void setSelectedNodeById(Long id) {
+        if (selectedNode.get() != null) {
+            selectedNode.get().setSelection(false);
+        }
+        if (id == -1l) {
+            this.setSelectedNode(new WeakReference<NodeView>(null));
+            repaint();
+            return;
+        }
+        mapNodes.get(id).setSelection(true);
+        this.setSelectedNode(new WeakReference<>(mapNodes.get(id)));
+        repaint();
+    }
+
     public void setSelectedNode(WeakReference<NodeView> selectedNode) {
         this.selectedNode = selectedNode;
+    }
+
+    public double getScale() {
+        return scale;
+    }
+
+    public void setScale(double scale) {
+        if (scale <= 0) {
+            throw new IllegalArgumentException("'scale' donnée ne doit pas être <= 0");
+        }
+        this.scale = scale;
     }
 
     public int getMaxX() {
@@ -216,11 +333,11 @@ public class DeliveryMap extends JPanel {
     }
 
     public void addListener(Listener l) {
-        this.listeners.add(l);
+        listeners.add(l);
     }
 
     public void removeListener(Listener l) {
-        this.listeners.remove(l);
+        listeners.remove(l);
     }
 
     // Event firing method.  Called internally by other class methods.
