@@ -3,7 +3,6 @@ package view;
 import config.Entry;
 import config.Helper;
 import config.Manager;
-import config.MissingAttributeException;
 import config.MissingEntryException;
 import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
@@ -20,8 +19,6 @@ import javax.swing.JPanel;
  * @author jmcomets
  */
 public abstract class NavigablePanel extends JPanel {
-    
-    private static final String CONFIG_ENTRY = "navigable-panel";
 
     private double SCALE_MAX = 3;
     private double SCALE_MIN = 0.1;
@@ -134,10 +131,11 @@ public abstract class NavigablePanel extends JPanel {
                 }
             }
         });
+        String configEntryName = "navigable-panel";
         try {
-            configure(Manager.getInstance().registerEntry(CONFIG_ENTRY));
+            configure(Manager.getInstance().registerEntry(configEntryName));
         } catch (MissingEntryException e) {
-            System.err.println("Aucune configuration trouvée pour " + CONFIG_ENTRY);
+            System.out.println("Aucune configuration trouvée pour " + configEntryName);
         }
     }
     

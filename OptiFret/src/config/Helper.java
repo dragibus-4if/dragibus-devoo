@@ -15,6 +15,10 @@ public class Helper {
         this.entry = entry;
     }
 
+    public String getString(String attributeName) throws MissingAttributeException {
+        return entry.getValue(attributeName);
+    }
+
     public String getString(String attributeName, String defaultValue) {
         try {
             return entry.getValue(attributeName);
@@ -23,7 +27,7 @@ public class Helper {
         }
     }
 
-    public double getInteger(String attributeName, int defaultValue) {
+    public int getInteger(String attributeName, int defaultValue) {
         try {
             String str = entry.getValue(attributeName);
             return Integer.parseInt(str);
