@@ -81,6 +81,8 @@ public class DeliverySheet {
      * @param deliveryEmployee
      */
     public void setDeliveryEmployee(DeliveryEmployee deliveryEmployee) {
+        if(deliveryEmployee == null)
+            throw new NullPointerException();
         this.deliveryEmployee = deliveryEmployee;
     }
 
