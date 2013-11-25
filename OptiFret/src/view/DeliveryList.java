@@ -12,9 +12,9 @@ import org.jdesktop.swingx.VerticalLayout;
 public class DeliveryList extends JScrollPane {
 
     private final JPanel panel;
-    private DeliveryCollapsiblePane selected;
+    private DeliveryView selected;
     private final CopyOnWriteArrayList<Listener> listeners;
-    private Map<Long, DeliveryCollapsiblePane> panelList;
+    private Map<Long, DeliveryView> panelList;
 
     public DeliveryList() {
         super();
@@ -30,7 +30,7 @@ public class DeliveryList extends JScrollPane {
         }
         panel.removeAll();
         for (Delivery d : deliveries) {
-            DeliveryCollapsiblePane dcp = new DeliveryCollapsiblePane(d, this);
+            DeliveryView dcp = new DeliveryView(d, this);
             dcp.toggle();
             panelList.put(d.getAddress(), dcp);
             panel.add(dcp);
@@ -39,11 +39,11 @@ public class DeliveryList extends JScrollPane {
         //repaint();
     }
 
-    public DeliveryCollapsiblePane getSelected() {
+    public DeliveryView getSelected() {
         return selected;
     }
 
-    public void setSelected(DeliveryCollapsiblePane newSelected) {
+    public void setSelected(DeliveryView newSelected) {
 
         if (selected == null) {
             selected = newSelected;
@@ -59,7 +59,7 @@ public class DeliveryList extends JScrollPane {
     }
 
     public void setSelectionById(long id) {
-        DeliveryCollapsiblePane newSelected = panelList.get(id);
+        DeliveryView newSelected = panelList.get(id);
 
         if (newSelected != null) {
             newSelected.onEventSelect();

@@ -226,7 +226,7 @@ public class MainController implements Listener {
     }
 
     /**
-     * Surcharge spécifiant la valeur par défaut de {@code clearRedoHistory}.
+     * Surcharge spécifiant la valeur par défaut de {@literal clearRedoHistory}.
      *
      * @param cmd
      */
