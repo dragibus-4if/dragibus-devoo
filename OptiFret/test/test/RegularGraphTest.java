@@ -4,12 +4,7 @@
  */
 package test;
 
-import java.io.FileWriter;
-import java.io.BufferedWriter;
-
-import java.io.IOException;
 import junit.framework.TestCase;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -23,10 +18,6 @@ import model.RoadSection;
 import model.TimeSlot;
 import tsp.RegularGraph;
 
-/**
- *
- * @author julien
- */
 public class RegularGraphTest extends TestCase {
 
     public void testLoadRoadFromNetwork() {

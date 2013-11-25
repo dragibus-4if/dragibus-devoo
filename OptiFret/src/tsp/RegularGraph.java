@@ -1,6 +1,7 @@
 package tsp;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -135,16 +136,30 @@ public class RegularGraph implements Graph {
 //        int progTSE = 2;    //Fin des timeSlot a pointer pour une adresse
         
         for(Delivery d1 : objectives) {
-            ArrayList<Integer> l = new ArrayList<>();
+            ArrayList<Integer> succEq = new ArrayList<>();
+            ArrayList<Integer> succNext = new ArrayList<>();
+            Date minDate = null;
             for(Delivery d2 : objectives) {
                 if(d1 != d2) {
-                    if(d1.getTimeSlot().getEnd().before(d2.getTimeSlot().getBegin())
-                    || d1.getTimeSlot().getEnd().equals(d2.getTimeSlot().getBegin())) {
-                        l.add(new Integer(d2.getId().intValue()));
+                    if(d1.getTimeSlot().getEnd().equals(d2.getTimeSlot().getBegin())) {
+                        succEq.add(new Integer(d2.getId().intValue()));
+                    }
+                    else if(d1.getTimeSlot().getEnd().before(d2.getTimeSlot().getBegin())) {
+                        if(minDate == null && d2.getTimeSlot().getBegin().equals(minDate)) {
+                            succNext.add(new Integer(d2.getId().intValue()));
+                        }
+                        else if(minDate == null || d2.getTimeSlot().getBegin().before(minDate)) {
+                            minDate = d2.getTimeSlot().getBegin();
+                            succNext.clear();
+                            succNext.add(new Integer(d2.getId().intValue()));
+                        }
                     }
                 }
             }
-            succ.add(l);
+            for(Integer i : succNext) {
+                succEq.add(i);
+            }
+            succ.add(succEq);
         }
 
 //        while (progress < size) {
