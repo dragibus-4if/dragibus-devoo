@@ -349,6 +349,16 @@ public class MainController extends Invoker implements Listener {
                 redoLastCommand();
             }
         });
+        
+        // "supprimer une livraison"
+        mainFrame.getAddDeliveryButton().addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                long deliveryId = 1;
+                deleteDelivery(deliveryId);
+            }
+        });
     }
 
     @Override
