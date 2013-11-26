@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.EmptyStackException;
+import java.util.List;
 import java.util.Stack;
 import javax.swing.JFileChooser;
 import javax.swing.JMenuItem;
@@ -199,7 +200,8 @@ public class MainController implements Listener {
                     }
                 });
 
-                mainFrame.getDeliveryMap().updateDeliveryNodes(roadNetwork.getNodes());
+                List<RoadNode> path = roadNetwork.makeRoute(deliverySheet.getDeliveryRound().getDeliveries());
+                mainFrame.getDeliveryMap().updateDeliveryNodes(path);
             } catch (IOException e) {
                 mainFrame.showErrorMessage(e.getMessage());
             }

@@ -9,6 +9,7 @@ import java.util.Set;
 import model.RoadNode;
 import model.RoadSection;
 
+// TODO REDO
 public class AStar {
     public static Double cost(RoadNode a, RoadNode b) {
         for(RoadSection s : a.getSections()) {
@@ -44,14 +45,16 @@ public class AStar {
                 }
             }
             if(current == goal) {
-                return reconstructPath(cameFrom, goal);
+                return reconstructPath(cameFrom, start, goal);
             }
             open.remove(current);
             close.add(current);
             for(RoadNode neighbor : current.getNeighbors()) {
                 Double tryGScore = gScore.get(current) + cost(current, neighbor);
                 Double tryFScore = tryGScore + heuristicCost(current, neighbor);
-                if(!fScore.containsKey(neighbor) || tryFScore < fScore.get(neighbor)) {
+                if(close.contains(neighbor) && fScore.containsKey(neighbor) && tryFScore >= fScore.get(neighbor))
+                    continue;
+                if(!open.contains(neighbor) || !fScore.containsKey(neighbor) || tryFScore < fScore.get(neighbor)) {
                     cameFrom.put(neighbor, current);
                     gScore.put(neighbor, tryGScore);
                     fScore.put(neighbor, tryFScore);
@@ -63,13 +66,16 @@ public class AStar {
         return null;
     }
 
-    private static List<RoadNode> reconstructPath(Map<RoadNode, RoadNode> cameFrom, RoadNode goal) {
-        if(cameFrom.containsKey(goal)) {
-            List<RoadNode> p = reconstructPath(cameFrom, cameFrom.get(goal));
-            p.add(goal);
-            return p;
-        }
+    private static List<RoadNode> reconstructPath(Map<RoadNode, RoadNode> cameFrom, RoadNode start, RoadNode goal) {
         List<RoadNode> p = new ArrayList<>();
+        if(goal == start)
+            return p;
+        if(cameFrom.containsKey(goal)) {
+            RoadNode n = cameFrom.get(goal);
+            if(n != goal) {
+                p = reconstructPath(cameFrom, start, cameFrom.get(goal));                
+            }
+        }
         p.add(goal);
         return p;
     }

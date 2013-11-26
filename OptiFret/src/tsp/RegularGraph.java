@@ -23,13 +23,14 @@ public class RegularGraph implements Graph {
     private final int[][] cost;
     private final ArrayList<ArrayList<Integer>> succ;
     private final Map<Integer, RoadNode> index2Node;
+    private final List<Delivery> objectives;
     
     public static RegularGraph loadFromRoadNetwork(RoadNetwork net, List<Delivery> objectives) {
         if (net == null || objectives == null) {
             throw new NullPointerException();
         }
         if (net.getRoot() == null) {
-            return new RegularGraph(0, 0, 0, new int[0][0], new ArrayList<ArrayList<Integer>>(), new TreeMap<Integer, RoadNode>());
+            return new RegularGraph(0, 0, 0, new int[0][0], new ArrayList<ArrayList<Integer>>(), new TreeMap<Integer, RoadNode>(), new ArrayList<Delivery>());
         }
 
         Set<RoadNode> open = new HashSet<>();
@@ -136,29 +137,32 @@ public class RegularGraph implements Graph {
 //        int progTSE = 2;    //Fin des timeSlot a pointer pour une adresse
         
         ArrayList<ArrayList<Integer>> succ = new ArrayList<>();
-        for(Delivery d1 : objectives) {
+        for(int i = 0 ; i < objectives.size() ; i++) {
+            Delivery d1 = objectives.get(i);
             ArrayList<Integer> succEq = new ArrayList<>();
             ArrayList<Integer> succNext = new ArrayList<>();
             Date minDate = null;
-            for(Delivery d2 : objectives) {
+            for(int j = 0 ; j < objectives.size() ; j++) {
+                Delivery d2 = objectives.get(j);
                 if(d1 != d2) {
                     if(d1.getTimeSlot().getEnd().equals(d2.getTimeSlot().getBegin())) {
-                        succEq.add(new Integer(d2.getId().intValue()));
+                        succEq.add(j);
                     }
                     else if(d1.getTimeSlot().getEnd().before(d2.getTimeSlot().getBegin())) {
                         if(minDate == null && d2.getTimeSlot().getBegin().equals(minDate)) {
-                            succNext.add(new Integer(d2.getId().intValue()));
+                            succNext.add(j);
                         }
                         else if(minDate == null || d2.getTimeSlot().getBegin().before(minDate)) {
                             minDate = d2.getTimeSlot().getBegin();
                             succNext.clear();
-                            succNext.add(new Integer(d2.getId().intValue()));
+                            succNext.add(j);
                         }
                     }
                 }
             }
-            for(Integer i : succNext) {
-                succEq.add(i);
+            succEq.addAll(succNext);
+            if(succEq.isEmpty()) {
+                succEq.add(0);
             }
             succ.add(succEq);
         }
@@ -186,12 +190,14 @@ public class RegularGraph implements Graph {
         int min = Integer.MAX_VALUE;
         int max = 0;
         int[][] distances = new int[size][size];
-        for (int i = 0; i < succ.size(); i++) {
-            for (int j = 0; j < succ.get(i).size(); j++) {
+        for (int i = 0 ; i < succ.size() ; i++) {
+            for (int j = 0 ; j < succ.get(i).size() ; j++) {
                 // Effectuer le AStar
-                // AStar entre indexMap[i] et indexMap[j].
                 // Récupérer la longueur qui correspond au cout de cheminement.
-                List<RoadNode> pathNode = AStar.findPath(indexMap.get(i), indexMap.get(succ.get(i).get(j)));
+                Integer succIndex = succ.get(i).get(j);
+                Integer addr1 = objectives.get(i).getAddress().intValue();
+                Integer addr2 = objectives.get(succIndex).getAddress().intValue();
+                List<RoadNode> pathNode = AStar.findPath(indexMap.get(addr1), indexMap.get(addr2));
                 Double c = new Double(0);
                 for (int k = 1; k < pathNode.size(); k++) {
                     c += AStar.cost(pathNode.get(k - 1), pathNode.get(k));
@@ -206,24 +212,28 @@ public class RegularGraph implements Graph {
             }
         }
 
-        return new RegularGraph(indexMap.size(), new Double(max).intValue(), new Double(min).intValue(), distances, succ, indexMap);
+        return new RegularGraph(size, new Double(max).intValue(), new Double(min).intValue(), distances, succ, indexMap, objectives);
     }
 
     public RegularGraph(int nbVertices, int maxArcCost, int minArcCost,
             int[][] cost, ArrayList<ArrayList<Integer>> succ,
-            Map<Integer, RoadNode> index2Node) {
+            Map<Integer, RoadNode> index2Node,
+            List<Delivery> objectives) {
         this.nbVertices = nbVertices;
         this.maxArcCost = maxArcCost;
         this.minArcCost = minArcCost;
         this.cost = cost;
         this.succ = succ;
         this.index2Node = index2Node;
+        this.objectives = objectives;
     }
 
     public List<RoadNode> getLsNode(int[] indexes) {
         List<RoadNode> l = new ArrayList<>();
-        for (int i : indexes) {
-            l.add(index2Node.get(new Integer(i)));
+        for (int i = 1; i < indexes.length ; i++) {
+            Integer addr1 = objectives.get(i - 1).getAddress().intValue();
+            Integer addr2 = objectives.get(i).getAddress().intValue();
+            l.addAll(AStar.findPath(index2Node.get(addr1), index2Node.get(addr2)));
         }
         return l;
     }
@@ -253,6 +263,8 @@ public class RegularGraph implements Graph {
         if ((i < 0) || (i >= nbVertices)) {
             throw new ArrayIndexOutOfBoundsException();
         }
+        if(succ.get(i).isEmpty())
+            return new int[0];
         int[] tab = new int[succ.get(i).size()];
         for (int j = 0; j < tab.length; j++) {
             tab[j] = succ.get(i).get(j);

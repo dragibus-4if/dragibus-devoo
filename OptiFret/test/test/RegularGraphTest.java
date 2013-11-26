@@ -32,7 +32,7 @@ public class RegularGraphTest extends TestCase {
 
         // On crée un RegularGraph "à la main" (HandMade)
         RegularGraph graphHM = new RegularGraph(nbVertices, max, min, cost, succ,
-                index2Node);
+                index2Node, new ArrayList<Delivery>());
 
         // Test du RegularGraph généré à partir d'un RoadNetwork nul
         try {
@@ -45,7 +45,8 @@ public class RegularGraphTest extends TestCase {
         RoadNetwork netNR = new RoadNetwork();
         RegularGraph graphZero = new RegularGraph(0, 0, 0, new int[0][0],
                 new ArrayList<ArrayList<Integer>>(),
-                new TreeMap<Integer, RoadNode>());
+                new TreeMap<Integer, RoadNode>(),
+                new ArrayList<Delivery>());
         RegularGraph graphGZero = RegularGraph.loadFromRoadNetwork(netNR, new ArrayList<Delivery>());
         assertEquals(graphZero.getNbVertices(), graphGZero.getNbVertices());
         assertEquals(graphZero.getMaxArcCost(), graphGZero.getMaxArcCost());
@@ -86,7 +87,7 @@ public class RegularGraphTest extends TestCase {
         treeCB.put(1, node2);
 
         RegularGraph graphCB = new RegularGraph(2, 88, 14, costCB, succCB,
-                treeCB);
+                treeCB, obj);
         RegularGraph graphGCB = RegularGraph.loadFromRoadNetwork(netCB, obj);
         assertEquals(graphCB.getNbVertices(), graphGCB.getNbVertices());
         assertEquals(graphCB.getMaxArcCost(), graphGCB.getMaxArcCost());
