@@ -54,9 +54,9 @@ public class DeliveryView extends JPanel {
         Client client = delivery.getClient();
         if (client != null) {
             String unspecified = "non spécifié";
-            String clientName = (client.getPhoneNum() != null) ? client.getPhoneNum() : unspecified;
+            String clientName = (client.getName() != null) ? client.getName() : unspecified;
             String clientPhoneNum = (client.getPhoneNum() != null) ? client.getPhoneNum() : unspecified;
-            String clientAddress = (client.getPhoneNum() != null) ? client.getPhoneNum() : unspecified;
+            String clientAddress = (client.getAddress()!= null) ? client.getAddress() : unspecified;
             clientPhoneNumLabel.setText("Tél. client : " + clientPhoneNum);
             clientNameLabel.setText("Client : " + clientName);
             clientAddressLabel.setText("Adresse : " + clientAddress);
