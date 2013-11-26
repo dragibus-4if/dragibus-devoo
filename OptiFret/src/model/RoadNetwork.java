@@ -295,7 +295,7 @@ public class RoadNetwork {
     public List<RoadNode> makeRoute(List<Delivery> deliveries) {
         RegularGraph graph = RegularGraph.loadFromRoadNetwork(this, deliveries);
         TSP tsp = new TSP(graph);
-        SolutionState s = tsp.solve(1000000, 100000);
+        SolutionState s = tsp.solve(100000000, 10000000);
         if (s == SolutionState.OPTIMAL_SOLUTION_FOUND || s == SolutionState.SOLUTION_FOUND) {
             int[] ls = tsp.getNext();
             System.out.print("Solution : ");

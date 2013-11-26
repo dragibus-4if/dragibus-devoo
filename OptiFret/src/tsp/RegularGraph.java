@@ -145,11 +145,11 @@ public class RegularGraph implements Graph {
             for(int j = 0 ; j < objectives.size() ; j++) {
                 Delivery d2 = objectives.get(j);
                 if(d1 != d2) {
-                    if(d1.getTimeSlot().getEnd().equals(d2.getTimeSlot().getBegin())) {
+                    if(d1.getTimeSlot().getBegin().equals(d2.getTimeSlot().getBegin())) {
                         succEq.add(j);
                     }
-                    else if(d1.getTimeSlot().getEnd().before(d2.getTimeSlot().getBegin())) {
-                        if(minDate == null && d2.getTimeSlot().getBegin().equals(minDate)) {
+                    else if(d1.getTimeSlot().getBegin().before(d2.getTimeSlot().getBegin())) {
+                        if(minDate != null && d2.getTimeSlot().getBegin().equals(minDate)) {
                             succNext.add(j);
                         }
                         else if(minDate == null || d2.getTimeSlot().getBegin().before(minDate)) {
@@ -161,7 +161,7 @@ public class RegularGraph implements Graph {
                 }
             }
             succEq.addAll(succNext);
-            if(succEq.isEmpty()) {
+            if(succNext.isEmpty()) {
                 succEq.add(0);
             }
             succ.add(succEq);
