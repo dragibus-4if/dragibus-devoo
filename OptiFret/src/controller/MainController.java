@@ -257,8 +257,7 @@ public class MainController extends Invoker implements Listener {
                 });
 
                 // TODO enlever
-                List<RoadNode> path = roadNetwork.makeRoute(deliverySheet.getDeliveries());
-                mainFrame.getDeliveryMap().updateDeliveryNodes(path);
+                roadNetwork.makeRoute(deliverySheet.getDeliveries());
             } catch (IOException e) {
                 mainFrame.showErrorMessage(e.getMessage());
             }
@@ -403,6 +402,9 @@ public class MainController extends Invoker implements Listener {
             mainFrame.getDeliveryMap().setSelectedNodeById(selectedDelivery.getAddress());
             mainFrame.getAddDeliveryButton().setEnabled(false);
             mainFrame.getDelDeliveryButton().setEnabled(true);
+            
+            ArrayList<RoadNode> path = roadNetwork.getPath(selectedDelivery.getId());
+            mainFrame.getDeliveryMap().updateDeliveryNodes(path);
         }
     }
 
