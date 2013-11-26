@@ -236,7 +236,7 @@ public class MainController extends Invoker implements Listener {
                         currentDeliverySheet = deliverySheet;
 
                         deliverySheet = loadedDeliverySheet;
-                        if(roadNetwork.makeRoute(deliverySheet.getDeliveries())) {
+                        if(roadNetwork.makeRoute(deliverySheet)) {
                             deliverySheet.setDelivery(roadNetwork.getSortedDeliveries());
                             deliverySheet.setDeliveryRound(roadNetwork.getPaths());
                         }

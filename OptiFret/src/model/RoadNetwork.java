@@ -3,6 +3,7 @@ package model;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -293,7 +294,12 @@ public class RoadNetwork {
         return l;
     }
 
-    public boolean makeRoute(List<Delivery> deliveries) {
+    public boolean makeRoute(DeliverySheet sheet) {
+        List<Delivery> deliveries = sheet.getDeliveries();
+        deliveries.add(0, new Delivery(new Long(-1),
+                sheet.getWarehouseAddress(),
+                new TimeSlot(new Date(new Long(0)), new Long(0)),
+                null));
         RegularGraph graph = RegularGraph.loadFromRoadNetwork(this, deliveries);
         TSP tsp = new TSP(graph);
         SolutionState s = tsp.solve(100000000, 10000000);
@@ -311,6 +317,7 @@ public class RoadNetwork {
                 this.sortedDeliveries.add(deliveries.get(index));
                 index = ls[index];
             } while(index != 0);
+            this.sortedDeliveries.remove(0); // Remove the warehouse
             return true;
         }
         System.out.println("Pas de solution trouvé");
