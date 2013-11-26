@@ -170,7 +170,7 @@ public class CreateDeliveryDialog extends JDialog {
         }
         
         // Client
-        Client client = new Client(((Number) clientId.getModel()).longValue());
+        Client client = new Client(((Number) clientId.getModel().getValue()).longValue());
         client.setName(clientName.getText());
         client.setPhoneNum(clientPhoneNum.getText());
         
@@ -194,6 +194,8 @@ public class CreateDeliveryDialog extends JDialog {
     }
 
     public static void main(String[] args) {
-        new CreateDeliveryDialog(null, 5, 5).setVisible(true);
+        CreateDeliveryDialog cdd = new CreateDeliveryDialog(null, 5, 5);
+        cdd.setVisible(true);
+        System.out.println("delivery = " + cdd.getDelivery());
     }
 }
