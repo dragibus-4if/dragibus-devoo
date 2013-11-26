@@ -49,7 +49,7 @@ public class RoadNode {
     }
 
     public Collection<RoadNode> getNeighbors() {
-        Collection<RoadNode> ls = new ArrayList<>(sections.size());
+        Collection<RoadNode> ls = new ArrayList<>();
         for (RoadSection section : getSections()) {
             ls.add(section.getRoadNodeEnd());
         }

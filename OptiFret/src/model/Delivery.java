@@ -7,16 +7,6 @@ public class Delivery {
     private TimeSlot timeSlot;
     private Client client;
 
-    public Delivery() {
-    }
-
-    public Delivery(Long id, Long address, TimeSlot timeSlot, Client client) {
-        this.id = id;
-        this.address = address;
-        this.timeSlot = timeSlot;
-        this.client = client;
-    }
-
     public Delivery(long id) {
         this(new Long(id));
     }
@@ -31,6 +21,13 @@ public class Delivery {
 
     public Long getAddress() {
         return address;
+    }
+
+    public Delivery(Long id, Long address, TimeSlot timeSlot, Client client) {
+        this(id);
+        this.address = address;
+        this.timeSlot = timeSlot;
+        this.client = client;
     }
 
     public void setAddress(Long address) {
@@ -52,16 +49,11 @@ public class Delivery {
     public void setClient(Client client) {
         this.client = client;
     }
-    
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("Delivery ")
-                .append(this.getId())
-                .append(" for \n")
-                .append(this.getClient())
-                .append("\nto adresse ")
-                .append(this.getAddress());
-        return sb.toString();
 
+    @Override
+    public String toString() {
+        return "Delivery{" + "id=" + id + ", address="
+                + address + ", timeSlot=" + timeSlot
+                + ", client=" + client + '}';
     }
 }

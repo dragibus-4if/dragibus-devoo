@@ -72,20 +72,18 @@ public class DeliveryMap extends NavigablePanel {
         for (ArcView arc : mapArcs.values()) {
             arc.resetNbLines();
         }
-        for (RoadNode rn : nodes) {
-            if (rn.getNeighbors() == null) {
-                break;
-            }
+        for(int i = 0 ; i < nodes.size() ; i++) {
+            RoadNode rn = nodes.get(i);
             NodeView tempNode = new NodeView(rn.getX(), rn.getY(), rn.getId(),
                     new WeakReference<>(this), MODE.CLASSIC);
-            for (Long i = 0l; i < mapNodes.size(); i++) {
-                if (tempNode.equals(mapNodes.get(i))) {
-                    mapNodes.get(i).setMode(MODE.DELIVERY);
+            for (Long j = new Long(0) ; j < mapNodes.size() ; j++) {
+                if (tempNode.equals(mapNodes.get(j))) {
+                    mapNodes.get(j).setMode(MODE.DELIVERY);
                 }
             }
-
-            for (RoadNode neighbor : rn.getNeighbors()) {
-                ArcView temp = new ArcView(rn.getX(), rn.getY(), neighbor.getX(), neighbor.getY(), 0);
+            if(i >= 1) {
+                RoadNode neighbor = nodes.get(i - 1);
+                ArcView temp = new ArcView(neighbor.getX(), neighbor.getY(), rn.getX(), rn.getY(), 0);
                 if (mapArcs.containsKey(temp.hashCode())) {
                     mapArcs.get(temp.hashCode()).incrementNbLines();
                 }

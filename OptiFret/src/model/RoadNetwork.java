@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -17,6 +18,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+import tsp.AStar;
 import tsp.RegularGraph;
 import tsp.SolutionState;
 import tsp.TSP;
@@ -34,8 +36,8 @@ public class RoadNetwork {
     private static final String X_ATTR = "x";
     private static final String ID_ATTR = "id";
     private RoadNode root;
-
-    
+    private HashMap<Delivery, List<RoadNode>> paths = new HashMap<>();
+    private List<Delivery> sortedDeliveries = new ArrayList<>();
     
     /**
      * 
@@ -291,10 +293,10 @@ public class RoadNetwork {
         return l;
     }
 
-    public List<RoadNode> makeRoute(List<Delivery> deliveries) {
+    public boolean makeRoute(List<Delivery> deliveries) {
         RegularGraph graph = RegularGraph.loadFromRoadNetwork(this, deliveries);
         TSP tsp = new TSP(graph);
-        SolutionState s = tsp.solve(1000000, 100000);
+        SolutionState s = tsp.solve(100000000, 10000000);
         if (s == SolutionState.OPTIMAL_SOLUTION_FOUND || s == SolutionState.SOLUTION_FOUND) {
             int[] ls = tsp.getNext();
             System.out.print("Solution : ");
@@ -302,10 +304,25 @@ public class RoadNetwork {
                 System.out.print(i);
             }
             System.out.println();
-            return graph.getLsNode(ls);
+            this.paths = graph.getPaths(ls);
+            int index = 0;
+            this.sortedDeliveries.clear();
+            do {
+                this.sortedDeliveries.add(deliveries.get(index));
+                index = ls[index];
+            } while(index != 0);
+            return true;
         }
         System.out.println("Pas de solution trouvé");
-        return new ArrayList<>();
+        return false;
+    }
+    
+    public HashMap<Delivery, List<RoadNode>> getPaths() {
+        return this.paths;
+    }
+    
+    public List<Delivery> getSortedDeliveries() {
+        return this.sortedDeliveries;
     }
 
     public int getSize() {

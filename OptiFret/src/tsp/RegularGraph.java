@@ -2,6 +2,7 @@ package tsp;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -35,7 +36,7 @@ public class RegularGraph implements Graph {
 
         Set<RoadNode> open = new HashSet<>();
         Set<RoadNode> close = new HashSet<>();
-        Integer index = new Integer(0);
+        //Integer index = new Integer(0);
         Map<Integer, RoadNode> indexMap = new TreeMap<>();
         open.add(net.getRoot());
         while (!open.isEmpty()) {
@@ -47,8 +48,9 @@ public class RegularGraph implements Graph {
                     open.add(n);
                 }
             }
-            indexMap.put(index, current);
-            index++;
+            //indexMap.put(index, current);
+            indexMap.put(current.getId().intValue(), current);
+            //index++;
         }
 
         //Ancien calcul du RegularGraph
@@ -145,11 +147,11 @@ public class RegularGraph implements Graph {
             for(int j = 0 ; j < objectives.size() ; j++) {
                 Delivery d2 = objectives.get(j);
                 if(d1 != d2) {
-                    if(d1.getTimeSlot().getEnd().equals(d2.getTimeSlot().getBegin())) {
+                    if(d1.getTimeSlot().getBegin().equals(d2.getTimeSlot().getBegin())) {
                         succEq.add(j);
                     }
-                    else if(d1.getTimeSlot().getEnd().before(d2.getTimeSlot().getBegin())) {
-                        if(minDate == null && d2.getTimeSlot().getBegin().equals(minDate)) {
+                    else if(d1.getTimeSlot().getBegin().before(d2.getTimeSlot().getBegin())) {
+                        if(minDate != null && d2.getTimeSlot().getBegin().equals(minDate)) {
                             succNext.add(j);
                         }
                         else if(minDate == null || d2.getTimeSlot().getBegin().before(minDate)) {
@@ -161,7 +163,7 @@ public class RegularGraph implements Graph {
                 }
             }
             succEq.addAll(succNext);
-            if(succEq.isEmpty()) {
+            if(succNext.isEmpty()) {
                 succEq.add(0);
             }
             succ.add(succEq);
@@ -227,14 +229,24 @@ public class RegularGraph implements Graph {
         this.index2Node = index2Node;
         this.objectives = objectives;
     }
-
-    public List<RoadNode> getLsNode(int[] indexes) {
+    
+    private List<RoadNode> getPath(int from, int to) {
+        Integer addr1 = objectives.get(from).getAddress().intValue();
+        Integer addr2 = objectives.get(to).getAddress().intValue();
         List<RoadNode> l = new ArrayList<>();
-        for (int i = 1; i < indexes.length ; i++) {
-            Integer addr1 = objectives.get(i - 1).getAddress().intValue();
-            Integer addr2 = objectives.get(i).getAddress().intValue();
-            l.addAll(AStar.findPath(index2Node.get(addr1), index2Node.get(addr2)));
-        }
+        l.add(index2Node.get(addr1));
+        List<RoadNode> path = AStar.findPath(index2Node.get(addr1), index2Node.get(addr2));
+        l.addAll(path);
+        return l;
+    }
+
+    public HashMap<Delivery, List<RoadNode>> getPaths(int[] indexes) {
+        HashMap<Delivery, List<RoadNode>> l = new HashMap<>();
+        int index = 0;
+        do {
+            l.put(objectives.get(index), getPath(index, indexes[index]));
+            index = indexes[index];
+        } while(index != 0);
         return l;
     }
 
