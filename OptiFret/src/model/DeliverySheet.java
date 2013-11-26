@@ -79,6 +79,10 @@ public class DeliverySheet {
         }
         return l;
     }
+    
+    public List<RoadNode> getDeliveryRound(Delivery from) {
+        return deliveryRound.get(from);
+    }
 
     public void setDeliveryRound(HashMap<Delivery, List<RoadNode>> deliveryRound) {
         this.deliveryRound = deliveryRound;
@@ -111,18 +115,6 @@ public class DeliverySheet {
             }
         }
         return null;
-    }
-
-    public List<RoadNode> getDeliveryRound() {
-        return deliveryRound;
-    }
-
-    public void setDeliveryRound(List<RoadNode> deliveryRound) {
-        this.deliveryRound = deliveryRound;
-    }
-
-    public DeliveryEmployee getDeliveryEmployee() {
-        return deliveryEmployee;
     }
 
     /**
