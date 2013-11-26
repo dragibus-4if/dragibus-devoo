@@ -115,6 +115,23 @@ public class MainController implements Listener {
                 // stocker l'etat courant de la liste de livraisons
                 currentDeliverySheet = deliverySheet;
                 currentNetwork = roadNetwork;
+                                
+                // recuperer la liste de livraisons et enlever la livraison
+                DeliveryRound dr = deliverySheet.getDeliveryRound();
+                
+                // chercher la livraison dans la liste pour l'enlever
+                for (Delivery liv : dr.getDeliveries()) {
+
+                }
+                
+                // ajouter la nouvelle liste a la fenetre et mettre a jour
+                mainFrame.getDeliveryList().setDeliveries(dr.getDeliveries());
+                mainFrame.getExportRound().setEnabled(true);
+                
+                // recalculer le chemin et mettre a jour le plan
+                mainFrame.getDeliveryMap()
+                                .updateNetwork(roadNetwork.getNodes());
+                mainFrame.repaint();
                 
                 throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
             }
