@@ -149,8 +149,8 @@ public class DeliveryView extends JPanel {
         updateToggleButton();
         folded = !folded;
         if (!extend.isCollapsed() && parent.getSelected() != this) {
-            minimal.setBackground(MINIMAL_BG_UNCOLLAPSED_COLOR);
-        }
+            minimal.setBackground(MINIMAL_BG_UNCOLLAPSED_COLOR);            
+        }      
     }
 
     private void updateToggleButton() {

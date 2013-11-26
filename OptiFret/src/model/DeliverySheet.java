@@ -68,15 +68,13 @@ public class DeliverySheet {
     }
 
     public List<RoadNode> getDeliveryRound() {
-        if(this.deliveries == null)
-            return new ArrayList<>();
-        if(this.deliveryRound == null)
-            return new ArrayList<>();
         List<RoadNode> l = new ArrayList<>();
-        for(Delivery d : this.deliveries) {
-            l.addAll(deliveryRound.get(d));
-            if(this.deliveries.get(this.deliveries.size() - 1) != d) {
-                l.remove(l.size() - 1);
+        if (deliveries != null && deliveryRound != null) {
+            for (Delivery d : deliveries) {
+                l.addAll(deliveryRound.get(d));
+                if (deliveries.get(deliveries.size() - 1) != d) {
+                    l.remove(l.size() - 1);
+                }
             }
         }
         return l;
@@ -94,10 +92,14 @@ public class DeliverySheet {
         return deliveryEmployee;
     }
 
+    public long getWarehouseAddress() {
+        return warehouseAddress;
+    }
+
     public List<Delivery> getDeliveries() {
         return deliveries;
     }
-    
+
     public void setDelivery(List<Delivery> deliveries) {
         this.deliveries = deliveries;
     }
@@ -106,8 +108,13 @@ public class DeliverySheet {
         deliveries.add(delivery);
     }
 
-    public long getWarehouseAddress() {
-        return warehouseAddress;
+    public Delivery findDeliveryById(long deliveryId) {
+        for (Delivery delivery : deliveries) {
+            if (delivery.getId() == deliveryId) {
+                return delivery;
+            }
+        }
+        return null;
     }
 
     /**

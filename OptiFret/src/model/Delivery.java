@@ -1,5 +1,7 @@
 package model;
 
+import java.util.Objects;
+
 public class Delivery {
 
     private Long id;
@@ -48,6 +50,17 @@ public class Delivery {
 
     public void setClient(Client client) {
         this.client = client;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        } else if (getClass() != obj.getClass()) {
+            return false;
+        } else {
+            return Objects.equals(id, ((Delivery) obj).id);
+        }
     }
 
     @Override

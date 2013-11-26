@@ -15,7 +15,6 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.EmptyStackException;
 import java.util.List;
-import java.util.Stack;
 import javax.swing.JFileChooser;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
@@ -23,6 +22,7 @@ import model.Delivery;
 import model.DeliverySheet;
 import model.RoadNetwork;
 import model.RoadNode;
+import view.CreateDeliveryDialog;
 import view.DeliveryMap;
 import view.Listener;
 import view.MainFrame;
@@ -31,15 +31,14 @@ import view.DeliveryList;
 import view.DeliveryView;
 import view.NodeView;
 
-public class MainController implements Listener {
+public class MainController extends Invoker implements Listener {
 
-    private final Stack<Command> history = new Stack<>();
-    private final Stack<Command> redoneHistory = new Stack<>();
     private RoadNetwork roadNetwork;
     private DeliverySheet deliverySheet;
     private MainFrame mainFrame;
 
     public MainController(MainFrame mainFrame) {
+        super();
         if (mainFrame == null) {
             throw new NullPointerException("'view' ne doit pas être nul");
         }
@@ -56,37 +55,39 @@ public class MainController implements Listener {
         }
         mainFrame.setVisible(true);
     }
-    
-    private void addDelivery() {
-        executeCommand(new Command("") {
-            
-            private DeliverySheet currentDeliverySheet;
+
+    private void addDelivery(long address) {
+        long id = 0; // TODO
+        CreateDeliveryDialog cdd = new CreateDeliveryDialog(mainFrame, id, address);
+        cdd.setVisible(true);
+
+        // Validation préalable: livraison crée si formulaire validé
+        final Delivery delivery = cdd.getDelivery();
+        if (delivery == null) {
+            return;
+        }
+
+        executeCommand(new Command("Ajouter la livraison d'id " + id) {
 
             @Override
             public void execute() {
-                // stocker l'etat courant
-                currentDeliverySheet = deliverySheet;
-                
-                // TODO - ouvrir la fenetre avec le formulair pour les livs et
-                // recuperer les valeurs
-                
-                // pour l'instant: ajouter une livraison fixe
-                Delivery newDelivery = new Delivery(Long.MAX_VALUE);
-                
                 // recuperer la liste de livraisons et ajouter la nouvelle liv
-                deliverySheet.addDelivery(newDelivery);
-                
+                deliverySheet.addDelivery(delivery);
+
                 // ajouter la nouvelle liste a la fenetre et mettre a jour
                 mainFrame.getDeliveryList().setDeliveries(deliverySheet.getDeliveries());
                 mainFrame.getExportRound().setEnabled(true);
+
+                // recalculer le chemin et mettre a jour le plan
+                mainFrame.getDeliveryMap().updateNetwork(deliverySheet.getDeliveryRound());
                 mainFrame.repaint();
             }
 
             @Override
             public void undo() {
-                // revenir a l'ancien DeliverySheet
-                deliverySheet = currentDeliverySheet;
-                
+                // TODO supprimer la livraison
+                deliverySheet.getDeliveries().remove(delivery);
+
                 // TODO - ajouter fonctionnalite
                 if (deliverySheet.getDeliveries() == null) {
                     mainFrame.getDeliveryList().setDeliveries(new ArrayList<Delivery>());
@@ -94,10 +95,37 @@ public class MainController implements Listener {
                 } else {
                     mainFrame.getDeliveryList().setDeliveries(deliverySheet.getDeliveries());
                 }
-                
+
                 mainFrame.repaint();
             }
         });
+    }
+
+    private void deleteDelivery(long deliveryId) {
+        final Delivery delivery = deliverySheet.findDeliveryById(deliveryId);
+        if (delivery == null) {
+            throw new IllegalArgumentException("Livraison d'id '" + deliveryId + "' indéfinie");
+        }
+
+        executeCommand(new Command("Supprimer la livraison d'id " + delivery.getId()) {
+
+            @Override
+            public void execute() {
+                List<Delivery> deliveries = deliverySheet.getDeliveries();
+                deliverySheet.getDeliveries().remove(delivery);
+
+                mainFrame.getDeliveryList().setDeliveries(deliveries);
+                mainFrame.getExportRound().setEnabled(deliveries.isEmpty());
+                mainFrame.getDeliveryMap().updateNetwork(deliverySheet.getDeliveryRound());
+                mainFrame.repaint();
+            }
+
+            @Override
+            public void undo() {
+                deliverySheet.getDeliveries().add(delivery);
+            }
+        });
+
     }
 
     private void configureStartup(Entry entry) {
@@ -261,94 +289,9 @@ public class MainController implements Listener {
         }
     }
 
-    /**
-     * Permet d'annuler la dernière commande et de l'ajouter à l'historique des
-     * "redo".
-     *
-     * @throws EmptyStackException
-     */
-    private void undoLastCommand() throws EmptyStackException {
-        Command cmd = history.pop();
-        undoCommand(cmd);
-        JMenuItem redo = mainFrame.getRedo();
-        JMenuItem undo = mainFrame.getUndo();
-        redo.setEnabled(true);
-        redo.setText(MainFrame.REDO_TOOLTIP + " \"" + cmd.getName() + '"');
-        if (history.size() == 0) {
-            undo.setEnabled(false);
-            undo.setText(MainFrame.UNDO_TOOLTIP);
-        } else {
-            Command cmd2 = history.peek();
-            undo.setText(MainFrame.UNDO_TOOLTIP + " \"" + cmd2.getName() + '"');
-        }
-    }
-
-    /**
-     * Permet de refaire la dernière commande annulée et de l'ajouter à
-     * l'historique des "undo".
-     *
-     * @throws EmptyStackException
-     */
-    private void redoLastCommand() throws EmptyStackException {
-        executeCommand(redoneHistory.pop(), false);
-        JMenuItem redo = mainFrame.getRedo();
-        if (redoneHistory.size() == 0) {
-            redo.setEnabled(false);
-            redo.setText(MainFrame.REDO_TOOLTIP);
-        } else {
-            Command cmd2 = redoneHistory.peek();
-            redo.setText(MainFrame.REDO_TOOLTIP + " \"" + cmd2.getName() + '"');
-        }
-    }
-
-    /**
-     * Permet d'exécuter une commande et de l'ajouter à l'historique.
-     *
-     * On gère ici les effets de bords éventuels : - dépassement de la taille de
-     * l'historique (TODO) - vidage de l'historique des "redo"
-     *
-     * @param cmd
-     */
-    private void executeCommand(Command cmd, boolean clearRedoHistory) {
-        // Exécuter la commande et l'ajouter à l'historique
-        cmd.execute();
-        history.add(cmd);
-        JMenuItem undo = mainFrame.getUndo();
-        undo.setEnabled(true);
-        undo.setText(MainFrame.UNDO_TOOLTIP + " \"" + cmd.getName() + '"');
-
-        // Empêcher de revenir en avant dans l'historique
-        if (clearRedoHistory) {
-            redoneHistory.clear();
-            mainFrame.getRedo().setText(MainFrame.REDO_TOOLTIP);
-        }
-    }
-
-    /**
-     * Surcharge spécifiant la valeur par défaut de {@literal clearRedoHistory}.
-     *
-     * @param cmd
-     */
-    private void executeCommand(Command cmd) {
-        executeCommand(cmd, true);
-    }
-
-    /**
-     * Permet d'annuler une commande et de l'ajouter à l'historique des "redo".
-     *
-     * On gère ici les effets de bords éventuels : - dépassement de la taille de
-     * l'historique des "redo" (TODO)
-     *
-     * @param cmd
-     */
-    private void undoCommand(Command cmd) {
-        cmd.undo();
-        redoneHistory.add(cmd);
-    }
-
     private void setupNewView() {
         // Historique
-        history.clear();
+        clearAllHistory();
         mainFrame.getUndo().setEnabled(false);
         mainFrame.getRedo().setEnabled(false);
         mainFrame.getLoadRound().setEnabled(false);
@@ -404,6 +347,16 @@ public class MainController implements Listener {
             @Override
             public void actionPerformed(ActionEvent e) {
                 redoLastCommand();
+            }
+        });
+        
+        // "supprimer une livraison"
+        mainFrame.getAddDeliveryButton().addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                long deliveryId = 1;
+                deleteDelivery(deliveryId);
             }
         });
     }
@@ -467,23 +420,46 @@ public class MainController implements Listener {
             List<RoadNode> path = deliverySheet.getDeliveryRound(selectedDelivery);
             mainFrame.getDeliveryMap().updateDeliveryNodes(path);
         }
-
     }
 
-    private abstract class Command {
-
-        private final String name;
-
-        Command(String name) {
-            this.name = name;
+    @Override
+    protected void executeCommand(Command cmd, boolean clearRedoHistory) {
+        super.executeCommand(cmd, clearRedoHistory);
+        JMenuItem undo = mainFrame.getUndo();
+        undo.setEnabled(true);
+        undo.setText(MainFrame.UNDO_TOOLTIP + " \"" + cmd.getName() + '"');
+        if (clearRedoHistory) {
+            mainFrame.getRedo().setText(MainFrame.REDO_TOOLTIP);
         }
+    }
 
-        public abstract void execute();
+    @Override
+    protected void undoLastCommand() throws EmptyStackException {
+        Command cmd = getHistory().peek();
+        super.undoLastCommand();
+        JMenuItem redo = mainFrame.getRedo();
+        JMenuItem undo = mainFrame.getUndo();
+        redo.setEnabled(true);
+        redo.setText(MainFrame.REDO_TOOLTIP + " \"" + cmd.getName() + '"');
+        if (getHistory().size() == 0) {
+            undo.setEnabled(false);
+            undo.setText(MainFrame.UNDO_TOOLTIP);
+        } else {
+            Command cmd2 = getHistory().peek();
+            undo.setText(MainFrame.UNDO_TOOLTIP + " \"" + cmd2.getName() + '"');
+        }
+    }
 
-        public abstract void undo();
-
-        public String getName() {
-            return name;
+    @Override
+    protected void redoLastCommand() throws EmptyStackException {
+        super.redoLastCommand();
+        JMenuItem redo = mainFrame.getRedo();
+        if (getRedoneHistory().size() == 0) {
+            redo.setEnabled(false);
+            redo.setText(MainFrame.REDO_TOOLTIP);
+        } else {
+            Command cmd = getRedoneHistory().peek();
+            redo.setText(MainFrame.REDO_TOOLTIP + " \"" + cmd.getName() + '"');
         }
     }
 }
