@@ -11,6 +11,7 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.geom.Ellipse2D;
 import java.lang.ref.WeakReference;
+import view.DeliveryMap.NODE_RETURN;
 
 /**
  *
@@ -144,19 +145,27 @@ public class NodeView {
         return selected;
     }
 
-    public boolean onMouseDown(int x, int y) {
-        boolean voidClic = true;
+    public NODE_RETURN onMouseDown(int x, int y) {
+        NODE_RETURN ret = NODE_RETURN.NOTHING_SELECTED;
+        //boolean voidClic = true;
         if (circle.contains(x + DIAMETER / 2, y + DIAMETER / 2) && (parent.get() != null)) {
             selected = true;
-            voidClic = false;
-            if (parent.get().getSelectedNode() != null) {
-                parent.get().getSelectedNode().clear();
+           // voidClic = false;
+            ret= NODE_RETURN.NODE_SELECTED;
+            if (parent.get().getSelectedNode().get() != null) {
+                if(parent.get().getSelectedNode().get().equals(this)){
+                    ret= NODE_RETURN.NODE_ALLREADY_SELECTED;
+                }else{
+                    parent.get().getSelectedNode().get().setSelection(false);
+                    parent.get().getSelectedNode().clear();
+                }
             }
             parent.get().setSelectedNode(new WeakReference<>(this));
         } else {
             selected = false;
         }
-        return voidClic;
+        //return voidClic;
+        return ret;
     }
 
     public void onMouseUp(int x, int y) {

@@ -20,8 +20,14 @@ public class DeliveryMap extends NavigablePanel {
     private Map<Long, NodeView> mapNodes;
     private WeakReference<NodeView> selectedNode;
     private CopyOnWriteArrayList<Listener> listeners;
-    
     public static final int PADDING = 20;
+
+    public enum NODE_RETURN {
+
+        NOTHING_SELECTED,
+        NODE_SELECTED,
+        NODE_ALLREADY_SELECTED
+    }
 
     public DeliveryMap() {
         super();
@@ -72,16 +78,16 @@ public class DeliveryMap extends NavigablePanel {
         for (ArcView arc : mapArcs.values()) {
             arc.resetNbLines();
         }
-        for(int i = 0 ; i < nodes.size() ; i++) {
+        for (int i = 0; i < nodes.size(); i++) {
             RoadNode rn = nodes.get(i);
             NodeView tempNode = new NodeView(rn.getX(), rn.getY(), rn.getId(),
                     new WeakReference<>(this), MODE.CLASSIC);
-            for (Long j = new Long(0) ; j < mapNodes.size() ; j++) {
+            for (Long j = new Long(0); j < mapNodes.size(); j++) {
                 if (tempNode.equals(mapNodes.get(j))) {
                     mapNodes.get(j).setMode(MODE.DELIVERY);
                 }
             }
-            if(i >= 1) {
+            if (i >= 1) {
                 RoadNode neighbor = nodes.get(i - 1);
                 ArcView temp = new ArcView(neighbor.getX(), neighbor.getY(), rn.getX(), rn.getY(), 0);
                 if (mapArcs.containsKey(temp.hashCode())) {
@@ -93,18 +99,24 @@ public class DeliveryMap extends NavigablePanel {
 
     @Override
     public void notifyPressed(int x, int y) {
-        boolean voidClic = true;
+        //boolean voidClic = true;
+        NODE_RETURN ret = NODE_RETURN.NOTHING_SELECTED;
         for (NodeView node : mapNodes.values()) {
-            if (!node.onMouseDown(x, y)) {
-                voidClic = false; // TODO also break loop ?
+            NODE_RETURN ret_node = node.onMouseDown(x, y);
+            if (ret_node == NODE_RETURN.NODE_SELECTED || ret_node == NODE_RETURN.NODE_ALLREADY_SELECTED) {
+                ret = ret_node;
+                break;
+                //voidClic = false; // TODO also break loop ?
             }
         }
-        if (voidClic) {
+        if (ret == NODE_RETURN.NOTHING_SELECTED) {
             if (getSelectedNode().get() != null) {
                 getSelectedNode().clear();
             }
         }
-        fireChangeEvent();
+        if (ret != NODE_RETURN.NODE_ALLREADY_SELECTED) {
+            fireChangeEvent();
+        }
         repaint();
     }
 
