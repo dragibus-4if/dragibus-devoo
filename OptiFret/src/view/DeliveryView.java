@@ -38,13 +38,14 @@ public class DeliveryView extends JPanel {
     private static final String ARROW_DOWN = "\u2193";
 
     public DeliveryView(Delivery delivery, DeliveryList parent) {
-        this.folded = true;
-        this.clientNameLabel = new JLabel();
-        this.clientPhoneNumLabel = new JLabel();
-        this.clientAddressLabel = new JLabel();
-        this.idDeliveryLabel = new JLabel();
-        this.extend = new JXCollapsiblePane();
-        this.minimal = new JPanel();
+        super(new VerticalLayout());
+        folded = true;
+        clientNameLabel = new JLabel();
+        clientPhoneNumLabel = new JLabel();
+        clientAddressLabel = new JLabel();
+        idDeliveryLabel = new JLabel();
+        extend = new JXCollapsiblePane();
+        minimal = new JPanel();
         this.parent = parent;
         this.delivery = delivery;
 
@@ -52,12 +53,15 @@ public class DeliveryView extends JPanel {
         idDeliveryLabel.setText("Livraison : " + delivery.getId());
         Client client = delivery.getClient();
         if (client != null) {
-            clientPhoneNumLabel.setText("Téléphone du client : " + client.getPhoneNum());
-            clientNameLabel.setText("Client : " + client.getName());
-            clientAddressLabel.setText("Adresse : " + client.getAddress());
+            String unspecified = "non spécifié";
+            String clientName = (client.getPhoneNum() != null) ? client.getPhoneNum() : unspecified;
+            String clientPhoneNum = (client.getPhoneNum() != null) ? client.getPhoneNum() : unspecified;
+            String clientAddress = (client.getPhoneNum() != null) ? client.getPhoneNum() : unspecified;
+            clientPhoneNumLabel.setText("Tél. client : " + clientPhoneNum);
+            clientNameLabel.setText("Client : " + clientName);
+            clientAddressLabel.setText("Adresse : " + clientAddress);
         }
 
-        setLayout(new VerticalLayout());
         add(makeMinimal());
         add(makeExtend());
         validate();
@@ -65,8 +69,8 @@ public class DeliveryView extends JPanel {
 
     private JXCollapsiblePane makeExtend() {
         extend.setLayout(new GridLayout(3, 1));
-        extend.add(clientAddressLabel);
         extend.add(clientNameLabel);
+        extend.add(clientAddressLabel);
         extend.add(clientPhoneNumLabel);
         extend.getContentPane().setBackground(MINIMAL_BG_OVER_COLOR);
         return extend;

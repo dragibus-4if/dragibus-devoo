@@ -3,10 +3,8 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package test;
 
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringReader;
@@ -14,11 +12,6 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
 import junit.framework.TestCase;
 import model.Client;
 import model.Delivery;
@@ -29,35 +22,48 @@ import model.RoadSection;
 import model.TimeSlot;
 
 public class DeliverySheetTest extends TestCase {
+
     public void testFile() {
         // Si le filename est null, la fonction retourne null.
         try {
-            DeliverySheet.loadFromXML(null);
-            fail("Chargement d'un reader nul");
+            try {
+                DeliverySheet.loadFromXML(null);
+            } catch (IOException ex) {
+            }
+            fail("Chargement d'un reader null");
+        } catch (NullPointerException e) {
         }
-        catch(NullPointerException e) {
-        }
-        
+
         try {
             // Si c'est un dossier, la fonction retourne Null
-            assertNull(DeliverySheet.loadFromXML(new FileReader("/")));
-        } catch (FileNotFoundException ex) {
+            DeliverySheet.loadFromXML(new FileReader("/"));
+            fail("Chargement d'un dossier");
+        } catch (IOException ex) {
         }
-        
+
         try {
             // Si le fichier n'est pas lisible, la fonction retourne Null
             // Normalement le fichier /root ne sont pas lisibles
-            assertNull(DeliverySheet.loadFromXML(new FileReader("/root")));
-        } catch (FileNotFoundException ex) {
+            DeliverySheet.loadFromXML(new FileReader("/root"));
+            fail("Chargement d'un fichier illisible");
+        } catch (IOException ex) {
         }
     }
 
     public void testXMLSyntax() {
-        // Test d'une fermeture de balise manquante
-        assertNull(DeliverySheet.loadFromXML(new StringReader("<root>")));
+        try {
+            // Erreur s'il manque une fermeture de balise
+            DeliverySheet.loadFromXML(new StringReader("<root>"));
+            fail("Balise manquante");
+        } catch (IOException ex) {
+        }
 
-        // Test d'une ouverture de balise manquante
-        assertNull(DeliverySheet.loadFromXML(new StringReader("<root></balise></root>")));
+        try {
+            // Erreur s'il y a une fermeture de balise manquante
+            DeliverySheet.loadFromXML(new StringReader("<root></balise></root>"));
+            fail("Balise manquante fermée");
+        } catch (IOException ex) {
+        }
 
         // Il n'y a pas tout les cas sur la syntaxe XML. La bibliothèque
         // utilisée doit pouvoir détecter les erreurs. Nous l'utilisons et ces
@@ -66,28 +72,43 @@ public class DeliverySheetTest extends TestCase {
     }
 
     public void testXMLSemantic() {
-        // Si la balise racine est un élément quelconque (différent de ce qui
-        // est attendu), la fonction renvoie null.
-        String s1 = "<root></root>";
-        assertNull(DeliverySheet.loadFromXML(new StringReader(s1)));
+        // Erreur si la balise racine est un élément quelconque
+        String s = "<root></root>";
+        assertFalse("root".equals(DeliverySheet.ROOT_ELEM));
+        try {
+            DeliverySheet.loadFromXML(new StringReader(s));
+            fail("Erreur quand le noeud racine est quelconque");
+        } catch (IOException ex) {
+        }
 
-        // Si le document contient un élément non défini, la fonction renvoie
-        // null.
-        String s2 = "<road_network><autre></autre></road_network>";
-        assertNull(DeliverySheet.loadFromXML(new StringReader(s2)));
+        // Erreur si la balise racine ne contient aucun élément
+        s = "<" + DeliverySheet.ROOT_ELEM + "></" + DeliverySheet.ROOT_ELEM + ">";
+        try {
+            DeliverySheet.loadFromXML(new StringReader(s));
+            fail("Erreur quand la racine ne contient aucun élément");
+        } catch (IOException ex) {
+        }
 
-        // Si c'est la bonne balise racine, la fonction renvoie quelque chose de non
-        // null.
-        String s3 = "<road_network></road_network>";
-        DeliverySheet rn = DeliverySheet.loadFromXML(new StringReader(s3));
-        assertNotNull(rn);
-        assertNotNull(rn.getDeliveryEmployee());
-        assertNotNull(rn.getDeliveryRound());
+        // Pas d'erreur si la balise racine ne contient que l'entrepôt
+        s = "<" + DeliverySheet.ROOT_ELEM + "><" + DeliverySheet.WAREHOUSE_NAME
+                + " " + DeliverySheet.WAREHOUSE_ADDRESS + "=\"1\"/></"
+                + DeliverySheet.ROOT_ELEM + ">";
+        try {
+            DeliverySheet.loadFromXML(new StringReader(s));
+        } catch (IOException ex) {
+            fail("Erreur quand la racine ne contient que l'entrepôt");
+        }
 
-        // TODO tests sur l'intégrité du document
-        // Voir le format des xmls à lire pour vérifier ça
+        // Erreur si le document contient un élément non défini
+        s = "<" + DeliverySheet.ROOT_ELEM + "><" + DeliverySheet.WAREHOUSE_NAME
+                + " /><autre></autre></" + DeliverySheet.ROOT_ELEM + ">";
+        try {
+            DeliverySheet.loadFromXML(new StringReader(s));
+            fail("Erreur quand le document contient un élément non défini");
+        } catch (IOException ex) {
+        }
     }
-    
+
     public void testSetDeliveryEmployee() {
         DeliverySheet sheet = new DeliverySheet();
         // Test avec un paramètre null
@@ -96,41 +117,38 @@ public class DeliverySheetTest extends TestCase {
             fail("Set un employé avec un null");
         } catch (NullPointerException e) {
         }
-        
+
         // Vérifie l'égalité entre le getter/setter
         DeliveryEmployee e = new DeliveryEmployee();
         sheet.setDeliveryEmployee(e);
         assertSame(sheet.getDeliveryEmployee(), e);
     }
-    
+
     public void testExportEmpty() {
         DeliverySheet sheet = new DeliverySheet();
-        
+
         // Test avec une sheet vide
         String result = "";
         StringWriter sw = new StringWriter();
         try {
             sheet.export(sw);
         } catch (IOException ex) {
-            Logger.getLogger(DeliverySheetTest.class.getName()).log(Level.SEVERE, null, ex);
         }
         assertEquals(result, sw.toString());
     }
-     
+
     public void testExportNull() {
         DeliverySheet sheet = new DeliverySheet();
         try {
             try {
                 sheet.export(null);
             } catch (IOException ex) {
-                Logger.getLogger(DeliverySheetTest.class.getName()).log(Level.SEVERE, null, ex);
             }
             fail("Appel de export avec un paramètre null");
-        }
-        catch(NullPointerException e) {
+        } catch (NullPointerException e) {
         }
     }
-    
+
     public void testExportBasic() {
         // Création d'un chemin basique
         List<RoadNode> path = new ArrayList<>();
@@ -143,14 +161,14 @@ public class DeliverySheetTest extends TestCase {
         path.get(1).addNeighbor(new RoadSection(path.get(1), path.get(2), 1, 1, "R2"));
         path.get(2).addNeighbor(new RoadSection(path.get(2), path.get(3), 1, 1, "R3"));
         path.get(3).addNeighbor(new RoadSection(path.get(3), path.get(0), 1, 1, "R4"));
-        
+
         DeliverySheet sheet = new DeliverySheet();
-        sheet.getDeliveryRound().setPath(path);
-        sheet.getDeliveryRound().addDelivery(new Delivery(new Long(0), new Long(1),
+        sheet.setDeliveryRound(path);
+        sheet.addDelivery(new Delivery(new Long(0), new Long(1),
                 new TimeSlot(new Date(), new Long(0)), new Client()));
-        sheet.getDeliveryRound().addDelivery(new Delivery(new Long(1), new Long(3),
+        sheet.addDelivery(new Delivery(new Long(1), new Long(3),
                 new TimeSlot(new Date(), new Long(0)), new Client()));
-        
+
         String result = "";
         result += "Prochaine livraison : R1\n\n";
         result += "Prendre la rue R1\n\n";
@@ -167,11 +185,10 @@ public class DeliverySheetTest extends TestCase {
         try {
             sheet.export(sw);
         } catch (IOException ex) {
-            Logger.getLogger(DeliverySheetTest.class.getName()).log(Level.SEVERE, null, ex);
         }
         assertEquals(result, sw.toString());
     }
-    
+
     public void testExportWithoutSection() {
         // Création d'un chemin basique
         List<RoadNode> path = new ArrayList<>();
@@ -183,37 +200,40 @@ public class DeliverySheetTest extends TestCase {
         path.get(0).addNeighbor(new RoadSection(path.get(0), path.get(1), 1, 1, "R1"));
         path.get(1).addNeighbor(new RoadSection(path.get(1), path.get(2), 1, 1, "R2"));
         path.get(3).addNeighbor(new RoadSection(path.get(3), path.get(0), 1, 1, "R4"));
-        
+
         DeliverySheet sheet = new DeliverySheet();
-        sheet.getDeliveryRound().setPath(path);
-        sheet.getDeliveryRound().addDelivery(new Delivery(new Long(0), new Long(1),
+        sheet.setDeliveryRound(path);
+        sheet.addDelivery(new Delivery(new Long(0), new Long(1),
                 new TimeSlot(new Date(), new Long(0)), new Client()));
-        sheet.getDeliveryRound().addDelivery(new Delivery(new Long(1), new Long(3),
+        sheet.addDelivery(new Delivery(new Long(1), new Long(3),
                 new TimeSlot(new Date(), new Long(0)), new Client()));
-        
+
         try {
             try {
                 sheet.export(new StringWriter());
             } catch (IOException ex) {
-                Logger.getLogger(DeliverySheetTest.class.getName()).log(Level.SEVERE, null, ex);
             }
             fail("Pas de section pour continuer le chemin.");
-        }
-        catch(RuntimeException e) {
+        } catch (RuntimeException e) {
         }
     }
-    
+
     public void testExportCross() {
         RoadNode n0 = new RoadNode(0);
-        n0.setX (10);n0.setY(10);
+        n0.setX(10);
+        n0.setY(10);
         RoadNode n1 = new RoadNode(1);
-        n1.setX(15);n1.setY(25);
+        n1.setX(15);
+        n1.setY(25);
         RoadNode n2 = new RoadNode(2);
-        n2.setX(12);n2.setY(5);
+        n2.setX(12);
+        n2.setY(5);
         RoadNode n3 = new RoadNode(3);
-        n3.setX(53);n3.setY(9);
+        n3.setX(53);
+        n3.setY(9);
         RoadNode n4 = new RoadNode(4);
-        n4.setX(60);n4.setY(25);
+        n4.setX(60);
+        n4.setY(25);
         n0.addNeighbor(new RoadSection(n0, n1, 1, 1, "R1"));
         n1.addNeighbor(new RoadSection(n1, n2, 1, 1, "R2"));
         n2.addNeighbor(new RoadSection(n2, n1, 1, 1, "-R2"));
@@ -231,17 +251,17 @@ public class DeliverySheetTest extends TestCase {
         path.add(n1);
         path.add(n4);
         path.add(n0);
-        
+
         DeliverySheet sheet = new DeliverySheet();
-        sheet.getDeliveryRound().setPath(path);
-        sheet.getDeliveryRound().addDelivery(new Delivery(new Long(0), new Long(1),
+        sheet.setDeliveryRound(path);
+        sheet.addDelivery(new Delivery(new Long(0), new Long(1),
                 new TimeSlot(new Date(), new Long(0)), new Client()));
-        sheet.getDeliveryRound().addDelivery(new Delivery(new Long(1), new Long(2),
+        sheet.addDelivery(new Delivery(new Long(1), new Long(2),
                 new TimeSlot(new Date(), new Long(0)), new Client()));
-        sheet.getDeliveryRound().addDelivery(new Delivery(new Long(3), new Long(4),
+        sheet.addDelivery(new Delivery(new Long(3), new Long(4),
                 new TimeSlot(new Date(), new Long(0)), new Client()));
-        
-        String result = "Prochaine livraison : R1\n\n"; 
+
+        String result = "Prochaine livraison : R1\n\n";
         result += "Prendre la rue R1\n\n";
         result += "Arrivée à la livraison : R1\n\n***\n\n";
         result += "Prochaine livraison : R2\n\n";
@@ -264,84 +284,78 @@ public class DeliverySheetTest extends TestCase {
         try {
             sheet.export(sw);
         } catch (IOException ex) {
-            Logger.getLogger(DeliverySheetTest.class.getName()).log(Level.SEVERE, null, ex);
         }
         assertEquals(result, sw.toString());
     }
-    
+
     public void testExportDeliveryOutPath() {
         // Création d'un chemin basique
         List<RoadNode> path = new ArrayList<>();
         path.add(new RoadNode(0));
         path.add(path.get(0));
         path.get(0).addNeighbor(new RoadSection(path.get(0), path.get(0), 1, 1, "R"));
-        
+
         DeliverySheet sheet = new DeliverySheet();
-        sheet.getDeliveryRound().setPath(path);
-        sheet.getDeliveryRound().addDelivery(new Delivery(new Long(0), new Long(1),
+        sheet.setDeliveryRound(path);
+        sheet.addDelivery(new Delivery(new Long(0), new Long(1),
                 new TimeSlot(new Date(), new Long(0)), new Client()));
-        
+
         try {
             try {
                 sheet.export(new StringWriter());
             } catch (IOException ex) {
-                Logger.getLogger(DeliverySheetTest.class.getName()).log(Level.SEVERE, null, ex);
             }
             fail("Livraison en dehors du chemin");
-        }
-        catch(RuntimeException e) {
+        } catch (RuntimeException e) {
         }
     }
-    
+
     public void testExportWithoutDelivery() {
         // Création d'un chemin basique
         List<RoadNode> path = new ArrayList<>();
         path.add(new RoadNode(0));
         path.add(path.get(0));
         path.get(0).addNeighbor(new RoadSection(path.get(0), path.get(0), 1, 1, "R"));
-        
+
         DeliverySheet sheet = new DeliverySheet();
-        sheet.getDeliveryRound().setPath(path);
-        
+        sheet.setDeliveryRound(path);
+
         String result = "Prendre la rue R\n\n";
         StringWriter sw = new StringWriter();
         try {
             sheet.export(sw);
         } catch (IOException ex) {
-            Logger.getLogger(DeliverySheetTest.class.getName()).log(Level.SEVERE, null, ex);
         }
         assertEquals(result, sw.toString());
     }
-    
+
     public void testExportEmptyPath() {
         // Création d'un chemin basique
         List<RoadNode> path = new ArrayList<>();
         DeliverySheet sheet = new DeliverySheet();
-        sheet.getDeliveryRound().setPath(path);
-        
+        sheet.setDeliveryRound(path);
+
         String result = "";
         StringWriter sw = new StringWriter();
         try {
             sheet.export(sw);
         } catch (IOException ex) {
-            Logger.getLogger(DeliverySheetTest.class.getName()).log(Level.SEVERE, null, ex);
         }
         assertEquals(result, sw.toString());
     }
-    
+
     public void testExportNoPath() {
         // Création d'un chemin basique
         List<RoadNode> path = new ArrayList<>();
         path.add(new RoadNode(0));
         DeliverySheet sheet = new DeliverySheet();
-        sheet.getDeliveryRound().setPath(path);
-        
+        sheet.setDeliveryRound(path);
+
         String result = "";
         StringWriter sw = new StringWriter();
         try {
             sheet.export(sw);
         } catch (IOException ex) {
-            Logger.getLogger(DeliverySheetTest.class.getName()).log(Level.SEVERE, null, ex);
         }
         assertEquals(result, sw.toString());
     }

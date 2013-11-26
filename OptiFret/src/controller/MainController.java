@@ -20,7 +20,6 @@ import javax.swing.JFileChooser;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import model.Delivery;
-import model.DeliveryRound;
 import model.DeliverySheet;
 import model.RoadNetwork;
 import model.RoadNode;
@@ -75,11 +74,10 @@ public class MainController implements Listener {
                 Delivery newDelivery = new Delivery(Long.MAX_VALUE);
                 
                 // recuperer la liste de livraisons et ajouter la nouvelle liv
-                DeliveryRound dr = deliverySheet.getDeliveryRound();
-                dr.addDelivery(newDelivery);
+                deliverySheet.addDelivery(newDelivery);
                 
                 // ajouter la nouvelle liste a la fenetre et mettre a jour
-                mainFrame.getDeliveryList().setDeliveries(dr.getDeliveries());
+                mainFrame.getDeliveryList().setDeliveries(deliverySheet.getDeliveries());
                 mainFrame.getExportRound().setEnabled(true);
                 mainFrame.repaint();
             }
@@ -90,12 +88,11 @@ public class MainController implements Listener {
                 deliverySheet = currentDeliverySheet;
                 
                 // TODO - ajouter fonctionnalite
-                DeliveryRound dr = deliverySheet.getDeliveryRound();
-                if (dr.getDeliveries() == null) {
+                if (deliverySheet.getDeliveries() == null) {
                     mainFrame.getDeliveryList().setDeliveries(new ArrayList<Delivery>());
                     mainFrame.getExportRound().setEnabled(false);
                 } else {
-                    mainFrame.getDeliveryList().setDeliveries(dr.getDeliveries());
+                    mainFrame.getDeliveryList().setDeliveries(deliverySheet.getDeliveries());
                 }
                 
                 mainFrame.repaint();
@@ -113,7 +110,7 @@ public class MainController implements Listener {
             try {
                 String dsFilename = helper.getString("load-delivery-sheet");
                 deliverySheet = DeliverySheet.loadFromXML(new FileReader(dsFilename));
-                mainFrame.getDeliveryList().setDeliveries(deliverySheet.getDeliveryRound().getDeliveries());
+                mainFrame.getDeliveryList().setDeliveries(deliverySheet.getDeliveries());
                 mainFrame.getExportRound().setEnabled(true);
             } catch (MissingAttributeException ex) {
                 System.out.println("Aucune configuration trouvée pour les demandes de livraison");
@@ -175,9 +172,7 @@ public class MainController implements Listener {
                             mainFrame.getDeliveryList().setDeliveries(null);
                         } else {
                             mainFrame.getDeliveryList().setDeliveries(
-                                    deliverySheet
-                                    .getDeliveryRound()
-                                    .getDeliveries());
+                                    deliverySheet.getDeliveries());
                         }
                         mainFrame.repaint();
                     }
@@ -197,7 +192,7 @@ public class MainController implements Listener {
                         .loadFromXML(new FileReader(fc.getSelectedFile()));
 
                 // Vérification comme quoi toutes les livraisons sont présentes sur la carte
-                for (Delivery delivery : loadedDeliverySheet.getDeliveryRound().getDeliveries()) {
+                for (Delivery delivery : loadedDeliverySheet.getDeliveries()) {
                     if (roadNetwork.getNodeById(delivery.getAddress()) == null) {
                         throw new IOException("Addresse '" + delivery.getAddress()
                                 + "' indéfinie,\nchargement annulé.");
@@ -213,8 +208,14 @@ public class MainController implements Listener {
                         currentDeliverySheet = deliverySheet;
 
                         deliverySheet = loadedDeliverySheet;
-                        DeliveryRound dr = deliverySheet.getDeliveryRound();
-                        mainFrame.getDeliveryList().setDeliveries(dr.getDeliveries());
+                        if(roadNetwork.makeRoute(deliverySheet.getDeliveries())) {
+                            deliverySheet.setDelivery(roadNetwork.getSortedDeliveries());
+                            deliverySheet.setDeliveryRound(roadNetwork.getPaths());
+                        }
+                        else {
+                            // TODO
+                        }
+                        mainFrame.getDeliveryList().setDeliveries(deliverySheet.getDeliveries());
                         mainFrame.getExportRound().setEnabled(true);
                         mainFrame.repaint();
                     }
@@ -228,15 +229,11 @@ public class MainController implements Listener {
                             mainFrame.getDeliveryList().setDeliveries(new ArrayList<Delivery>());
                             mainFrame.getExportRound().setEnabled(false);
                         } else {
-                            DeliveryRound dr = deliverySheet.getDeliveryRound();
-                            mainFrame.getDeliveryList().setDeliveries(dr.getDeliveries());
+                            mainFrame.getDeliveryList().setDeliveries(deliverySheet.getDeliveries());
                         }
                         mainFrame.repaint();
                     }
                 });
-
-                List<RoadNode> path = roadNetwork.makeRoute(deliverySheet.getDeliveryRound().getDeliveries());
-                mainFrame.getDeliveryMap().updateDeliveryNodes(path);
             } catch (IOException e) {
                 mainFrame.showErrorMessage(e.getMessage());
             }
@@ -466,6 +463,9 @@ public class MainController implements Listener {
             mainFrame.getDeliveryMap().setSelectedNodeById(selectedDelivery.getAddress());
             mainFrame.getAddDeliveryButton().setEnabled(false);
             mainFrame.getDelDeliveryButton().setEnabled(true);
+            
+            List<RoadNode> path = deliverySheet.getDeliveryRound(selectedDelivery);
+            mainFrame.getDeliveryMap().updateDeliveryNodes(path);
         }
 
     }
