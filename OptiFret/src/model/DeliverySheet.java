@@ -88,6 +88,10 @@ public class DeliverySheet {
         return warehouseAddress;
     }
 
+    public Delivery findDeliveryById(long deliveryId) {
+        return null;
+    }
+
     /**
      * Setteur pour l'instance de DeliveryEmployee.
      *
