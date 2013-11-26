@@ -230,21 +230,21 @@ public class RegularGraph implements Graph {
         this.objectives = objectives;
     }
     
-    private ArrayList<RoadNode> getPath(int from, int to) {
+    private List<RoadNode> getPath(int from, int to) {
         Integer addr1 = objectives.get(from).getAddress().intValue();
         Integer addr2 = objectives.get(to).getAddress().intValue();
-        ArrayList<RoadNode> l = new ArrayList<>();
+        List<RoadNode> l = new ArrayList<>();
         l.add(index2Node.get(addr1));
         List<RoadNode> path = AStar.findPath(index2Node.get(addr1), index2Node.get(addr2));
         l.addAll(path);
         return l;
     }
 
-    public HashMap<Long, ArrayList<RoadNode>> getPaths(int[] indexes) {
-        HashMap<Long, ArrayList<RoadNode>> l = new HashMap<>();
+    public HashMap<Delivery, List<RoadNode>> getPaths(int[] indexes) {
+        HashMap<Delivery, List<RoadNode>> l = new HashMap<>();
         int index = 0;
         do {
-            l.put(objectives.get(index).getId(), getPath(index, indexes[index]));
+            l.put(objectives.get(index), getPath(index, indexes[index]));
             index = indexes[index];
         } while(index != 0);
         return l;

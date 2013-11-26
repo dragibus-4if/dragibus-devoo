@@ -208,6 +208,13 @@ public class MainController implements Listener {
                         currentDeliverySheet = deliverySheet;
 
                         deliverySheet = loadedDeliverySheet;
+                        if(roadNetwork.makeRoute(deliverySheet.getDeliveries())) {
+                            deliverySheet.setDelivery(roadNetwork.getSortedDeliveries());
+                            deliverySheet.setDeliveryRound(roadNetwork.getPaths());
+                        }
+                        else {
+                            // TODO
+                        }
                         mainFrame.getDeliveryList().setDeliveries(deliverySheet.getDeliveries());
                         mainFrame.getExportRound().setEnabled(true);
                         mainFrame.repaint();
@@ -227,9 +234,6 @@ public class MainController implements Listener {
                         mainFrame.repaint();
                     }
                 });
-
-                // TODO enlever
-                roadNetwork.makeRoute(deliverySheet.getDeliveries());
             } catch (IOException e) {
                 mainFrame.showErrorMessage(e.getMessage());
             }
@@ -460,7 +464,7 @@ public class MainController implements Listener {
             mainFrame.getAddDeliveryButton().setEnabled(false);
             mainFrame.getDelDeliveryButton().setEnabled(true);
             
-            ArrayList<RoadNode> path = roadNetwork.getPath(selectedDelivery.getId());
+            List<RoadNode> path = deliverySheet.getDeliveryRound(selectedDelivery);
             mainFrame.getDeliveryMap().updateDeliveryNodes(path);
         }
 

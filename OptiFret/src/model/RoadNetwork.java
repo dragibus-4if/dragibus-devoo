@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -35,7 +36,8 @@ public class RoadNetwork {
     private static final String X_ATTR = "x";
     private static final String ID_ATTR = "id";
     private RoadNode root;
-    private HashMap<Long, ArrayList<RoadNode>> paths;
+    private HashMap<Delivery, List<RoadNode>> paths = new HashMap<>();
+    private List<Delivery> sortedDeliveries = new ArrayList<>();
     
     /**
      * 
@@ -291,7 +293,7 @@ public class RoadNetwork {
         return l;
     }
 
-    public void makeRoute(List<Delivery> deliveries) {
+    public boolean makeRoute(List<Delivery> deliveries) {
         RegularGraph graph = RegularGraph.loadFromRoadNetwork(this, deliveries);
         TSP tsp = new TSP(graph);
         SolutionState s = tsp.solve(100000000, 10000000);
@@ -303,14 +305,24 @@ public class RoadNetwork {
             }
             System.out.println();
             this.paths = graph.getPaths(ls);
+            int index = 0;
+            this.sortedDeliveries.clear();
+            do {
+                this.sortedDeliveries.add(deliveries.get(index));
+                index = ls[index];
+            } while(index != 0);
+            return true;
         }
         System.out.println("Pas de solution trouvé");
+        return false;
     }
     
-    public ArrayList<RoadNode> getPath(Long delivery) {
-        if(!this.paths.containsKey(delivery))
-            throw new ArrayIndexOutOfBoundsException();
-        return this.paths.get(delivery);
+    public HashMap<Delivery, List<RoadNode>> getPaths() {
+        return this.paths;
+    }
+    
+    public List<Delivery> getSortedDeliveries() {
+        return this.sortedDeliveries;
     }
 
     public int getSize() {
