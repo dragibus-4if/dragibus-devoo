@@ -5,8 +5,6 @@ import config.Helper;
 import config.Manager;
 import config.MissingEntryException;
 import java.awt.Graphics2D;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -23,20 +21,15 @@ public abstract class NavigablePanel extends JPanel {
     private double SCALE_MAX = 3;
     private double SCALE_MIN = 0.1;
     private double SCALE_INC = 0.1;
-    private double SCROLL_SPEED = 5;
 
     private double scale;
 
-    private double vX;
-    private double vY;
-    private double offX;
-    private double offY;
+    private int offX;
+    private int offY;
 
     private boolean dragging;
     private int grabX;
     private int grabY;
-    private int dragX;
-    private int dragY;
 
     public NavigablePanel() {
         super();
@@ -80,57 +73,6 @@ public abstract class NavigablePanel extends JPanel {
                 doScroll(e);
             }
         });
-        addKeyListener(new KeyListener() {
-
-            @Override
-            public void keyTyped(KeyEvent e) {
-            }
-
-            @Override
-            public void keyPressed(KeyEvent e) {
-                int keyCode = e.getKeyCode();
-                switch (keyCode) {
-                    case KeyEvent.VK_UP:
-                        vY += SCROLL_SPEED;
-                        break;
-
-                    case KeyEvent.VK_DOWN:
-                        vY -= SCROLL_SPEED;
-                        break;
-
-                    case KeyEvent.VK_LEFT:
-                        vX += SCROLL_SPEED;
-                        break;
-
-                    case KeyEvent.VK_RIGHT:
-                        vX -= SCROLL_SPEED;
-                        break;
-                }
-                updateOffset();
-            }
-
-            @Override
-            public void keyReleased(KeyEvent e) {
-                int keyCode = e.getKeyCode();
-                switch (keyCode) {
-                    case KeyEvent.VK_UP:
-                        vY += -SCROLL_SPEED;
-                        break;
-
-                    case KeyEvent.VK_DOWN:
-                        vY -= -SCROLL_SPEED;
-                        break;
-
-                    case KeyEvent.VK_LEFT:
-                        vX += -SCROLL_SPEED;
-                        break;
-
-                    case KeyEvent.VK_RIGHT:
-                        vX -= -SCROLL_SPEED;
-                        break;
-                }
-            }
-        });
         String configEntryName = "navigable-panel";
         try {
             configure(Manager.getInstance().registerEntry(configEntryName));
@@ -138,27 +80,23 @@ public abstract class NavigablePanel extends JPanel {
             System.out.println("Aucune configuration trouvée pour " + configEntryName);
         }
     }
-    
+
     private void configure(Entry entry) {
         Helper helper = new Helper(entry);
         SCALE_MAX = helper.getDouble("scale-max", SCALE_MAX);
         SCALE_MIN = helper.getDouble("scale-min", SCALE_MIN);
         SCALE_INC = helper.getDouble("scale-inc", SCALE_INC);
-        SCROLL_SPEED = helper.getDouble("scroll-speed", SCROLL_SPEED);
     }
 
     public void resetTransform() {
         scale = 1;
         offX = offY = 0;
-        vX = vY = 0;
         dragging = false;
         grabX = grabY = 0;
-        dragX = dragY = 0;
     }
 
     public void applyTransform(Graphics2D g2d) {
         g2d.translate(offX, offY);
-        g2d.translate(dragX, dragY);
         g2d.scale(scale, scale);
     }
 
@@ -183,8 +121,8 @@ public abstract class NavigablePanel extends JPanel {
     private void doMousePressed(MouseEvent e) {
         notifyPressed(getActualX(e.getX()), getActualY(e.getY()));
         dragging = true;
-        grabX = e.getX();
-        grabY = e.getY();
+        grabX = e.getX() - offX;
+        grabY = e.getY() - offY;
     }
 
     private void doMouseReleased(MouseEvent e) {
@@ -195,16 +133,10 @@ public abstract class NavigablePanel extends JPanel {
     private void doMouseDragged(MouseEvent e) {
         notifyMoved(getActualX(e.getX()), getActualY(e.getY()));
         if (dragging) {
-            dragX = e.getX() - grabX;
-            dragY = e.getY() - grabY;
+            offX = e.getX() - grabX;
+            offY = e.getY() - grabY;
             repaint();
         }
-    }
-
-    private void updateOffset() {
-        offX += vX;
-        offY += vY;
-        repaint();
     }
 
     private int getActualX(int x) {

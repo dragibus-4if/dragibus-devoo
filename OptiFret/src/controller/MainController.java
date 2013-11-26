@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.EmptyStackException;
+import java.util.List;
 import java.util.Stack;
 import javax.swing.JFileChooser;
 import javax.swing.JMenuItem;
@@ -55,6 +56,51 @@ public class MainController implements Listener {
             System.out.println("Aucune configuration trouvée pour " + startupConfigEntryName);
         }
         mainFrame.setVisible(true);
+    }
+    
+    private void addDelivery() {
+        executeCommand(new Command("") {
+            
+            private DeliverySheet currentDeliverySheet;
+
+            @Override
+            public void execute() {
+                // stocker l'etat courant
+                currentDeliverySheet = deliverySheet;
+                
+                // TODO - ouvrir la fenetre avec le formulair pour les livs et
+                // recuperer les valeurs
+                
+                // pour l'instant: ajouter une livraison fixe
+                Delivery newDelivery = new Delivery(Long.MAX_VALUE);
+                
+                // recuperer la liste de livraisons et ajouter la nouvelle liv
+                DeliveryRound dr = deliverySheet.getDeliveryRound();
+                dr.addDelivery(newDelivery);
+                
+                // ajouter la nouvelle liste a la fenetre et mettre a jour
+                mainFrame.getDeliveryList().setDeliveries(dr.getDeliveries());
+                mainFrame.getExportRound().setEnabled(true);
+                mainFrame.repaint();
+            }
+
+            @Override
+            public void undo() {
+                // revenir a l'ancien DeliverySheet
+                deliverySheet = currentDeliverySheet;
+                
+                // TODO - ajouter fonctionnalite
+                DeliveryRound dr = deliverySheet.getDeliveryRound();
+                if (dr.getDeliveries() == null) {
+                    mainFrame.getDeliveryList().setDeliveries(new ArrayList<Delivery>());
+                    mainFrame.getExportRound().setEnabled(false);
+                } else {
+                    mainFrame.getDeliveryList().setDeliveries(dr.getDeliveries());
+                }
+                
+                mainFrame.repaint();
+            }
+        });
     }
 
     private void configureStartup(Entry entry) {
@@ -189,7 +235,8 @@ public class MainController implements Listener {
                     }
                 });
 
-                mainFrame.getDeliveryMap().updateDeliveryNodes(roadNetwork.getNodes());
+                List<RoadNode> path = roadNetwork.makeRoute(deliverySheet.getDeliveryRound().getDeliveries());
+                mainFrame.getDeliveryMap().updateDeliveryNodes(path);
             } catch (IOException e) {
                 mainFrame.showErrorMessage(e.getMessage());
             }

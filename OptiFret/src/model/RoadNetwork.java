@@ -35,6 +35,14 @@ public class RoadNetwork {
     private static final String ID_ATTR = "id";
     private RoadNode root;
 
+    
+    
+    /**
+     * 
+     * @param input
+     * @return
+     * @throws IOException 
+     */
     public static RoadNetwork loadFromXML(Reader input) throws IOException {
         if (input == null) {
             throw new NullPointerException("Fichier chargé null");
@@ -154,7 +162,7 @@ public class RoadNetwork {
                     throw new IOException(
                             "Erreur roadNetwork.loadFromXML : \n"
                             + "Erreur syntaxique :\n"
-                            + "\tnom de noeud attend : TronconSortant\n"
+                            + "\tnom de noeud attendu : TronconSortant\n"
                             + "\tnom de noeud trouvé : "
                             + roadSectionNode.getNodeName());
                 }
@@ -289,8 +297,14 @@ public class RoadNetwork {
         SolutionState s = tsp.solve(1000000, 100000);
         if (s == SolutionState.OPTIMAL_SOLUTION_FOUND || s == SolutionState.SOLUTION_FOUND) {
             int[] ls = tsp.getNext();
+            System.out.print("Solution : ");
+            for(int i : ls) {
+                System.out.print(i);
+            }
+            System.out.println();
             return graph.getLsNode(ls);
         }
+        System.out.println("Pas de solution trouvé");
         return new ArrayList<>();
     }
 
