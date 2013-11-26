@@ -32,9 +32,8 @@ import org.xml.sax.SAXException;
  * @author Jean-Marie
  */
 public class DeliverySheet {
-
-    private final List<Delivery> deliveries;
-    private final List<RoadNode> deliveryRound;
+    private List<Delivery> deliveries;
+    private List<RoadNode> deliveryRound;
     
     private DeliveryEmployee deliveryEmployee;
     private long warehouseAddress;
@@ -60,12 +59,16 @@ public class DeliverySheet {
      */
     public DeliverySheet() {
         deliveryEmployee = new DeliveryEmployee();
-        deliveries = new ArrayList<>();
-        deliveryRound = new ArrayList<>();
+        deliveries = null;
+        deliveryRound = null;
     }
 
     public List<RoadNode> getDeliveryRound() {
         return deliveryRound;
+    }
+
+    public void setDeliveryRound(List<RoadNode> deliveryRound) {
+        this.deliveryRound = deliveryRound;
     }
 
     public DeliveryEmployee getDeliveryEmployee() {
@@ -209,6 +212,8 @@ public class DeliverySheet {
         writer.flush();
     }
 
+    private static long deliveryIdCursor;
+
     /**
      * Cette methode charger une liste de livraisons pour un plage horaire a
      * partir d'un fichier XML. Elle prend un Reader representant le fichier, le
@@ -225,6 +230,8 @@ public class DeliverySheet {
         if (reader == null) {
             throw new NullPointerException("'reader' ne doit pas être nul");
         }
+        
+        deliveryIdCursor = 1;
         
         Element documentRoot;
         try {
@@ -246,14 +253,7 @@ public class DeliverySheet {
         ds.warehouseAddress = parseWarehouse(warehouseNodes.item(0));
 
         NodeList plages = documentRoot.getElementsByTagName(NAME_TIMETABLE);
-        List<Delivery> deliveries = parseTimeTable(plages);
-
-        // parcourir la liste des livraisons pour les ajouter a la
-        // deliveryRound du DSM
-        for (Delivery delivery : deliveries) {
-            ds.addDelivery(delivery);
-        }
-
+        ds.deliveries = parseTimeTable(plages);
         return ds;
     }
 
@@ -281,11 +281,10 @@ public class DeliverySheet {
      * facilement. Puis, le plage correspondant est ajoute a la livraison.
      *
      * @param journeyNodes la NodeListe de plages
-     * @return la liste de livraisons creee
+     * @return la liste de livraisons crée
      */
     private static List<Delivery> parseTimeTable(NodeList timetable) throws IOException {
         List<Delivery> deliveries = new LinkedList<>();
-
         for (int i = 0; i < timetable.getLength(); i++) {
             Node node = timetable.item(i);
             Element plage;
@@ -298,18 +297,13 @@ public class DeliverySheet {
             TimeSlot ts = parseTimeSlot(node);
 
             NodeList deliveryNodes = plage.getElementsByTagName(DELIVERY_NAME);
-            System.out.println(ts);
 
-            // traiter la liste des livraisons
-            for (int k = 0; k < deliveryNodes.getLength(); k++) {
-                Node deliveryNode = deliveryNodes.item(k);
-                Delivery delivery = parseDelivery(deliveryNode);
-
-                // ajouter le plage a la livraison
-                delivery.setTimeSlot(ts);
-
-                // ajouter la livraison à la liste
-                deliveries.add(delivery);
+            // Traiter la liste des livraisons
+            for (int j = 0; j < deliveryNodes.getLength(); j++, deliveryIdCursor++) {
+                System.out.println(deliveryIdCursor);
+                Node deliveryNode = deliveryNodes.item(j);
+                Delivery del = parseDelivery(deliveryNode);
+                deliveries.add(new Delivery(deliveryIdCursor, del.getAddress(), ts, del.getClient()));
             }
 
         }
@@ -405,17 +399,19 @@ public class DeliverySheet {
 
         NamedNodeMap attributs = node.getAttributes();
         
+        // Non géré via XML du fait du mauvais format donné :
+        //  -> un id doit être UNIQUE à travers tous les objets concernés
         // Id de la livraison
-        Node deliveryIdNode = attributs.getNamedItem(DELIVERY_ID);
-        if (deliveryIdNode == null) {
-            throw new IOException("Attribut '" + DELIVERY_ID + "' requis");
-        }
-        long deliveryId;
-        try {
-            deliveryId = Long.parseLong(deliveryIdNode.getNodeValue());
-        } catch (DOMException | NumberFormatException e) {
-            throw new IOException("Erreur de format de l'id de la livraison");
-        }
+        //Node deliveryIdNode = attributs.getNamedItem(DELIVERY_ID);
+        //if (deliveryIdNode == null) {
+        //    throw new IOException("Attribut '" + DELIVERY_ID + "' requis");
+        //}
+        long deliveryId = 0;
+        //try {
+        //    deliveryId = Long.parseLong(deliveryIdNode.getNodeValue());
+        //} catch (DOMException | NumberFormatException e) {
+        //    throw new IOException("Erreur de format de l'id de la livraison");
+        //}
         
         // Id du client
         Node clientIdNode = attributs.getNamedItem(DELIVERY_CLIENT_ID);
