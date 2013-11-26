@@ -17,6 +17,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+import tsp.AStar;
 import tsp.RegularGraph;
 import tsp.SolutionState;
 import tsp.TSP;
@@ -305,7 +306,8 @@ public class RoadNetwork {
             return graph.getLsNode(ls);
         }
         System.out.println("Pas de solution trouvé");
-        return new ArrayList<>();
+        return AStar.findPath(getNodeById(deliveries.get(0).getAddress()), getNodeById(deliveries.get(1).getAddress()));
+        // return new ArrayList<>();
     }
 
     public int getSize() {
