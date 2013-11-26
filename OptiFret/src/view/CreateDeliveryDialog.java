@@ -125,7 +125,7 @@ public class CreateDeliveryDialog extends JDialog {
         timeSlotBegin.setModel(new SpinnerDateModel(new Date(), null, null, Calendar.MINUTE));
         timeSlotBegin.setEditor(new JSpinner.DateEditor(timeSlotBegin, "HH:mm"));
         timeSlotEnd.setModel(new SpinnerDateModel(new Date(), null, null, Calendar.MINUTE));
-        timeSlotEnd.setEditor(new JSpinner.DateEditor(timeSlotBegin, "HH:mm"));
+        timeSlotEnd.setEditor(new JSpinner.DateEditor(timeSlotEnd, "HH:mm"));
     }
 
     private void setupListeners() {
