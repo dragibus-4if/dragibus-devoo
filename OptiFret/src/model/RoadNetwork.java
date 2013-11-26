@@ -35,8 +35,6 @@ public class RoadNetwork {
     private static final String X_ATTR = "x";
     private static final String ID_ATTR = "id";
     private RoadNode root;
-
-    
     
     /**
      * 

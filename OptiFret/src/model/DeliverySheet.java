@@ -3,8 +3,9 @@ package model;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -32,21 +33,24 @@ import org.xml.sax.SAXException;
  */
 public class DeliverySheet {
 
+    private final List<Delivery> deliveries;
+    private final List<RoadNode> deliveryRound;
+    
+    private DeliveryEmployee deliveryEmployee;
+    private long warehouseAddress;
+
     private static final String ROOT_ELEM = "JourneeType";
     private static final String NAME_WAREHOUSE = "Entrepot";
     private static final String NAME_TIMETABLE = "Plage";
-    private static final String NAME_DELIVERY = "Livraison";
+    private static final String DELIVERY_NAME = "Livraison";
 
-    private static final String DELIVERY_ADRESSE = "adresse";
-    private static final String DELIVERY_CLIENT = "client";
+    private static final String DELIVERY_ADDRESS = "adresse";
+    private static final String DELIVERY_CLIENT_ID = "client";
     private static final String DELIVERY_ID = "id";
 
     private static final String ROADNODE_ID = "adresse";
-    private static final String TIMESLOT_DEBUT = "heureDebut";
-    private static final String TIMESLOT_FIN = "heureFin";
-
-    private final DeliveryRound deliveryRound = new DeliveryRound();
-    private DeliveryEmployee deliveryEmployee = new DeliveryEmployee();
+    private static final String TIMESLOT_BEGIN = "heureDebut";
+    private static final String TIMESLOT_END = "heureFin";
 
     private static final double CONE_FRONT = 15;
     private static final double CONE_BACK = 15;
@@ -55,24 +59,29 @@ public class DeliverySheet {
      * Constructeur standard.
      */
     public DeliverySheet() {
+        deliveryEmployee = new DeliveryEmployee();
+        deliveries = new ArrayList<>();
+        deliveryRound = new ArrayList<>();
     }
 
-    /**
-     * Getteur pour l'instance de DeliveryRound.
-     *
-     * @return l'instance de DeliveryRound
-     */
-    public DeliveryRound getDeliveryRound() {
-        return this.deliveryRound;
+    public List<RoadNode> getDeliveryRound() {
+        return deliveryRound;
     }
 
-    /**
-     * Getteur pour l'instance du DeliveryEmployee.
-     *
-     * @return l'instance du DeliveryEmployee
-     */
     public DeliveryEmployee getDeliveryEmployee() {
         return deliveryEmployee;
+    }
+    
+    public List<Delivery> getDeliveries() {
+        return deliveries;
+    }
+
+    public void addDelivery(Delivery delivery) {
+        deliveries.add(delivery);
+    }
+
+    public long getWarehouseAddress() {
+        return warehouseAddress;
     }
 
     /**
@@ -81,8 +90,9 @@ public class DeliverySheet {
      * @param deliveryEmployee
      */
     public void setDeliveryEmployee(DeliveryEmployee deliveryEmployee) {
-        if(deliveryEmployee == null)
+        if (deliveryEmployee == null) {
             throw new NullPointerException();
+        }
         this.deliveryEmployee = deliveryEmployee;
     }
 
@@ -97,8 +107,8 @@ public class DeliverySheet {
             throw new NullPointerException();
         }
 
-        List<Delivery> delv = deliveryRound.getDeliveries();
-        List<RoadNode> path = deliveryRound.getPath();
+        List<Delivery> delv = deliveries;
+        List<RoadNode> path = deliveryRound;
 
         if (path == null) {
             return;
@@ -209,87 +219,56 @@ public class DeliverySheet {
      *
      * @param reader un Reader contenant le fichier XML a charger
      * @return le nouveau DeliverySheet avec les entrepots et les livraisons
+     * @throws java.io.IOException
      */
-    public static DeliverySheet loadFromXML(Reader reader) {
+    public static DeliverySheet loadFromXML(Reader reader) throws IOException {
         if (reader == null) {
             throw new NullPointerException("'reader' ne doit pas être nul");
         }
-
-        DeliverySheet dsm = new DeliverySheet();
+        
+        Element documentRoot;
         try {
-            // creation d'un constructeur de documents a l'aide d'une fabrique
-            DocumentBuilder builder = DocumentBuilderFactory.newInstance()
-                    .newDocumentBuilder();
-            // lecture du contenu d'un fichier XML avec DOM
+            DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
             Document document = builder.parse(new InputSource(reader));
-            Element documentRoot = document.getDocumentElement();
-
-            // normalizer la représentation textuelle des elements
+            documentRoot = document.getDocumentElement();
             documentRoot.normalize();
-
-            // recuperer la liste de sous-elements
-            if (documentRoot.getTagName().equals(ROOT_ELEM)) {
-                NodeList entrepots = documentRoot.getElementsByTagName(NAME_WAREHOUSE);
-                List<RoadNode> rnListe = treatWarehouse(entrepots);
-
-                // ajouter la liste des entrepots a la deliveryRound du DSM
-                dsm.deliveryRound.setPath(rnListe);
-
-                NodeList plages = documentRoot.getElementsByTagName(NAME_TIMETABLE);
-                List<Delivery> livListe = treatTimetable(plages);
-
-                // parcourir la liste des livraisons pour les ajouter a la
-                // deliveryRound du DSM
-                for (Delivery delivery : livListe) {
-                    dsm.deliveryRound.addDelivery(delivery);
-                }
-            } else { // element racine different de "JourneeType" (erreur de syntaxe)
-                throw new IOException("La structure du document n'est pas la bonne!");
-            }
-
-            // todo : traiter les erreurs
-        } catch (ParserConfigurationException pce) {
-            System.out.println("Erreur de configuration du parseur DOM");
-            System.out.println("lors de l'appel a fabrique.newDocumentBuilder();");
-        } catch (SAXException se) {
-            System.out.println("Erreur lors du parsing du document");
-            System.out.println("lors de l'appel a construteur.parse(xml)");
-        } catch (IOException ioe) {
-            System.out.println("Erreur d'entree/sortie");
-            System.out.println("lors de l'appel a construteur.parse(xml)");
-        } catch (Exception ex) {
-            System.out.println("Erreur de type d'element XML");
-            System.out.println("lors de l'appel a Node.getNodeType()");
+        } catch (ParserConfigurationException | SAXException ex) {
+            throw new IOException(ex.getMessage());
         }
-        return dsm;
+
+        DeliverySheet ds = new DeliverySheet();
+        
+        // Element racine different de "JourneeType" (erreur de syntaxe)
+        if (!documentRoot.getTagName().equals(ROOT_ELEM)) {
+            throw new IOException("Le noeud racine n'est pas '" + ROOT_ELEM + "'");
+        }
+        NodeList warehouseNodes = documentRoot.getElementsByTagName(NAME_WAREHOUSE);
+        ds.warehouseAddress = parseWarehouse(warehouseNodes.item(0));
+
+        NodeList plages = documentRoot.getElementsByTagName(NAME_TIMETABLE);
+        List<Delivery> deliveries = parseTimeTable(plages);
+
+        // parcourir la liste des livraisons pour les ajouter a la
+        // deliveryRound du DSM
+        for (Delivery delivery : deliveries) {
+            ds.addDelivery(delivery);
+        }
+
+        return ds;
     }
 
-    /**
-     * Cette methode prend une NodeList d'entrepots et en cree des RoadNodes.
-     *
-     * @param entrepots la NodeList contenant les donnees pour les entrepots
-     */
-    private static List<RoadNode> treatWarehouse(NodeList entrepots) {
-        // on va dire que l'id des RoadNodes
-        // correspond à l'adresse précisé dans l'élément entrepot
-        List<RoadNode> nodes = new LinkedList<>();
-
-        for (int i = 0; i < entrepots.getLength(); i++) {
-            // lire l'adresse de l'element XML
-            NamedNodeMap attributs = entrepots.item(i).getAttributes();
-            Node adresse = attributs.getNamedItem(ROADNODE_ID);
-            String adresseString = adresse.getNodeValue();
-
-            // creer un nouveau RoadNode avec l'adresse lu
-            RoadNode entrepot = new RoadNode(Long.parseLong(adresseString));
-
-            // ajouter l'entrepot à la liste de RoadNodes
-            nodes.add(entrepot);
-
-            //System.out.println(entrepot);
+    private static long parseWarehouse(Node warehouseNode) throws IOException {
+        NamedNodeMap attributs = warehouseNode.getAttributes();
+        Node address = attributs.getNamedItem(ROADNODE_ID);
+        if (address == null) {
+            throw new IOException("Attribut '" + ROADNODE_ID + "' attendu pour l'entrepôt");
         }
-
-        return nodes;
+        try {
+            return Long.parseLong(address.getNodeValue());
+        } catch (NumberFormatException e) {
+            throw new IOException("Nombre attendu pour l'adresse de l'entrepôt, '"
+                    + address.getNodeValue() + "' trouvé");
+        }
     }
 
     /**
@@ -304,9 +283,8 @@ public class DeliverySheet {
      * @param journeyNodes la NodeListe de plages
      * @return la liste de livraisons creee
      */
-    private static List<Delivery> treatTimetable(NodeList timetable) throws Exception {
-        // traiter chaque plage
-        List<Delivery> livs = new LinkedList<>();
+    private static List<Delivery> parseTimeTable(NodeList timetable) throws IOException {
+        List<Delivery> deliveries = new LinkedList<>();
 
         for (int i = 0; i < timetable.getLength(); i++) {
             Node node = timetable.item(i);
@@ -314,29 +292,28 @@ public class DeliverySheet {
             if (node.getNodeType() == Node.ELEMENT_NODE) {
                 plage = (Element) node;
             } else {
-                throw new Exception("Wrong node type");
+                throw new IOException("Mauvais type de noeud pour le créneau horaire");
             }
 
-            TimeSlot ts = createTimeSlotFromXMLNode(node);
+            TimeSlot ts = parseTimeSlot(node);
 
-            NodeList livraisons = plage.getElementsByTagName(NAME_DELIVERY);
+            NodeList deliveryNodes = plage.getElementsByTagName(DELIVERY_NAME);
             System.out.println(ts);
 
             // traiter la liste des livraisons
-            for (int k = 0; k < livraisons.getLength(); k++) {
-                Node livraison = livraisons.item(k);
-                Delivery liv = createDeliveryFromXMLNode(livraison);
+            for (int k = 0; k < deliveryNodes.getLength(); k++) {
+                Node deliveryNode = deliveryNodes.item(k);
+                Delivery delivery = parseDelivery(deliveryNode);
 
                 // ajouter le plage a la livraison
-                liv.setTimeSlot(ts);
-                System.out.println(liv);
+                delivery.setTimeSlot(ts);
 
                 // ajouter la livraison à la liste
-                livs.add(liv);
+                deliveries.add(delivery);
             }
 
         }
-        return livs;
+        return deliveries;
     }
 
     /**
@@ -346,51 +323,70 @@ public class DeliverySheet {
      *
      * @param node l'element XML precisant le TimeSlot
      * @return le nouveau TimeSlot
-     * @throws DOMException s'il y a un probleme avec le XML
+     * @throws IOException s'il y a un probleme avec le XML
      */
-    private static TimeSlot createTimeSlotFromXMLNode(Node node) throws DOMException {
-        NamedNodeMap attributs = node.getAttributes();
-        Node timeslotDebut = attributs.getNamedItem(TIMESLOT_DEBUT);
-        Node timeslotFin = attributs.getNamedItem(TIMESLOT_FIN);
+    private static TimeSlot parseTimeSlot(Node node) throws IOException {
+        NamedNodeMap attributes = node.getAttributes();
+        Node timeSlotBegin = attributes.getNamedItem(TIMESLOT_BEGIN);
+        if (timeSlotBegin == null) {
+            throw new IOException("Attribut '" + TIMESLOT_BEGIN + "' requis");
+        }
+        Node timeSlotEnd = attributes.getNamedItem(TIMESLOT_END);
+        if (timeSlotEnd == null) {
+            throw new IOException("Attribut '" + TIMESLOT_END + "' requis");
+        }
 
-        /* recuperer l'heure de debut de livraison en String, repartir le String
-         * en ses trois parties pour les caster en int
-         */
-        String tsDebutString = timeslotDebut.getNodeValue();
-        String[] debutHeureParties = tsDebutString.split(":");
-        int debutHeure = Integer.parseInt(debutHeureParties[0]);
-        int debutMin = Integer.parseInt(debutHeureParties[1]);
-        int debutSec = Integer.parseInt(debutHeureParties[2]);
+        Date beginDate;
+        Date endDate;
 
-        /* recuperer l'heure de fin de livraison en String, repartir le String
-         * en ses trois parties pour les caster en int
-         */
-        String tsFinString = timeslotFin.getNodeValue();
-        String[] finHeureParties = tsFinString.split(":");
-        int finHeure = Integer.parseInt(finHeureParties[0]);
-        int finMin = Integer.parseInt(finHeureParties[1]);
-        int finSec = Integer.parseInt(finHeureParties[2]);
+        // Récupérer l'heure de début de livraison en String, splitter le String
+        // en ses trois parties pour les caster en int, la dernière étant optionnelle
+        try {
+            beginDate = parseHour(timeSlotBegin.getNodeValue());
+            endDate = parseHour(timeSlotEnd.getNodeValue());
+        } catch (DOMException ex) {
+            throw new IOException(ex.getMessage());
+        }
 
-        // creer un nouveau Date representant le jour actuel
-        Date today = new Date();
+        return new TimeSlot(beginDate, endDate);
+    }
 
-        // creer un GregorianCalendar a partir de la date today et l'heure
-        // les minutes et les secondes lus
-        // on prend un GregorianCalendar parce que Date va changer la date en
-        // 01.01.1970 01:00:00 si en fait un .setTime(long millisecondes)
-        GregorianCalendar calDebut = new GregorianCalendar(
-                today.getYear(), today.getMonth(), today.getDay(),
-                debutHeure, debutMin, debutSec);
-        GregorianCalendar calFin = new GregorianCalendar(
-                today.getYear(), today.getMonth(), today.getDay(),
-                finHeure, finMin, debutSec);
+    private static Date parseHour(String time) throws IOException {
+        // Calendar initialisé à la date d'aujourd'hui
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
 
-        // recuperer les heures des calendriers
-        Date tsDebutDate = calDebut.getTime();
-        Date tsFinDate = calFin.getTime();
+        String[] splitTime = time.split(":");
+        if (splitTime.length < 2) {
+            throw new IOException("Créneaux horaires attendus sous le format hh:mm[:ss], '" + time + "' trouvé");
+        }
 
-        // creer nouveau TimeSlot et le renvoyer a la fois
-        return new TimeSlot(tsDebutDate, tsFinDate);
+        // heures
+        try {
+            calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(splitTime[0]));
+        } catch (NumberFormatException ex) {
+            throw new IOException("Mauvais champ heures spécifié '" + splitTime[0] + "'");
+        }
+
+        // minutes
+        try {
+            calendar.set(Calendar.MINUTE, Integer.parseInt(splitTime[0]));
+        } catch (NumberFormatException ex) {
+            throw new IOException("Mauvais champ minutes spécifié '" + splitTime[1] + "'");
+        }
+
+        // secondes
+        try {
+            calendar.set(Calendar.SECOND, Integer.parseInt(splitTime[0]));
+        } catch (NumberFormatException ex) {
+            throw new IOException("Mauvais champ secondes spécifié '" + splitTime[2] + "'");
+        } catch (ArrayIndexOutOfBoundsException ex) {
+        }
+
+        return calendar.getTime();
     }
 
     /**
@@ -401,34 +397,51 @@ public class DeliverySheet {
      * @param node l'element XML precisant la Delivery
      * @return la nouvelle Delivery
      */
-    private static Delivery createDeliveryFromXMLNode(Node node) {
-        if (node.getNodeName().equals(NAME_DELIVERY)) {
-            NamedNodeMap attributs = node.getAttributes();
-            Node idLiv = attributs.getNamedItem(DELIVERY_ID);
-            Node clientLiv = attributs.getNamedItem(DELIVERY_CLIENT);
-            Node adresseLiv = attributs.getNamedItem(DELIVERY_ADRESSE);
-
-            // recuperer les valeurs des attributs
-            String idLivString = idLiv.getNodeValue();
-            String clientLivString = clientLiv.getNodeValue();
-            String adresseLivString = adresseLiv.getNodeValue();
-
-            // convertir les attributs de String en long
-            long id = Long.parseLong(idLivString);
-            long client = Long.parseLong(clientLivString);
-            long adresse = Long.parseLong(adresseLivString);
-
-            // creer nouvelle livraison et nouvelle client
-            Delivery liv = new Delivery(id);
-            Client c = new Client(client);
-
-            // ajouter adresse et client a la livraison
-            liv.setAddress(adresse);
-            liv.setClient(c);
-
-            return liv;
-        } else {
-            throw new UnsupportedOperationException("Not supported yet.");
+    private static Delivery parseDelivery(Node node) throws IOException {
+        if (!node.getNodeName().equals(DELIVERY_NAME)) {
+            throw new IOException("Noeud XML '" + DELIVERY_NAME + "' attendy, '"
+                    + node.getNodeName() + "' trouvé");
         }
+
+        NamedNodeMap attributs = node.getAttributes();
+        
+        // Id de la livraison
+        Node deliveryIdNode = attributs.getNamedItem(DELIVERY_ID);
+        if (deliveryIdNode == null) {
+            throw new IOException("Attribut '" + DELIVERY_ID + "' requis");
+        }
+        long deliveryId;
+        try {
+            deliveryId = Long.parseLong(deliveryIdNode.getNodeValue());
+        } catch (DOMException | NumberFormatException e) {
+            throw new IOException("Erreur de format de l'id de la livraison");
+        }
+        
+        // Id du client
+        Node clientIdNode = attributs.getNamedItem(DELIVERY_CLIENT_ID);
+        if (clientIdNode == null) {
+            throw new IOException("Attribut '" + DELIVERY_CLIENT_ID + "' requis");
+        }
+        long clientId;
+        try {
+            clientId = Long.parseLong(clientIdNode.getNodeValue());
+        } catch (DOMException | NumberFormatException e) {
+            throw new IOException("Erreur de format de l'id du client de la livraison");
+        }
+        clientId = Long.parseLong(clientIdNode.getNodeValue());
+        
+        // Addresse de la livraison
+        Node addressNode = attributs.getNamedItem(DELIVERY_ADDRESS);
+        if (addressNode == null) {
+            throw new IOException("Attribut '" + DELIVERY_ADDRESS + "' requis");
+        }
+        long address;
+        try {
+            address = Long.parseLong(addressNode.getNodeValue());
+        } catch (DOMException | NumberFormatException e) {
+            throw new IOException("Erreur de format de l'adresse de la livraison");
+        }
+        
+        return new Delivery(deliveryId, address, null, new Client(clientId));
     }
 }
