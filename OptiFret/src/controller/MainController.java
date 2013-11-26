@@ -19,10 +19,12 @@ import java.util.Stack;
 import javax.swing.JFileChooser;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import model.Client;
 import model.Delivery;
 import model.DeliverySheet;
 import model.RoadNetwork;
 import model.RoadNode;
+import view.AddDelivery;
 import view.DeliveryMap;
 import view.Listener;
 import view.MainFrame;
@@ -58,6 +60,15 @@ public class MainController implements Listener {
     }
     
     private void addDelivery() {
+        long addressNewDelivery = mainFrame.getDeliveryMap()
+                                           .getSelectedNode()
+                                           .get()
+                                           .getAddress();
+
+        // ouvrir la forme
+        AddDelivery formFrame = new AddDelivery(addressNewDelivery, new ArrayList<Client>());
+        formFrame.setVisible(true);
+        
         // TODO - "" doit etre remplace par le nom du dialogue de saisie d'une
         // livraison
         
@@ -417,6 +428,14 @@ public class MainController implements Listener {
         // sélectionner un noeud/une livraison
         mainFrame.getDeliveryMap().addListener(this);
         mainFrame.getDeliveryList().addListener(this);
+        
+        mainFrame.getAddDeliveryButton().addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                addDelivery();
+            }
+        });
 
         // "charger la carte"
         mainFrame.getLoadMap().addActionListener(new ActionListener() {

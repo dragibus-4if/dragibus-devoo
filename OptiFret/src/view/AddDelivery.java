@@ -521,7 +521,7 @@ public class AddDelivery extends javax.swing.JFrame {
             client = new Client();
         }
         TimeSlot timeSlot = getTimeSlot();
-        Delivery del = new Delivery();
+        Delivery del = new Delivery(address);
         del.setClient( client );
         del.setAddress( address );
         del.setTimeSlot( timeSlot );
