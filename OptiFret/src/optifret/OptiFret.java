@@ -1,5 +1,7 @@
 package optifret;
 
+import config.Manager;
+import config.ini.IniLoader;
 import controller.MainController;
 import java.awt.EventQueue;
 import javax.swing.UIManager;
@@ -20,12 +22,14 @@ public class OptiFret {
             public void run() {
                 try {
                     UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+                } catch (ClassNotFoundException | InstantiationException |
+                        IllegalAccessException | UnsupportedLookAndFeelException e) {
+                    System.err.println(e);
+                } finally {
+                    Manager.getInstance().setLoader(new IniLoader());
                     MainFrame frame = new MainFrame();
                     MainController controller = new MainController(frame);
                     controller.run();
-                } catch (ClassNotFoundException | InstantiationException |
-                        IllegalAccessException | UnsupportedLookAndFeelException e) {
-                    
                 }
             }
         });
