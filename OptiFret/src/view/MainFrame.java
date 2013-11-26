@@ -3,8 +3,10 @@ package view;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.KeyEvent;
-import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import static javax.swing.JFrame.EXIT_ON_CLOSE;
@@ -13,7 +15,6 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import static javax.swing.JOptionPane.showMessageDialog;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
 
 /**
@@ -30,32 +31,35 @@ public class MainFrame extends JFrame {
     private JMenuItem exportRound;
     private JMenuItem undo;
     private JMenuItem redo;
+    private JButton addDeliveryButton;
+    private JButton delDeliveryButton;
     private DeliveryMap deliveryMap;
     private DeliveryList deliveryList;
+    
+    private static final int DEFAULT_WIDTH = 800;
+    private static final int DEFAULT_HEIGHT = 600;
     
     private static final int DELIVERY_MAP_WIDTH = 600;
     private static final int DELIVERY_LIST_WIDTH = 200;
     
-    public static final String REDO_TOOLTIP = "Redo";
-    public static final String UNDO_TOOLTIP = "Undo";
+    public static final String REDO_TOOLTIP = "Refaire";
+    public static final String UNDO_TOOLTIP = "Annuler";
     public static final String MENU_EDIT_TOOLTIP = "Edition";
     public static final String EXPORT_ROUND_TOOLTIP = "Exporter une tournée";
     public static final String LOAD_MAP_TOOLTIP = "Charger un plan";
     public static final String MENU_FILE_TOOLTIP = "Fichier";
     public static final String LOAD_ROUND_TOOLTIP = "Charger une tournée";
     public static final String ADD_DELIVERY_TOOLTIP = "Ajouter";
+    public static final String DEL_DELIVERY_TOOLTIP = "Supprimer";
 
     public MainFrame() {
         super("Optifret");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setSize(800, DELIVERY_MAP_WIDTH);
+        setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
         setLayout(new BorderLayout());
         setJMenuBar(makeMenu());
-        DeliveryMap map=(DeliveryMap)makeDeliveryMap();
-        JScrollPane scrollPane =new JScrollPane(map);
-        add(scrollPane, BorderLayout.CENTER);
+        add(makeDeliveryMap(), BorderLayout.CENTER);
         add(makeDeliveryList(), BorderLayout.LINE_START);
-        add(makeDeliveryAdding(), BorderLayout.PAGE_END);
     }
 
     private JMenuBar makeMenu() {
@@ -81,22 +85,31 @@ public class MainFrame extends JFrame {
     }
 
     private Component makeDeliveryMap() {
+        JPanel panel = new JPanel(new GridBagLayout());
         deliveryMap = new DeliveryMap();
         deliveryMap.setPreferredSize(new Dimension(DELIVERY_MAP_WIDTH, getHeight()));
-        deliveryMap.setVisible(true);
-        return deliveryMap;
+        addDeliveryButton = new JButton(ADD_DELIVERY_TOOLTIP);
+        addDeliveryButton.setPreferredSize(new Dimension(100, 70));
+        delDeliveryButton = new JButton(DEL_DELIVERY_TOOLTIP);
+        addDeliveryButton.setPreferredSize(addDeliveryButton.getPreferredSize());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.weightx = gbc.weighty = 1;
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
+        panel.add(deliveryMap, gbc);
+        int padding = 10;
+        gbc.insets = new Insets(padding, padding, padding, padding);
+        gbc.gridwidth = 1;
+        gbc.weighty = 0.1;
+        panel.add(addDeliveryButton, gbc);
+        panel.add(delDeliveryButton, gbc);
+        return panel;
     }
 
     private Component makeDeliveryList() {
         deliveryList = new DeliveryList();
-        deliveryList.setPreferredSize(new Dimension(DELIVERY_LIST_WIDTH, deliveryMap.getMaxY()));
+        deliveryList.setPreferredSize(new Dimension(DELIVERY_LIST_WIDTH, getHeight()));
         return deliveryList;
-    }
-
-    private Component makeDeliveryAdding() {
-        JPanel panel = new JPanel();
-        panel.add(new JButton(ADD_DELIVERY_TOOLTIP));
-        return panel;
     }
 
     public JMenuItem getLoadRound() {
@@ -125,6 +138,14 @@ public class MainFrame extends JFrame {
 
     public DeliveryList getDeliveryList() {
         return deliveryList;
+    }
+
+    public JButton getAddDeliveryButton() {
+        return addDeliveryButton;
+    }
+
+    public JButton getDelDeliveryButton() {
+        return delDeliveryButton;
     }
 
     public void showErrorMessage(String msg) {

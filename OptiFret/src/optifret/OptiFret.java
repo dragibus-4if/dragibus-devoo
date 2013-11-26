@@ -2,6 +2,8 @@ package optifret;
 
 import controller.MainController;
 import java.awt.EventQueue;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 import view.MainFrame;
 
 /**
@@ -16,9 +18,15 @@ public class OptiFret {
         EventQueue.invokeLater(new Runnable() {
             @Override
             public void run() {
-                MainFrame frame = new MainFrame();
-                MainController controller = new MainController(frame);
-                frame.setVisible(true);
+                try {
+                    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+                    MainFrame frame = new MainFrame();
+                    MainController controller = new MainController(frame);
+                    controller.run();
+                } catch (ClassNotFoundException | InstantiationException |
+                        IllegalAccessException | UnsupportedLookAndFeelException e) {
+                    
+                }
             }
         });
     }

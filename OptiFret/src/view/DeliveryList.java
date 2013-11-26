@@ -10,11 +10,27 @@ import model.Delivery;
 import org.jdesktop.swingx.VerticalLayout;
 
 public class DeliveryList extends JScrollPane {
-
+    /**
+     * JPanel contenant l'ensemble des DeliveryView
+     * 
+     * @see DeliveryView
+     */
     private final JPanel panel;
-    private DeliveryCollapsiblePane selected;
+    /**
+     * contient le DeliveryView actuellemnt selectionné
+     * @see DeliveryView
+     */
+    private DeliveryView selected;
+    /**
+     * Contient la liste des listeners ecoutant les events envoyés
+     */
     private final CopyOnWriteArrayList<Listener> listeners;
-    private Map<Long, DeliveryCollapsiblePane> panelList;
+    /**
+     * Contient toutes les DeliveryView présent dans le panel
+     * 
+     * @see DeliveryView
+     */
+    private Map<Long, DeliveryView> panelList;
 
     public DeliveryList() {
         super();
@@ -22,15 +38,21 @@ public class DeliveryList extends JScrollPane {
         this.panelList = new LinkedHashMap<>();
         panel = new JPanel(new VerticalLayout());
         getViewport().add(panel);
+        
+        
     }
-
+ 
+    /**
+     * Charge une liste de Delivery dans la DeliveryList
+     * @param deliveries 
+     */
     public void setDeliveries(List<Delivery> deliveries) {
         if (deliveries == null) {
             return;
         }
         panel.removeAll();
         for (Delivery d : deliveries) {
-            DeliveryCollapsiblePane dcp = new DeliveryCollapsiblePane(d, this);
+            DeliveryView dcp = new DeliveryView(d, this);
             dcp.toggle();
             panelList.put(d.getAddress(), dcp);
             panel.add(dcp);
@@ -38,12 +60,19 @@ public class DeliveryList extends JScrollPane {
         validate();
         //repaint();
     }
-
-    public DeliveryCollapsiblePane getSelected() {
+/**
+ * Getter pour selected
+ * @return Renvoie la DeliveryView selectionnée
+ */
+    public DeliveryView getSelected() {
         return selected;
     }
 
-    public void setSelected(DeliveryCollapsiblePane newSelected) {
+    /**
+     * Permet de mettre a jour la DeliveryView seéctionnée
+     * @param newSelected  
+     */
+    public void setSelected(DeliveryView newSelected) {
 
         if (selected == null) {
             selected = newSelected;
@@ -57,9 +86,14 @@ public class DeliveryList extends JScrollPane {
             }
         }
     }
-
+    
+    /**
+     * Permet de mettre à jour la DeliveryView seléctionnée
+     * 
+     * @param id id de la livraison lié à la DeliveryView
+     */
     public void setSelectionById(long id) {
-        DeliveryCollapsiblePane newSelected = panelList.get(id);
+        DeliveryView newSelected = panelList.get(id);
 
         if (newSelected != null) {
             newSelected.onEventSelect();
@@ -67,20 +101,30 @@ public class DeliveryList extends JScrollPane {
             setSelected(null);
         }
     }
-
+    /**
+     * Ajoute un listener d'event
+     * @param l 
+     */
     public void addListener(Listener l) {
         this.listeners.add(l);
     }
 
+    /**
+     * Retire un listerner d'event
+     * @param l 
+     */
     public void removeListener(Listener l) {
         this.listeners.remove(l);
     }
 
-    // Event firing method.  Called internally by other class methods.
+    /**
+     * Envoie une notification a tous les listeners d'event ajouté à listerners
+     */
     protected void fireChangeEvent() {
         MyChangeEvent evt = new MyChangeEvent(this);
         for (Listener l : listeners) {
             l.changeEventReceived(evt);
+            
         }
     }
 }
