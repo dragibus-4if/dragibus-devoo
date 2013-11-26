@@ -98,7 +98,6 @@ public class MainController implements Listener {
                 roadNetwork = currentNetwork;
                 
                 // TODO - ajouter fonctionnalite
-                DeliveryRound dr = deliverySheet.getDeliveryRound();
                 mainFrame.getDeliveryMap()
                                 .updateNetwork(roadNetwork.getNodes());
                 
@@ -128,15 +127,12 @@ public class MainController implements Listener {
                 currentNetwork = roadNetwork;
                                 
                 // recuperer la liste de livraisons et enlever la livraison
-                DeliveryRound dr = deliverySheet.getDeliveryRound();
-                
-                // chercher la livraison dans la liste pour l'enlever
-                for (Delivery liv : dr.getDeliveries()) {
+                for (Delivery liv : deliverySheet.getDeliveries()) {
 
                 }
                 
                 // ajouter la nouvelle liste a la fenetre et mettre a jour
-                mainFrame.getDeliveryList().setDeliveries(dr.getDeliveries());
+                mainFrame.getDeliveryList().setDeliveries(deliverySheet.getDeliveries());
                 mainFrame.getExportRound().setEnabled(true);
                 
                 // recalculer le chemin et mettre a jour le plan
