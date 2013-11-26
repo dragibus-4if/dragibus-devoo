@@ -35,6 +35,7 @@ public class RoadNetwork {
     private static final String X_ATTR = "x";
     private static final String ID_ATTR = "id";
     private RoadNode root;
+    private HashMap<Long, ArrayList<RoadNode>> paths;
     
     /**
      * 
@@ -290,10 +291,10 @@ public class RoadNetwork {
         return l;
     }
 
-    public List<RoadNode> makeRoute(List<Delivery> deliveries) {
+    public void makeRoute(List<Delivery> deliveries) {
         RegularGraph graph = RegularGraph.loadFromRoadNetwork(this, deliveries);
         TSP tsp = new TSP(graph);
-        SolutionState s = tsp.solve(1000000, 100000);
+        SolutionState s = tsp.solve(100000000, 10000000);
         if (s == SolutionState.OPTIMAL_SOLUTION_FOUND || s == SolutionState.SOLUTION_FOUND) {
             int[] ls = tsp.getNext();
             System.out.print("Solution : ");
@@ -301,11 +302,15 @@ public class RoadNetwork {
                 System.out.print(i);
             }
             System.out.println();
-            return graph.getLsNode(ls);
+            this.paths = graph.getPaths(ls);
         }
         System.out.println("Pas de solution trouvé");
-        return AStar.findPath(getNodeById(deliveries.get(0).getAddress()), getNodeById(deliveries.get(1).getAddress()));
-        // return new ArrayList<>();
+    }
+    
+    public ArrayList<RoadNode> getPath(Long delivery) {
+        if(!this.paths.containsKey(delivery))
+            throw new ArrayIndexOutOfBoundsException();
+        return this.paths.get(delivery);
     }
 
     public int getSize() {
