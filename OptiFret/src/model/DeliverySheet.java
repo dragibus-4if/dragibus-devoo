@@ -3,11 +3,14 @@ package model;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -34,7 +37,7 @@ import org.xml.sax.SAXException;
 public class DeliverySheet {
 
     private List<Delivery> deliveries;
-    private List<RoadNode> deliveryRound;
+    private Map<Delivery, List<RoadNode>> deliveryRound;
 
     private DeliveryEmployee deliveryEmployee;
     private long warehouseAddress;
@@ -65,10 +68,25 @@ public class DeliverySheet {
     }
 
     public List<RoadNode> getDeliveryRound() {
-        return deliveryRound;
+        if(this.deliveries == null)
+            return new ArrayList<>();
+        if(this.deliveryRound == null)
+            return new ArrayList<>();
+        List<RoadNode> l = new ArrayList<>();
+        for(Delivery d : this.deliveries) {
+            l.addAll(deliveryRound.get(d));
+            if(this.deliveries.get(this.deliveries.size() - 1) != d) {
+                l.remove(l.size() - 1);
+            }
+        }
+        return l;
+    }
+    
+    public List<RoadNode> getDeliveryRound(Delivery from) {
+        return deliveryRound.get(from);
     }
 
-    public void setDeliveryRound(List<RoadNode> deliveryRound) {
+    public void setDeliveryRound(HashMap<Delivery, List<RoadNode>> deliveryRound) {
         this.deliveryRound = deliveryRound;
     }
 
@@ -78,6 +96,10 @@ public class DeliverySheet {
 
     public List<Delivery> getDeliveries() {
         return deliveries;
+    }
+    
+    public void setDelivery(List<Delivery> deliveries) {
+        this.deliveries = deliveries;
     }
 
     public void addDelivery(Delivery delivery) {
@@ -116,7 +138,7 @@ public class DeliverySheet {
         }
 
         List<Delivery> delv = deliveries;
-        List<RoadNode> path = deliveryRound;
+        List<RoadNode> path = getDeliveryRound();
 
         if (path == null) {
             return;
