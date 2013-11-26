@@ -228,6 +228,7 @@ public class MainController implements Listener {
                     }
                 });
 
+                // TODO enlever
                 List<RoadNode> path = roadNetwork.makeRoute(deliverySheet.getDeliveries());
                 mainFrame.getDeliveryMap().updateDeliveryNodes(path);
             } catch (IOException e) {

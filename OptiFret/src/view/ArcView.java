@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package view;
 
 import java.awt.BasicStroke;
@@ -12,14 +8,14 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
 
-/**
- *
- * @author Sylvain
- */
 public class ArcView {
 
+    private static final boolean RAINBOW = false;
     private static final int STROKE = 2;
-    private static final int ARR_SIZE = 4;
+    private static final int HUGE_STROKE = 4;
+    private static final int ARR_SIZE = 8;
+    private static final Color EM_COLOR = new Color(0, 255, 0);
+    private static final Color LINE_COLOR = new Color(0, 0, 0);
     private int x1;
     private int y1;
     private int x2;
@@ -96,19 +92,24 @@ public class ArcView {
         g.setStroke(myStroke);
         g.setColor(new Color(255, 255, 255));
         g.drawLine(0, 0, len, 0);
-        g.setColor(new Color(0, 0, 0));
-        //  g.drawLine(1, -2, len - 1, -2);
+        g.setColor(LINE_COLOR);
         g.drawLine(0, 2, len , 2);
-         if (nbLines > 0) {
-            for (int i = 0; i < nbLines; i++) {
-                g.fillPolygon(new int[]{len, len - ARR_SIZE, len - ARR_SIZE, len},
-                        new int[]{3, (-ARR_SIZE / 2)+3, ARR_SIZE+3, 3}, 4);
-                g.translate(-ARR_SIZE - 1, 0);
+        if(nbLines > 0) {
+            g.setStroke(new BasicStroke(HUGE_STROKE));
+            g.setColor(EM_COLOR);
+            // Rainbow mode
+            if(RAINBOW) {
+                g.setColor(new Color((int)(Math.random() * 255),
+                    (int)(Math.random() * 255),
+                    (int)(Math.random() * 255)));
             }
+            g.drawLine(0, 2, len , 2);
         }
-
-
-
+        for (int i = 0; i < nbLines; i++) {
+            g.fillPolygon(new int[]{len, len - ARR_SIZE, len - ARR_SIZE, len},
+                    new int[]{3, (-ARR_SIZE / 2)+3, ARR_SIZE+3, 3}, 4);
+            g.translate(-ARR_SIZE - 1, 0);
+        }
     }
 
     public void resetNbLines(){
