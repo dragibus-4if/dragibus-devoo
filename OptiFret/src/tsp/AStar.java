@@ -9,7 +9,6 @@ import java.util.Set;
 import model.RoadNode;
 import model.RoadSection;
 
-// TODO REDO
 public class AStar {
     public static Double cost(RoadNode a, RoadNode b) {
         for(RoadSection s : a.getSections()) {
@@ -51,7 +50,7 @@ public class AStar {
             close.add(current);
             for(RoadNode neighbor : current.getNeighbors()) {
                 Double tryGScore = gScore.get(current) + cost(current, neighbor);
-                Double tryFScore = tryGScore + heuristicCost(current, neighbor);
+                Double tryFScore = tryGScore + heuristicCost(neighbor, goal);
                 if(close.contains(neighbor) && fScore.containsKey(neighbor) && tryFScore >= fScore.get(neighbor))
                     continue;
                 if(!open.contains(neighbor) || !fScore.containsKey(neighbor) || tryFScore < fScore.get(neighbor)) {
