@@ -21,34 +21,36 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 /**
- * Feuille de route d'un livreur.
- *
- * {@code DeliverySheet} encapsule le chargement XML des demandes de livraisons
- * pour définir la tournée (représentée par {@code DeliveryRound}) et le livreur
- * associé (représentée par {@code DeliveryEmployee}).
+ * Feuille de route d'un livreur. {@literal DeliverySheet} encapsule le
+ * chargement XML des demandes de livraisons pour définir la tournée
+ * (représentée par {@literal DeliveryRound}) et le livreur associé (représentée
+ * par {@literal DeliveryEmployee}).
  *
  * @author Patrizia
  * @author Jean-Marie
+ * @author Julien
+ * @author Pierre
  */
 public class DeliverySheet {
+
     private List<Delivery> deliveries;
     private List<RoadNode> deliveryRound;
-    
+
     private DeliveryEmployee deliveryEmployee;
     private long warehouseAddress;
 
-    private static final String ROOT_ELEM = "JourneeType";
-    private static final String NAME_WAREHOUSE = "Entrepot";
-    private static final String NAME_TIMETABLE = "Plage";
-    private static final String DELIVERY_NAME = "Livraison";
+    public static final String ROOT_ELEM = "JourneeType";
+    public static final String WAREHOUSE_NAME = "Entrepot";
+    public static final String TIMETABLE_NAME = "Plage";
+    public static final String DELIVERY_NAME = "Livraison";
 
-    private static final String DELIVERY_ADDRESS = "adresse";
-    private static final String DELIVERY_CLIENT_ID = "client";
-    private static final String DELIVERY_ID = "id";
+    public static final String DELIVERY_ADDRESS = "adresse";
+    public static final String DELIVERY_CLIENT_ID = "client";
+    public static final String DELIVERY_ID = "id";
 
-    private static final String ROADNODE_ID = "adresse";
-    private static final String TIMESLOT_BEGIN = "heureDebut";
-    private static final String TIMESLOT_END = "heureFin";
+    public static final String WAREHOUSE_ADDRESS = "adresse";
+    public static final String TIMESLOT_BEGIN = "heureDebut";
+    public static final String TIMESLOT_END = "heureFin";
 
     private static final double CONE_FRONT = 15;
     private static final double CONE_BACK = 15;
@@ -73,7 +75,7 @@ public class DeliverySheet {
     public DeliveryEmployee getDeliveryEmployee() {
         return deliveryEmployee;
     }
-    
+
     public List<Delivery> getDeliveries() {
         return deliveries;
     }
@@ -106,7 +108,7 @@ public class DeliverySheet {
      */
     public void export(Writer writer) throws IOException {
         if (writer == null) {
-            throw new NullPointerException();
+            throw new NullPointerException("'writer' ne doit pas être null");
         }
 
         List<Delivery> delv = deliveries;
@@ -116,7 +118,7 @@ public class DeliverySheet {
             return;
         }
 
-        int index_delv = 0;
+        int indexDelivs = 0;
         RoadNode old = null;
         RoadSection oldRs = null;
 
@@ -142,8 +144,7 @@ public class DeliverySheet {
                         bufferRoad += "Prendre la rue ";
                         bufferRoad += rs.getRoadName();
                         bufferRoad += "\n\n";
-                    } //Calcul du "Prenez à gauche/droite, sur"
-                    else {
+                    } else { //Calcul du "Prenez à gauche/droite, sur"
                         //Calcul de la longeur
                         bufferRoad += "Dans ";
                         bufferRoad += (int) rs.getLength();
@@ -173,8 +174,6 @@ public class DeliverySheet {
                             bufferRoad += "Prenez tout droit ";
                         }
 
-                        System.out.println(rs.getRoadName() + angle);
-
                         bufferRoad += "sur la rue ";
                         bufferRoad += rs.getRoadName();
                         bufferRoad += "\n\n";
@@ -184,11 +183,14 @@ public class DeliverySheet {
                     break;
                 }
             }
+
+            // Coupure dans le chemin
             if (rs == null) {
                 throw new RuntimeException();
             }
-            if (index_delv < delv.size() && liv.getId().equals(
-                    delv.get(index_delv).getAddress())) {
+
+            if (indexDelivs < delv.size() && liv.getId().equals(
+                    delv.get(indexDelivs).getAddress())) {
 
                 writer.write("Prochaine livraison : ");
                 writer.write(rs.getRoadName() + "\n\n");
@@ -197,15 +199,16 @@ public class DeliverySheet {
                 writer.write(rs.getRoadName());
                 writer.write("\n\n***\n\n");
                 bufferRoad = "";
-                index_delv++;
-            } else if (index_delv == delv.size()) {
+                indexDelivs++;
+            } else if (indexDelivs == delv.size()) {
                 writer.write(bufferRoad);
                 bufferRoad = "";
             }
             old = liv;
         }
-        if (index_delv != delv.size()) {
-            // On est pas passé par toutes les livraisons
+
+        // On est pas passé par toutes les livraisons
+        if (indexDelivs != delv.size()) {
             throw new RuntimeException();
         }
         writer.flush();
@@ -229,9 +232,9 @@ public class DeliverySheet {
         if (reader == null) {
             throw new NullPointerException("'reader' ne doit pas être nul");
         }
-        
+
         deliveryIdCursor = 1;
-        
+
         Element documentRoot;
         try {
             DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
@@ -243,24 +246,29 @@ public class DeliverySheet {
         }
 
         DeliverySheet ds = new DeliverySheet();
-        
+
         // Element racine different de "JourneeType" (erreur de syntaxe)
         if (!documentRoot.getTagName().equals(ROOT_ELEM)) {
             throw new IOException("Le noeud racine n'est pas '" + ROOT_ELEM + "'");
         }
-        NodeList warehouseNodes = documentRoot.getElementsByTagName(NAME_WAREHOUSE);
+        NodeList warehouseNodes = documentRoot.getElementsByTagName(WAREHOUSE_NAME);
+        if (warehouseNodes == null || warehouseNodes.getLength() == 0) {
+            throw new IOException("L'entrepôt doit être défini via l'élément '" + WAREHOUSE_NAME + "'");
+        }
         ds.warehouseAddress = parseWarehouse(warehouseNodes.item(0));
 
-        NodeList plages = documentRoot.getElementsByTagName(NAME_TIMETABLE);
-        ds.deliveries = parseTimeTable(plages);
+        NodeList timeTable = documentRoot.getElementsByTagName(TIMETABLE_NAME);
+        if (timeTable != null) {
+            ds.deliveries = parseTimeTable(timeTable);
+        }
         return ds;
     }
 
     private static long parseWarehouse(Node warehouseNode) throws IOException {
         NamedNodeMap attributs = warehouseNode.getAttributes();
-        Node address = attributs.getNamedItem(ROADNODE_ID);
+        Node address = attributs.getNamedItem(WAREHOUSE_ADDRESS);
         if (address == null) {
-            throw new IOException("Attribut '" + ROADNODE_ID + "' attendu pour l'entrepôt");
+            throw new IOException("Attribut '" + WAREHOUSE_ADDRESS + "' attendu pour l'entrepôt");
         }
         try {
             return Long.parseLong(address.getNodeValue());
@@ -397,7 +405,7 @@ public class DeliverySheet {
         }
 
         NamedNodeMap attributs = node.getAttributes();
-        
+
         // Non géré via XML du fait du mauvais format donné :
         //  -> un id doit être UNIQUE à travers tous les objets concernés
         // Id de la livraison
@@ -411,7 +419,7 @@ public class DeliverySheet {
         //} catch (DOMException | NumberFormatException e) {
         //    throw new IOException("Erreur de format de l'id de la livraison");
         //}
-        
+
         // Id du client
         Node clientIdNode = attributs.getNamedItem(DELIVERY_CLIENT_ID);
         if (clientIdNode == null) {
@@ -424,7 +432,7 @@ public class DeliverySheet {
             throw new IOException("Erreur de format de l'id du client de la livraison");
         }
         clientId = Long.parseLong(clientIdNode.getNodeValue());
-        
+
         // Addresse de la livraison
         Node addressNode = attributs.getNamedItem(DELIVERY_ADDRESS);
         if (addressNode == null) {
@@ -436,7 +444,7 @@ public class DeliverySheet {
         } catch (DOMException | NumberFormatException e) {
             throw new IOException("Erreur de format de l'adresse de la livraison");
         }
-        
+
         return new Delivery(deliveryId, address, null, new Client(clientId));
     }
 }
