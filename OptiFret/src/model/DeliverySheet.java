@@ -56,8 +56,8 @@ public class DeliverySheet {
     public static final String TIMESLOT_BEGIN = "heureDebut";
     public static final String TIMESLOT_END = "heureFin";
 
-    private static final double CONE_FRONT = 15;
-    private static final double CONE_BACK = 15;
+    private static final double CONE_FRONT = Math.PI*(1/20);
+    private static final double CONE_BACK = Math.PI*(1-1/10);
 
     /**
      * Constructeur standard.
@@ -200,7 +200,9 @@ public class DeliverySheet {
                                 - rs.getRoadNodeBegin().getY();
 
                         double angle1 = Math.atan2(v1Y, v1X);
+                        if ( angle1 <= 0 ) {angle1 += 2*Math.PI;}
                         double angle2 = Math.atan2(v2Y, v2X);
+                        if ( angle2 <= 0 ) {angle2 += 2*Math.PI;}
                         double angle = angle2 - angle1;
 
                         if (angle < -CONE_FRONT && angle > -CONE_BACK) {
@@ -228,7 +230,6 @@ public class DeliverySheet {
             if (rs == null) {
                 throw new RuntimeException();
             }
-
             if (indexDelivs < delv.size() && liv.getId().equals(
                     delv.get(indexDelivs).getAddress())) {
 
@@ -246,7 +247,6 @@ public class DeliverySheet {
             }
             old = liv;
         }
-
         // On est pas passé par toutes les livraisons
         if (indexDelivs != delv.size()) {
             throw new RuntimeException();
