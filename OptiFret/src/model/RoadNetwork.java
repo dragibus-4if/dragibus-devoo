@@ -239,6 +239,38 @@ public class RoadNetwork {
         this.root = root;
     }
 
+    public RoadNode getNodeById(long id) {
+        return getNodeById(new Long(id));
+    }
+
+    public RoadNode getNodeById(Long id) {
+        if (id == null) {
+            throw new NullPointerException("'id' ne doit pas être null");
+        }
+
+        if (root == null) {
+            return null;
+        }
+
+        Set<RoadNode> open = new HashSet<>();
+        Set<RoadNode> close = new HashSet<>();
+        open.add(root);
+        while (!open.isEmpty()) {
+            RoadNode current = open.iterator().next();
+            if (current.getId() == id) {
+                return current;
+            }
+            open.remove(current);
+            close.add(current);
+            for (RoadNode n : current.getNodes()) {
+                if (!close.contains(n)) {
+                    open.add(n);
+                }
+            }
+        }
+        return null;
+    }
+
     public boolean allValidNodes(List<Long> idList) {
         if (idList == null) {
             throw new NullPointerException("'idList' ne doit pas être null");
@@ -343,10 +375,6 @@ public class RoadNetwork {
 
     public int getSize() {
         return getNodes().size();
-    }
-
-    RoadNode getNodeById(Long address) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }
