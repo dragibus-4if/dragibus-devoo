@@ -1,5 +1,6 @@
 package model;
 
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
@@ -25,7 +26,7 @@ import org.xml.sax.SAXException;
 import tsp.AStar;
 
 /**
- * Feuille de route d'un livreur. {@literal DeliverySheet} encapsule le
+ * Modèle de la feuille de route d'un livreur. {@literal DeliverySheet} encapsule le
  * chargement XML des demandes de livraisons pour définir la tournée
  * (représentée par {@literal DeliveryRound}) et le livreur associé (représentée
  * par {@literal DeliveryEmployee}).
@@ -39,7 +40,6 @@ public class DeliverySheet {
 
     private List<Delivery> deliveries;
 
-    private DeliveryEmployee deliveryEmployee;
     private long warehouseAddress;
     private RoadNetwork network;
 
@@ -63,7 +63,6 @@ public class DeliverySheet {
      * Constructeur standard.
      */
     public DeliverySheet() {
-        deliveryEmployee = new DeliveryEmployee();
         deliveries = null;
         network = null;
     }
@@ -76,36 +75,38 @@ public class DeliverySheet {
         }
         return l;
     }
-    
+
     public List<RoadNode> getWarehouseRound() {
-        if(network == null)
+        if (network == null) {
             return new ArrayList<>();
-        if(deliveries.isEmpty())
+        }
+        if (deliveries.isEmpty()) {
             return new ArrayList<>();
-        RoadNode n1 = network.getNodeById(deliveries.get(0).getAddress());
-        RoadNode n2 = network.getNodeById(warehouseAddress);
-        if(n1 == null || n2 == null)
+        }
+        RoadNode n1 = network.getNodeById(warehouseAddress);
+        RoadNode n2 = network.getNodeById(deliveries.get(0).getAddress());
+        if (n1 == null || n2 == null) {
             return new ArrayList<>();
-        return AStar.findPath(n1, n2);
-    }
-    
-    public List<RoadNode> getDeliveryRound(Delivery from) {
-        if(network == null)
-            return new ArrayList<>();
-        int index = deliveries.indexOf(from) + 1;
-        RoadNode n1 = network.getNodeById(from.getAddress());
-        RoadNode n2 = null;
-        if(index < deliveries.size())
-            n2 = network.getNodeById(deliveries.get(index).getAddress());
-        else
-            n2 = network.getNodeById(warehouseAddress);
-        if(n1 == null || n2 == null)
-            return new ArrayList<>();
+        }
         return AStar.findPath(n1, n2);
     }
 
-    public DeliveryEmployee getDeliveryEmployee() {
-        return deliveryEmployee;
+    public List<RoadNode> getDeliveryRound(Delivery from) {
+        if (network == null) {
+            return new ArrayList<>();
+        }
+        int index = deliveries.indexOf(from) + 1;
+        RoadNode n1 = network.getNodeById(from.getAddress());
+        RoadNode n2 = null;
+        if (index < deliveries.size()) {
+            n2 = network.getNodeById(deliveries.get(index).getAddress());
+        } else {
+            n2 = network.getNodeById(warehouseAddress);
+        }
+        if (n1 == null || n2 == null) {
+            return new ArrayList<>();
+        }
+        return AStar.findPath(n1, n2);
     }
 
     public long getWarehouseAddress() {
@@ -132,21 +133,9 @@ public class DeliverySheet {
         }
         return null;
     }
-    
+
     public void setRoadNetwork(RoadNetwork rn) {
         network = rn;
-    }
-
-    /**
-     * Setteur pour l'instance de DeliveryEmployee.
-     *
-     * @param deliveryEmployee
-     */
-    public void setDeliveryEmployee(DeliveryEmployee deliveryEmployee) {
-        if (deliveryEmployee == null) {
-            throw new NullPointerException();
-        }
-        this.deliveryEmployee = deliveryEmployee;
     }
 
     /**
@@ -173,6 +162,8 @@ public class DeliverySheet {
 
         String bufferRoad = "";      //Buffer de toute la route à effectuer
 
+        writer.write("Nouvelle Tournée\n\n\n**********************\n\n\n\n");
+        
         for (RoadNode liv : path) {
             if (old == null) {
                 old = liv;
@@ -232,7 +223,7 @@ public class DeliverySheet {
                     break;
                 }
             }
-
+            
             // Coupure dans le chemin
             if (rs == null) {
                 throw new RuntimeException();
@@ -356,7 +347,6 @@ public class DeliverySheet {
 
             // Traiter la liste des livraisons
             for (int j = 0; j < deliveryNodes.getLength(); j++, deliveryIdCursor++) {
-                System.out.println(deliveryIdCursor);
                 Node deliveryNode = deliveryNodes.item(j);
                 Delivery del = parseDelivery(deliveryNode);
                 deliveries.add(new Delivery(deliveryIdCursor, del.getAddress(), ts, del.getClient()));

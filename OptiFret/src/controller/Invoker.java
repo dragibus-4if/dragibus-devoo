@@ -7,7 +7,7 @@ import java.util.Stack;
  *
  * @author jmcomets
  */
-class Invoker {
+public class Invoker {
     private final Stack<Command> history;
     private final Stack<Command> redoneHistory;
 
