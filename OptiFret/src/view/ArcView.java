@@ -14,7 +14,7 @@ public class ArcView {
     private static final int STROKE = 2;
     private static final int HUGE_STROKE = 4;
     private static final int ARR_SIZE = 8;
-    private static final Color EM_COLOR = new Color(0, 255, 0);
+    private static final Color EM_COLOR = new Color(0, 151, 202);
     private static final Color LINE_COLOR = new Color(0, 0, 0);
     private int x1;
     private int y1;

@@ -3,9 +3,11 @@ package model;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -35,7 +37,8 @@ public class RoadNetwork {
     private static final String X_ATTR = "x";
     private static final String ID_ATTR = "id";
     private RoadNode root;
-    private HashMap<Long, ArrayList<RoadNode>> paths;
+    private HashMap<Delivery, List<RoadNode>> paths = new HashMap<>();
+    private List<Delivery> sortedDeliveries = new ArrayList<>();
     
     /**
      * 
@@ -255,7 +258,7 @@ public class RoadNetwork {
         open.add(root);
         while (!open.isEmpty()) {
             RoadNode current = open.iterator().next();
-            if (current.getId() == id) {
+            if (current.getId().equals(id)) {
                 return current;
             }
             open.remove(current);
@@ -291,26 +294,47 @@ public class RoadNetwork {
         return l;
     }
 
-    public void makeRoute(List<Delivery> deliveries) {
+    public boolean makeRoute(DeliverySheet sheet) {
+        if(sheet == null) {
+            throw new NullPointerException();
+        }
+        List<Delivery> deliveries = sheet.getDeliveries();
+        deliveries.add(0, new Delivery(new Long(-1),
+                sheet.getWarehouseAddress(),
+                new TimeSlot(new Date(new Long(0)), new Long(0)),
+                null));
         RegularGraph graph = RegularGraph.loadFromRoadNetwork(this, deliveries);
         TSP tsp = new TSP(graph);
-        SolutionState s = tsp.solve(100000000, 10000000);
+        SolutionState s = tsp.solve(100000, 100000);
         if (s == SolutionState.OPTIMAL_SOLUTION_FOUND || s == SolutionState.SOLUTION_FOUND) {
             int[] ls = tsp.getNext();
             System.out.print("Solution : ");
             for(int i : ls) {
                 System.out.print(i);
+                System.out.print(" ");
             }
             System.out.println();
             this.paths = graph.getPaths(ls);
+            
+            int index = 0;
+            this.sortedDeliveries = new ArrayList<>();
+            do {
+                this.sortedDeliveries.add(deliveries.get(index));
+                index = ls[index];
+            } while(index != 0);
+            this.sortedDeliveries.remove(0); // Remove the warehouse
+            return true;
         }
         System.out.println("Pas de solution trouvé");
+        return false;
     }
     
-    public ArrayList<RoadNode> getPath(Long delivery) {
-        if(!this.paths.containsKey(delivery))
-            throw new ArrayIndexOutOfBoundsException();
-        return this.paths.get(delivery);
+    public HashMap<Delivery, List<RoadNode>> getPaths() {
+        return this.paths;
+    }
+    
+    public List<Delivery> getSortedDeliveries() {
+        return this.sortedDeliveries;
     }
 
     public int getSize() {
