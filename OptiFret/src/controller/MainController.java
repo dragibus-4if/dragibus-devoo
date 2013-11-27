@@ -441,11 +441,11 @@ public class MainController extends Invoker implements Listener {
         } else {
             mainFrame.getDeliveryList().setSelectionById(selectedNode.getAddress());
             if (selectedNode.getMode() == NodeView.MODE.DELIVERY_PATH) {
-                mainFrame.getDelDeliveryButton().setEnabled(true);
-                mainFrame.getAddDeliveryButton().setEnabled(false);
-            } else {
                 mainFrame.getDelDeliveryButton().setEnabled(false);
                 mainFrame.getAddDeliveryButton().setEnabled(true);
+            } else {
+                mainFrame.getDelDeliveryButton().setEnabled(true);
+                mainFrame.getAddDeliveryButton().setEnabled(false);
             }
         }
     }

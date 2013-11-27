@@ -4,7 +4,7 @@ package controller;
  *
  * @author jmcomets
  */
-abstract class Command {
+public abstract class Command {
 
     private final String name;
 
