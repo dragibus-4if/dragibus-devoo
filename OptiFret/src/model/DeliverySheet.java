@@ -26,7 +26,7 @@ import org.xml.sax.SAXException;
 import tsp.AStar;
 
 /**
- * Feuille de route d'un livreur. {@literal DeliverySheet} encapsule le
+ * Modèle de la feuille de route d'un livreur. {@literal DeliverySheet} encapsule le
  * chargement XML des demandes de livraisons pour définir la tournée
  * (représentée par {@literal DeliveryRound}) et le livreur associé (représentée
  * par {@literal DeliveryEmployee}).
@@ -39,9 +39,7 @@ import tsp.AStar;
 public class DeliverySheet {
 
     private List<Delivery> deliveries;
-    private Map<Delivery, List<RoadNode>> deliveryRound;
 
-    private DeliveryEmployee deliveryEmployee;
     private long warehouseAddress;
     private RoadNetwork network;
 
@@ -65,26 +63,15 @@ public class DeliverySheet {
      * Constructeur standard.
      */
     public DeliverySheet() {
-        deliveryEmployee = new DeliveryEmployee();
         deliveries = null;
-        deliveryRound = null;
         network = null;
     }
 
     public List<RoadNode> getDeliveryRound() {
         List<RoadNode> l = new ArrayList<>();
         l.addAll(getWarehouseRound());
-        if (deliveries != null && deliveryRound != null) {
-            for (Delivery d : deliveries) {
-                if (deliveryRound.containsKey(d)) {
-                    l.addAll(deliveryRound.get(d));
-                    if (deliveries.get(deliveries.size() - 1) != d) {
-                        l.remove(l.size() - 1);
-                    }
-                } else {
-                    throw new ArrayIndexOutOfBoundsException();
-                }
-            }
+        for(Delivery d : deliveries) {
+            l.addAll(getDeliveryRound(d));
         }
         return l;
     }
@@ -96,8 +83,8 @@ public class DeliverySheet {
         if (deliveries.isEmpty()) {
             return new ArrayList<>();
         }
-        RoadNode n1 = network.getNodeById(deliveries.get(0).getAddress());
-        RoadNode n2 = network.getNodeById(warehouseAddress);
+        RoadNode n1 = network.getNodeById(warehouseAddress);
+        RoadNode n2 = network.getNodeById(deliveries.get(0).getAddress());
         if (n1 == null || n2 == null) {
             return new ArrayList<>();
         }
@@ -120,17 +107,6 @@ public class DeliverySheet {
             return new ArrayList<>();
         }
         return AStar.findPath(n1, n2);
-        //if(!deliveryRound.containsKey(from))
-        //    throw new ArrayIndexOutOfBoundsException();
-        //return deliveryRound.get(from);
-    }
-
-    public void setDeliveryRound(HashMap<Delivery, List<RoadNode>> deliveryRound) {
-        this.deliveryRound = deliveryRound;
-    }
-
-    public DeliveryEmployee getDeliveryEmployee() {
-        return deliveryEmployee;
     }
 
     public long getWarehouseAddress() {
@@ -160,18 +136,6 @@ public class DeliverySheet {
 
     public void setRoadNetwork(RoadNetwork rn) {
         network = rn;
-    }
-
-    /**
-     * Setteur pour l'instance de DeliveryEmployee.
-     *
-     * @param deliveryEmployee
-     */
-    public void setDeliveryEmployee(DeliveryEmployee deliveryEmployee) {
-        if (deliveryEmployee == null) {
-            throw new NullPointerException();
-        }
-        this.deliveryEmployee = deliveryEmployee;
     }
 
     /**

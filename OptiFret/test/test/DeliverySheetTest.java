@@ -16,7 +16,6 @@ import java.util.List;
 import junit.framework.TestCase;
 import model.Client;
 import model.Delivery;
-import model.DeliveryEmployee;
 import model.DeliverySheet;
 import model.RoadNode;
 import model.RoadSection;
@@ -108,21 +107,6 @@ public class DeliverySheetTest extends TestCase {
             fail("Erreur quand le document contient un élément non défini");
         } catch (IOException ex) {
         }
-    }
-
-    public void testSetDeliveryEmployee() {
-        DeliverySheet sheet = new DeliverySheet();
-        // Test avec un paramètre null
-        try {
-            sheet.setDeliveryEmployee(null);
-            fail("Set un employé avec un null");
-        } catch (NullPointerException e) {
-        }
-
-        // Vérifie l'égalité entre le getter/setter
-        DeliveryEmployee e = new DeliveryEmployee();
-        sheet.setDeliveryEmployee(e);
-        assertSame(sheet.getDeliveryEmployee(), e);
     }
 
     public void testExportEmpty() {
