@@ -7,8 +7,6 @@ package model;
  * Une livraison doit normalement être identifiée par son {@code id}, unique à
  * travers les livraisons de l'application. L'attribut {@code address} doit
  * correspondre à l'ID d'un {@code RoadNode}.</p>
- *
- * @author jmcomets
  */
 public class Delivery {
 
@@ -135,12 +133,6 @@ public class Delivery {
             return id.equals(((Delivery) obj).id);
         }
     }
-
-    /**
-     * Redéfinition de la représentation String de la livraison.
-     *
-     * @return la représentation String de la livraison
-     */
     @Override
     public String toString() {
         return "Delivery{" + "id=" + id + ", address="
