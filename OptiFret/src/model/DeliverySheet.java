@@ -71,16 +71,22 @@ public class DeliverySheet {
         List<RoadNode> l = new ArrayList<>();
         if (deliveries != null && deliveryRound != null) {
             for (Delivery d : deliveries) {
-                l.addAll(deliveryRound.get(d));
-                if (deliveries.get(deliveries.size() - 1) != d) {
-                    l.remove(l.size() - 1);
+                if(deliveryRound.containsKey(d)) {
+                    l.addAll(deliveryRound.get(d));
+                    if (deliveries.get(deliveries.size() - 1) != d) {
+                        l.remove(l.size() - 1);
+                    }
                 }
+                else
+                    throw new ArrayIndexOutOfBoundsException();
             }
         }
         return l;
     }
     
     public List<RoadNode> getDeliveryRound(Delivery from) {
+        if(!deliveryRound.containsKey(from))
+            throw new ArrayIndexOutOfBoundsException();
         return deliveryRound.get(from);
     }
 
