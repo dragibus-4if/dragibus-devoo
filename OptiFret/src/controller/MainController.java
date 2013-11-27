@@ -164,7 +164,6 @@ public class MainController extends Invoker implements Listener {
     private void calculRoute() {
         if (roadNetwork.makeRoute(deliverySheet)) {
             deliverySheet.setDelivery(roadNetwork.getSortedDeliveries());
-            deliverySheet.setDeliveryRound(roadNetwork.getPaths());
             updateDeliveryMap(deliverySheet);
             mainFrame.getDeliveryList().setDeliveries(deliverySheet.getDeliveries());
         } else {
@@ -190,8 +189,11 @@ public class MainController extends Invoker implements Listener {
         List<Delivery> ls = new ArrayList<>();
         ls.add(del);
         int index = deliverySheet.getDeliveries().indexOf(del);
-        if (index+1 < deliverySheet.getDeliveries().size()) {
-            ls.add(deliverySheet.getDeliveries().get((index + 1) % deliverySheet.getDeliveries().size()));
+        if (index != -1 && index + 1 < deliverySheet.getDeliveries().size()) {
+            ls.add(deliverySheet.getDeliveries().get(index + 1));
+        }
+        if(deliverySheet.getDeliveries().get(0) == del) {
+            path.addAll(0, deliverySheet.getWarehouseRound());
         }
         updateDeliveryMap(path, ls);
     }
