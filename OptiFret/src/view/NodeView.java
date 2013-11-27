@@ -11,6 +11,7 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.geom.Ellipse2D;
 import java.lang.ref.WeakReference;
+import view.DeliveryMap.NODE_RETURN;
 
 /**
  *
@@ -19,32 +20,31 @@ import java.lang.ref.WeakReference;
 public class NodeView {
 
     public static final int DIAMETER = 10;
-    private static final int STROKE = 2;
+    private static final int BASIC_NODE_STROKE = 2;
     private static final int STROKE_ENLIGHT = 5;
-
-    private final BasicStroke myStroke = new BasicStroke(STROKE);
+    private static final int PATH_NODE_DIAMETER = 12;
+    private static final int DEL_NODE_DIAMETER = 14;
+    private final BasicStroke basicNodeStroke = new BasicStroke(BASIC_NODE_STROKE);
     private final BasicStroke myStrokeEnlight = new BasicStroke(STROKE_ENLIGHT);
-    private final Ellipse2D circle;
+    private Ellipse2D circle;
     private final Color cBasic = new Color(100, 100, 100);
     private final Color cSelectedBasic = new Color(255, 204, 0);
-    private final Color cBasicDel = new Color(0, 51, 102);
-    private final Color cSelectedBasicDel = new Color(255, 204, 100);
+    private final Color cBasicDelPath = new Color(0, 151, 202);
+    private final Color cSelectedBasicDelPath = new Color(0, 151, 202);
+    private final Color cBasicDelNode = new Color(255, 100, 100);
+    private final Color cSelectedBasicDelNode = new Color(255, 100, 100);
     private final Color cMouseOver = new Color(204, 204, 204);
-
     private final WeakReference<DeliveryMap> parent;
-
     private int x1;
     private int y1;
-
     private final Long address;
     private boolean mouseOver = false;
     private boolean selected = false;
 
     public enum MODE {
 
-        CLASSIC, DELIVERY
+        CLASSIC, DELIVERY_PATH, DELIVERY_NODE
     };
-
     private MODE mode;
 
     public NodeView(int x1, int y1, Long address, WeakReference<DeliveryMap> ref, MODE mode) {
@@ -52,9 +52,26 @@ public class NodeView {
         this.y1 = y1;
         this.address = address;
         this.mode = mode;
-        circle = new Ellipse2D.Double((float) x1, (float) y1,
-                (float) DIAMETER, (float) DIAMETER);
+        circle = generateCircle();
         parent = ref;
+    }
+
+    public Ellipse2D generateCircle() {
+        Ellipse2D circle;
+        switch (mode) {
+            case DELIVERY_NODE:
+                circle = new Ellipse2D.Double((float) x1, (float) y1,
+                        (float) DEL_NODE_DIAMETER, (float) DEL_NODE_DIAMETER);
+                break;
+            case DELIVERY_PATH:
+                circle = new Ellipse2D.Double((float) x1, (float) y1,
+                        (float) PATH_NODE_DIAMETER, (float) PATH_NODE_DIAMETER);
+                break;
+            default:
+                circle = new Ellipse2D.Double((float) x1, (float) y1,
+                        (float) DIAMETER, (float) DIAMETER);
+        }
+        return circle;
     }
 
     @Override
@@ -83,7 +100,7 @@ public class NodeView {
                 RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
         g2d.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS,
                 RenderingHints.VALUE_FRACTIONALMETRICS_ON);
-        g2d.setStroke(myStroke);
+        g2d.setStroke(basicNodeStroke);
         g2d.translate(-DIAMETER / 2, -DIAMETER / 2);
         g2d.setColor(parent.get().getBackground());
         g2d.fill(circle);
@@ -96,12 +113,20 @@ public class NodeView {
                     g2d.setColor(cBasic);
                 }
                 break;
-            case DELIVERY:
+            case DELIVERY_PATH:
                 if (selected) {
-                    g2d.setColor(cSelectedBasicDel);
+                    g2d.setColor(cSelectedBasicDelPath);
                     g2d.fill(circle);
                 } else {
-                    g2d.setColor(cBasicDel);
+                    g2d.setColor(cBasicDelPath);
+                }
+                break;
+            case DELIVERY_NODE:
+                if (selected) {
+                    g2d.setColor(cSelectedBasicDelNode);
+                    g2d.fill(circle);
+                } else {
+                    g2d.setColor(cBasicDelNode);
                 }
                 break;
         }
@@ -110,7 +135,7 @@ public class NodeView {
             g2d.setColor(cMouseOver);
             g2d.setStroke(myStrokeEnlight);
             g2d.draw(circle);
-            g2d.setStroke(myStroke);
+            g2d.setStroke(basicNodeStroke);
         } else {
             g2d.draw(circle);
         }
@@ -144,19 +169,27 @@ public class NodeView {
         return selected;
     }
 
-    public boolean onMouseDown(int x, int y) {
-        boolean voidClic = true;
+    public NODE_RETURN onMouseDown(int x, int y) {
+        NODE_RETURN ret = NODE_RETURN.NOTHING_SELECTED;
+        //boolean voidClic = true;
         if (circle.contains(x + DIAMETER / 2, y + DIAMETER / 2) && (parent.get() != null)) {
             selected = true;
-            voidClic = false;
-            if (parent.get().getSelectedNode() != null) {
-                parent.get().getSelectedNode().clear();
+            // voidClic = false;
+            ret = NODE_RETURN.NODE_SELECTED;
+            if (parent.get().getSelectedNode().get() != null) {
+                if (parent.get().getSelectedNode().get().equals(this)) {
+                    ret = NODE_RETURN.NODE_ALLREADY_SELECTED;
+                } else {
+                    parent.get().getSelectedNode().get().setSelection(false);
+                    parent.get().getSelectedNode().clear();
+                }
             }
             parent.get().setSelectedNode(new WeakReference<>(this));
         } else {
             selected = false;
         }
-        return voidClic;
+        //return voidClic;
+        return ret;
     }
 
     public void onMouseUp(int x, int y) {
@@ -172,6 +205,7 @@ public class NodeView {
 
     public void setMode(MODE mode) {
         this.mode = mode;
+        circle=generateCircle();
     }
 
     public Long getAddress() {

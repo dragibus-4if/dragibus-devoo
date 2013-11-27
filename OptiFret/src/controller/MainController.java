@@ -47,17 +47,14 @@ public class MainController extends Invoker implements Listener {
     }
 
     public void run() {
-        String startupConfigEntryName = "startup";
         try {
-            configureStartup(Manager.getInstance().registerEntry(startupConfigEntryName));
+            configureStartup(Manager.getInstance().registerEntry("startup"));
         } catch (MissingEntryException e) {
-            System.out.println("Aucune configuration trouvée pour " + startupConfigEntryName);
+            System.out.println("Aucune configuration trouvée pour le MainController");
         }
         mainFrame.setVisible(true);
     }
 
-<<<<<<< Updated upstream
-=======
     private void configureStartup(Entry entry) {
         Helper helper = new Helper(entry);
         try {
@@ -68,7 +65,6 @@ public class MainController extends Invoker implements Listener {
             try {
                 String dsFilename = helper.getString("load-delivery-sheet");
                 deliverySheet = DeliverySheet.loadFromXML(new FileReader(dsFilename));
-                deliverySheet.setRoadNetwork(roadNetwork);
                 calculRoute();
                 mainFrame.getExportRound().setEnabled(true);
             } catch (MissingAttributeException ex) {
@@ -83,13 +79,22 @@ public class MainController extends Invoker implements Listener {
         }
     }
 
->>>>>>> Stashed changes
     private void addDelivery(long address) {
-        long id = 0; // TODO
+        // Calcul du max des id
+        long id = 0;
+        for (Delivery d : deliverySheet.getDeliveries()) {
+            if (id < d.getId()) {
+                id = d.getId();
+            }
+        }
+        // ...incrémenté de 1
+        id++;
+        
+        // Formulaire de création de la livraison
         CreateDeliveryDialog cdd = new CreateDeliveryDialog(mainFrame, id, address);
         cdd.setVisible(true);
 
-        // Validation préalable: livraison crée si formulaire validé
+        // Validation préalable: livraison créée si formulaire validé
         final Delivery delivery = cdd.getDelivery();
         if (delivery == null) {
             return;
@@ -101,22 +106,21 @@ public class MainController extends Invoker implements Listener {
             public void execute() {
                 // recuperer la liste de livraisons et ajouter la nouvelle liv
                 deliverySheet.addDelivery(delivery);
+                calculRoute();
 
                 // ajouter la nouvelle liste a la fenetre et mettre a jour
-                mainFrame.getDeliveryList().setDeliveries(deliverySheet.getDeliveries());
                 mainFrame.getExportRound().setEnabled(true);
 
                 // recalculer le chemin et mettre a jour le plan
-                mainFrame.getDeliveryMap().updateNetwork(deliverySheet.getDeliveryRound());
+                //mainFrame.getDeliveryMap().updateNetwork(deliverySheet.getDeliveryRound());
                 mainFrame.repaint();
             }
 
             @Override
             public void undo() {
-                // TODO supprimer la livraison
                 deliverySheet.getDeliveries().remove(delivery);
+                calculRoute();
 
-                // TODO - ajouter fonctionnalite
                 if (deliverySheet.getDeliveries() == null) {
                     mainFrame.getDeliveryList().setDeliveries(new ArrayList<Delivery>());
                     mainFrame.getExportRound().setEnabled(false);
@@ -141,43 +145,54 @@ public class MainController extends Invoker implements Listener {
             public void execute() {
                 List<Delivery> deliveries = deliverySheet.getDeliveries();
                 deliverySheet.getDeliveries().remove(delivery);
+                calculRoute();
 
-                mainFrame.getDeliveryList().setDeliveries(deliveries);
                 mainFrame.getExportRound().setEnabled(deliveries.isEmpty());
-                mainFrame.getDeliveryMap().updateNetwork(deliverySheet.getDeliveryRound());
+                //mainFrame.getDeliveryMap().updateNetwork(deliverySheet.getDeliveryRound());
                 mainFrame.repaint();
             }
 
             @Override
             public void undo() {
                 deliverySheet.getDeliveries().add(delivery);
+                calculRoute();
+                mainFrame.repaint();
             }
         });
-
     }
-
-    private void configureStartup(Entry entry) {
-        Helper helper = new Helper(entry);
-        try {
-            String rnFilename = helper.getString("load-road-network");
-            roadNetwork = RoadNetwork.loadFromXML(new FileReader(rnFilename));
-            mainFrame.getLoadRound().setEnabled(true);
-            mainFrame.getDeliveryMap().updateNetwork(roadNetwork.getNodes());
-            try {
-                String dsFilename = helper.getString("load-delivery-sheet");
-                deliverySheet = DeliverySheet.loadFromXML(new FileReader(dsFilename));
-                mainFrame.getDeliveryList().setDeliveries(deliverySheet.getDeliveries());
-                mainFrame.getExportRound().setEnabled(true);
-            } catch (MissingAttributeException ex) {
-                System.out.println("Aucune configuration trouvée pour les demandes de livraison");
-            } catch (IOException ex) {
-                System.err.println(ex.getMessage());
-            }
-        } catch (MissingAttributeException ex) {
-            System.out.println("Aucune configuration trouvée pour la carte");
-        } catch (IOException ex) {
-            System.err.println(ex.getMessage());
+    
+    private void calculRoute() {
+        if (roadNetwork.makeRoute(deliverySheet)) {
+            deliverySheet.setDelivery(roadNetwork.getSortedDeliveries());
+            deliverySheet.setDeliveryRound(roadNetwork.getPaths());
+            updateDeliveryMap(deliverySheet);
+            mainFrame.getDeliveryList().setDeliveries(deliverySheet.getDeliveries());
         }
+        else {
+            // Pas de solution
+            // TODO afficher un message
+            updateDeliveryMap(deliverySheet);
+            mainFrame.getDeliveryList().setDeliveries(deliverySheet.getDeliveries());
+        }
+    }
+    
+    private void updateDeliveryMap(List<RoadNode> path, List<Delivery> deliveries) {
+        mainFrame.getDeliveryMap().clearNodeViewMode();
+        mainFrame.getDeliveryMap().updateDeliveryNodesPath(path);
+        mainFrame.getDeliveryMap().updateDeliveryNodes(deliveries);
+    }
+    
+    private void updateDeliveryMap(DeliverySheet sheet) {
+        updateDeliveryMap(sheet.getDeliveryRound(), sheet.getDeliveries());
+    }
+    
+    private void updateDeliveryMap(Delivery del) {
+        List<RoadNode> path = deliverySheet.getDeliveryRound(del);
+        List<Delivery> ls = new ArrayList<>();
+        ls.add(del);
+        int index = deliverySheet.getDeliveries().indexOf(del);
+        ls.add(deliverySheet.getDeliveries().get((index + 1) % deliverySheet.getDeliveries().size()));
+        updateDeliveryMap(path, ls);
     }
 
     private void loadRoadNetwork() {
@@ -200,17 +215,13 @@ public class MainController extends Invoker implements Listener {
 
                         roadNetwork = loadedNetwork;
                         mainFrame.getLoadRound().setEnabled(true);
-                        mainFrame.getDeliveryMap()
-                                .updateNetwork(roadNetwork.getNodes());
-                        mainFrame.getDeliveryList()
-                                .setDeliveries(new ArrayList<Delivery>());
-                        mainFrame.pack();
+                        mainFrame.getDeliveryMap().updateNetwork(roadNetwork.getNodes());
+                        mainFrame.getDeliveryList().setDeliveries(new ArrayList<Delivery>());
                         mainFrame.repaint();
                     }
 
                     @Override
                     public void undo() {
-
                         roadNetwork = currentNetwork;
                         deliverySheet = currentDeliverySheet;
 
@@ -219,16 +230,14 @@ public class MainController extends Invoker implements Listener {
                             mainFrame.getLoadRound().setEnabled(false);
                             mainFrame.getDeliveryMap().updateNetwork(new ArrayList<RoadNode>());
                         } else {
-                            mainFrame.getDeliveryMap().updateNetwork(
-                                    roadNetwork.getNodes());
+                            mainFrame.getDeliveryMap().updateNetwork(roadNetwork.getNodes());
                         }
 
                         // verifier si une liste de livraisons a deja ete charge
                         if (deliverySheet == null) {
-                            mainFrame.getDeliveryList().setDeliveries(null);
+                            mainFrame.getDeliveryList().setDeliveries(new ArrayList<Delivery>());
                         } else {
-                            mainFrame.getDeliveryList().setDeliveries(
-                                    deliverySheet.getDeliveries());
+                            mainFrame.getDeliveryList().setDeliveries(deliverySheet.getDeliveries());
                         }
                         mainFrame.repaint();
                     }
@@ -264,19 +273,7 @@ public class MainController extends Invoker implements Listener {
                         currentDeliverySheet = deliverySheet;
 
                         deliverySheet = loadedDeliverySheet;
-<<<<<<< Updated upstream
-                        if(roadNetwork.makeRoute(deliverySheet)) {
-                            deliverySheet.setDelivery(roadNetwork.getSortedDeliveries());
-                            deliverySheet.setDeliveryRound(roadNetwork.getPaths());
-                        }
-                        else {
-                            // TODO
-                        }
-                        mainFrame.getDeliveryList().setDeliveries(deliverySheet.getDeliveries());
-=======
-                        deliverySheet.setRoadNetwork(roadNetwork);
                         calculRoute();
->>>>>>> Stashed changes
                         mainFrame.getExportRound().setEnabled(true);
                         mainFrame.repaint();
                     }
@@ -290,12 +287,7 @@ public class MainController extends Invoker implements Listener {
                             mainFrame.getDeliveryList().setDeliveries(new ArrayList<Delivery>());
                             mainFrame.getExportRound().setEnabled(false);
                         } else {
-<<<<<<< Updated upstream
-                            mainFrame.getDeliveryList().setDeliveries(deliverySheet.getDeliveries());
-=======
-                            deliverySheet.setRoadNetwork(roadNetwork);
                             calculRoute();
->>>>>>> Stashed changes
                         }
                         mainFrame.repaint();
                     }
@@ -387,14 +379,22 @@ public class MainController extends Invoker implements Listener {
                 redoLastCommand();
             }
         });
-        
+
         // "supprimer une livraison"
         mainFrame.getAddDeliveryButton().addActionListener(new ActionListener() {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                long deliveryId = 1;
-                deleteDelivery(deliveryId);
+                addDelivery(mainFrame.getDeliveryMap().getSelectedNode().get().getAddress());
+            }
+        });
+
+        // "ajouter"
+        mainFrame.getDelDeliveryButton().addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                deleteDelivery(mainFrame.getDeliveryList().getSelected().getDelivery().getId());
             }
         });
     }
@@ -422,9 +422,11 @@ public class MainController extends Invoker implements Listener {
         if (selectedNode == null) {
             mainFrame.getDeliveryList().setSelectionById(-1);
             mainFrame.getAddDeliveryButton().setEnabled(false);
+            updateDeliveryMap(deliverySheet);
+
         } else {
             mainFrame.getDeliveryList().setSelectionById(selectedNode.getAddress());
-            if (selectedNode.getMode() == NodeView.MODE.DELIVERY) {
+            if (selectedNode.getMode() == NodeView.MODE.DELIVERY_PATH) {
                 mainFrame.getDelDeliveryButton().setEnabled(true);
                 mainFrame.getAddDeliveryButton().setEnabled(false);
             } else {
@@ -454,9 +456,17 @@ public class MainController extends Invoker implements Listener {
             mainFrame.getDeliveryMap().setSelectedNodeById(selectedDelivery.getAddress());
             mainFrame.getAddDeliveryButton().setEnabled(false);
             mainFrame.getDelDeliveryButton().setEnabled(true);
-            
-            List<RoadNode> path = deliverySheet.getDeliveryRound(selectedDelivery);
-            mainFrame.getDeliveryMap().updateDeliveryNodes(path);
+            updateDeliveryMap(selectedDelivery);
+            /*mainFrame.getDeliveryMap().updateDeliveryNodesPath(path);
+            ArrayList<Delivery> temp=new ArrayList<>();
+            temp.add(selectedDelivery);
+            ArrayList<Delivery> tempDel=(ArrayList<Delivery>)deliverySheet.getDeliveries();
+            for(int i=0;i < tempDel.size();i++){
+                if(tempDel.get(i).getAddress()==selectedDelivery.getAddress() && ++i<tempDel.size()){
+                    temp.add(tempDel.get(i));
+                    break;
+                }
+            }*/
         }
     }
 
