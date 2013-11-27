@@ -172,12 +172,17 @@ public class DeliverySheetTest extends TestCase {
         result += "Prochaine livraison : R1\n\n";
         result += "Prendre la rue R1\n\n";
         result += "Arrivée à la livraison : R1\n\n***\n\n";
-        result += "Prochaine livraison : R3\n\n";
+        result += "Prochaine livraison : R2\n\n";
         result += "Dans 1 mètres : \n";
-        result += "Prenez tout droit sur la rue R2\n\n";
+        //result += "Prenez tout droit sur la rue R2\n\n";
+        result += "Prenez la rue R2\n\n";
+        result += "Arrivée à la livraison : R2\n\n***\n\n";
         result += "Dans 1 mètres : \n";
-        result += "Prenez tout droit sur la rue R3\n\n";
-        result += "Arrivée à la livraison : R3\n\n***\n\n";
+        //result += "Prenez tout droit sur la rue R3\n\n";
+        result += "Prenez la rue R3\n\n";
+        result += "Dans 1 mètres : \n";
+        //result += "Prenez tout droit sur la rue R3\n\n";
+        result += "Prenez la rue R4\n\n";
         StringWriter sw = new StringWriter();
         try {
             sheet.export(sw);
@@ -299,6 +304,9 @@ public class DeliverySheetTest extends TestCase {
             sheet.export(sw);
         } catch (IOException ex) {
         }
+        System.out.println("#### Chemin  :");
+        System.out.println(sw);
+        System.out.println("####");
         assertEquals(result, sw.toString());
     }
 

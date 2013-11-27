@@ -56,8 +56,8 @@ public class DeliverySheet {
     public static final String TIMESLOT_BEGIN = "heureDebut";
     public static final String TIMESLOT_END = "heureFin";
 
-    private static final double CONE_FRONT = Math.PI*(1/20);
-    private static final double CONE_BACK = Math.PI*(1-1/10);
+    private static final double CONE_FRONT = Math.PI*(1/4);
+    private static final double CONE_BACK = Math.PI*(1-1/4);
 
     /**
      * Constructeur standard.
@@ -190,22 +190,45 @@ public class DeliverySheet {
                         bufferRoad += (int) rs.getLength();
                         bufferRoad += " mètres : \n";
 
-                        int v1X = oldRs.getRoadNodeEnd().getX()
+                        /*int v1X = oldRs.getRoadNodeEnd().getX()
                                 - oldRs.getRoadNodeBegin().getX();
                         int v1Y = oldRs.getRoadNodeEnd().getY()
                                 - oldRs.getRoadNodeBegin().getY();
                         int v2X = rs.getRoadNodeEnd().getX()
                                 - rs.getRoadNodeBegin().getX();
                         int v2Y = rs.getRoadNodeEnd().getY()
-                                - rs.getRoadNodeBegin().getY();
+                                - rs.getRoadNodeBegin().getY();*/
 
-                        double angle1 = Math.atan2(v1Y, v1X);
-                        if ( angle1 <= 0 ) {angle1 += 2*Math.PI;}
-                        double angle2 = Math.atan2(v2Y, v2X);
-                        if ( angle2 <= 0 ) {angle2 += 2*Math.PI;}
-                        double angle = angle2 - angle1;
+                        //double angle1 = Math.atan2(v1Y, v1X);
+                        //if ( angle1 <= 0 ) {angle1 += 2*Math.PI;}
+                        //double angle2 = Math.atan2(v2Y, v2X);
+                        //if ( angle2 <= 0 ) {angle2 += 2*Math.PI;}
+                        //double angle = angle2 - angle1;
+                        /*double angle = Math.atan2(v1X*v2Y - v1Y*v1X, v1X*v2X + v1Y*v2Y);
+                        System.out.print("Angle : (");
+                        System.out.print(v1X);
+                        System.out.print(", ");
+                        System.out.print(v1Y);
+                        System.out.print(") ; (");
+                        System.out.print(v2X);
+                        System.out.print(", ");
+                        System.out.print(v2Y);
+                        System.out.print(") -> ");
+                        System.out.println(angle);
 
-                        if (angle < -CONE_FRONT && angle > -CONE_BACK) {
+                        if(Math.abs(angle) < CONE_FRONT) {
+                            bufferRoad += "Prenez tout droit ";
+                        }
+                        else if(angle > CONE_FRONT && angle < CONE_BACK) {
+                            bufferRoad += "Prenez à gauche ";
+                        }
+                        else if(angle < -CONE_FRONT && angle > -CONE_BACK) {
+                            bufferRoad += "Prenez à droite ";
+                        }
+                        else {
+                            bufferRoad += "Faite demi-tour ";
+                        }*/
+                        /*if (angle < -CONE_FRONT && angle > -CONE_BACK) {
                             bufferRoad += "Prenez à gauche ";
                         } else if (angle > CONE_FRONT && angle < CONE_BACK) {
                             bufferRoad += "Prenez à droite ";
@@ -214,9 +237,10 @@ public class DeliverySheet {
                             bufferRoad += "Faites demi-tour ";
                         } else {
                             bufferRoad += "Prenez tout droit ";
-                        }
+                        }*/
 
-                        bufferRoad += "sur la rue ";
+                        //bufferRoad += "sur la rue ";
+                        bufferRoad += "Prenez la rue ";
                         bufferRoad += rs.getRoadName();
                         bufferRoad += "\n\n";
                     }
