@@ -198,6 +198,8 @@ public class DeliverySheet {
 
         String bufferRoad = "";      //Buffer de toute la route à effectuer
 
+        writer.write("Nouvelle Tournée\n\n\n**********************\n\n\n\n");
+        
         for (RoadNode liv : path) {
             if (old == null) {
                 old = liv;
@@ -257,10 +259,7 @@ public class DeliverySheet {
                     break;
                 }
             }
-
-            writer.write(bufferRoad);
-            writer.write("RoadNodeID : "+liv.getId() +" Adresse: " +delv.get(indexDelivs).getAddress());
-            bufferRoad = "";
+            
             // Coupure dans le chemin
             if (rs == null) {
                 throw new RuntimeException();
@@ -285,9 +284,9 @@ public class DeliverySheet {
         }
 
         // On est pas passé par toutes les livraisons
-//        if (indexDelivs != delv.size()) {
-//            throw new RuntimeException();
-//        }
+        if (indexDelivs != delv.size()) {
+            throw new RuntimeException();
+        }
         writer.flush();
     }
 
