@@ -75,10 +75,14 @@ public class DeliverySheet {
         l.addAll(getWarehouseRound());
         if (deliveries != null && deliveryRound != null) {
             for (Delivery d : deliveries) {
-                l.addAll(deliveryRound.get(d));
-                if (deliveries.get(deliveries.size() - 1) != d) {
-                    l.remove(l.size() - 1);
+                if(deliveryRound.containsKey(d)) {
+                    l.addAll(deliveryRound.get(d));
+                    if (deliveries.get(deliveries.size() - 1) != d) {
+                        l.remove(l.size() - 1);
+                    }
                 }
+                else
+                    throw new ArrayIndexOutOfBoundsException();
             }
         }
         return l;
