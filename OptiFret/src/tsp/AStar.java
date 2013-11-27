@@ -67,9 +67,7 @@ public class AStar {
 
     private static List<RoadNode> reconstructPath(Map<RoadNode, RoadNode> cameFrom, RoadNode start, RoadNode goal) {
         List<RoadNode> p = new ArrayList<>();
-        if(goal == start)
-            return p;
-        if(cameFrom.containsKey(goal)) {
+        if(goal != start && cameFrom.containsKey(goal)) {
             RoadNode n = cameFrom.get(goal);
             if(n != goal) {
                 p = reconstructPath(cameFrom, start, cameFrom.get(goal));                

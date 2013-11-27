@@ -106,6 +106,12 @@ public class DeliveryMap extends NavigablePanel {
             mapNodes.get(del.getAddress()).setMode(MODE.DELIVERY_NODE);
         }
     }
+    
+    public void clearNodeViewMode() {
+        for(NodeView n : mapNodes.values()) {
+            n.setMode(MODE.CLASSIC);
+        }
+    }
 
     @Override
     public void notifyPressed(int x, int y) {

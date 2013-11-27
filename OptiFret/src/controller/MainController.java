@@ -65,13 +65,8 @@ public class MainController extends Invoker implements Listener {
             try {
                 String dsFilename = helper.getString("load-delivery-sheet");
                 deliverySheet = DeliverySheet.loadFromXML(new FileReader(dsFilename));
-                if (roadNetwork.makeRoute(deliverySheet)) {
-                    deliverySheet.setDelivery(roadNetwork.getSortedDeliveries());
-                    deliverySheet.setDeliveryRound(roadNetwork.getPaths());
-                    mainFrame.getDeliveryMap().updateDeliveryNodesPath(deliverySheet.getDeliveryRound());
-                    mainFrame.getDeliveryMap().updateDeliveryNodes(deliverySheet.getDeliveries());
-                }
-                mainFrame.getDeliveryList().setDeliveries(deliverySheet.getDeliveries());
+                deliverySheet.setRoadNetwork(roadNetwork);
+                calculRoute();
                 mainFrame.getExportRound().setEnabled(true);
             } catch (MissingAttributeException ex) {
                 System.out.println("Aucune configuration trouvée pour les demandes de livraison");
@@ -112,19 +107,20 @@ public class MainController extends Invoker implements Listener {
             public void execute() {
                 // recuperer la liste de livraisons et ajouter la nouvelle liv
                 deliverySheet.addDelivery(delivery);
+                calculRoute();
 
                 // ajouter la nouvelle liste a la fenetre et mettre a jour
-                mainFrame.getDeliveryList().setDeliveries(deliverySheet.getDeliveries());
                 mainFrame.getExportRound().setEnabled(true);
 
                 // recalculer le chemin et mettre a jour le plan
-                mainFrame.getDeliveryMap().updateNetwork(deliverySheet.getDeliveryRound());
+                //mainFrame.getDeliveryMap().updateNetwork(deliverySheet.getDeliveryRound());
                 mainFrame.repaint();
             }
 
             @Override
             public void undo() {
                 deliverySheet.getDeliveries().remove(delivery);
+                calculRoute();
 
                 if (deliverySheet.getDeliveries() == null) {
                     mainFrame.getDeliveryList().setDeliveries(new ArrayList<Delivery>());
@@ -150,18 +146,54 @@ public class MainController extends Invoker implements Listener {
             public void execute() {
                 List<Delivery> deliveries = deliverySheet.getDeliveries();
                 deliverySheet.getDeliveries().remove(delivery);
+                calculRoute();
 
-                mainFrame.getDeliveryList().setDeliveries(deliveries);
                 mainFrame.getExportRound().setEnabled(deliveries.isEmpty());
-                mainFrame.getDeliveryMap().updateNetwork(deliverySheet.getDeliveryRound());
+                //mainFrame.getDeliveryMap().updateNetwork(deliverySheet.getDeliveryRound());
                 mainFrame.repaint();
             }
 
             @Override
             public void undo() {
                 deliverySheet.getDeliveries().add(delivery);
+                calculRoute();
+                mainFrame.repaint();
             }
         });
+    }
+    
+    private void calculRoute() {
+        if (roadNetwork.makeRoute(deliverySheet)) {
+            deliverySheet.setDelivery(roadNetwork.getSortedDeliveries());
+            deliverySheet.setDeliveryRound(roadNetwork.getPaths());
+            updateDeliveryMap(deliverySheet);
+            mainFrame.getDeliveryList().setDeliveries(deliverySheet.getDeliveries());
+        }
+        else {
+            // Pas de solution
+            // TODO afficher un message
+            updateDeliveryMap(deliverySheet);
+            mainFrame.getDeliveryList().setDeliveries(deliverySheet.getDeliveries());
+        }
+    }
+    
+    private void updateDeliveryMap(List<RoadNode> path, List<Delivery> deliveries) {
+        mainFrame.getDeliveryMap().clearNodeViewMode();
+        mainFrame.getDeliveryMap().updateDeliveryNodesPath(path);
+        mainFrame.getDeliveryMap().updateDeliveryNodes(deliveries);
+    }
+    
+    private void updateDeliveryMap(DeliverySheet sheet) {
+        updateDeliveryMap(sheet.getDeliveryRound(), sheet.getDeliveries());
+    }
+    
+    private void updateDeliveryMap(Delivery del) {
+        List<RoadNode> path = deliverySheet.getDeliveryRound(del);
+        List<Delivery> ls = new ArrayList<>();
+        ls.add(del);
+        int index = deliverySheet.getDeliveries().indexOf(del);
+        ls.add(deliverySheet.getDeliveries().get((index + 1) % deliverySheet.getDeliveries().size()));
+        updateDeliveryMap(path, ls);
     }
 
     private void loadRoadNetwork() {
@@ -193,6 +225,11 @@ public class MainController extends Invoker implements Listener {
                     public void undo() {
                         roadNetwork = currentNetwork;
                         deliverySheet = currentDeliverySheet;
+                        
+                        if(deliverySheet != null) {
+                           deliverySheet.setRoadNetwork(roadNetwork);
+                           calculRoute();
+                        }
 
                         // verifier si un reseau a deja ete charge
                         if (roadNetwork == null) {
@@ -242,13 +279,8 @@ public class MainController extends Invoker implements Listener {
                         currentDeliverySheet = deliverySheet;
 
                         deliverySheet = loadedDeliverySheet;
-                        if(roadNetwork.makeRoute(deliverySheet)) {
-                            deliverySheet.setDelivery(roadNetwork.getSortedDeliveries());
-                            deliverySheet.setDeliveryRound(roadNetwork.getPaths());
-                        } else {
-                            // TODO
-                        }
-                        mainFrame.getDeliveryList().setDeliveries(deliverySheet.getDeliveries());
+                        deliverySheet.setRoadNetwork(roadNetwork);
+                        calculRoute();
                         mainFrame.getExportRound().setEnabled(true);
                         mainFrame.repaint();
                     }
@@ -262,7 +294,8 @@ public class MainController extends Invoker implements Listener {
                             mainFrame.getDeliveryList().setDeliveries(new ArrayList<Delivery>());
                             mainFrame.getExportRound().setEnabled(false);
                         } else {
-                            mainFrame.getDeliveryList().setDeliveries(deliverySheet.getDeliveries());
+                            deliverySheet.setRoadNetwork(roadNetwork);
+                            calculRoute();
                         }
                         mainFrame.repaint();
                     }
@@ -397,9 +430,7 @@ public class MainController extends Invoker implements Listener {
         if (selectedNode == null) {
             mainFrame.getDeliveryList().setSelectionById(-1);
             mainFrame.getAddDeliveryButton().setEnabled(false);
-            List<RoadNode> path = deliverySheet.getDeliveryRound();
-            mainFrame.getDeliveryMap().updateDeliveryNodesPath(path);
-            mainFrame.getDeliveryMap().updateDeliveryNodes(deliverySheet.getDeliveries());
+            updateDeliveryMap(deliverySheet);
 
         } else {
             mainFrame.getDeliveryList().setSelectionById(selectedNode.getAddress());
@@ -433,9 +464,8 @@ public class MainController extends Invoker implements Listener {
             mainFrame.getDeliveryMap().setSelectedNodeById(selectedDelivery.getAddress());
             mainFrame.getAddDeliveryButton().setEnabled(false);
             mainFrame.getDelDeliveryButton().setEnabled(true);
-
-            List<RoadNode> path = deliverySheet.getDeliveryRound(selectedDelivery);
-            mainFrame.getDeliveryMap().updateDeliveryNodesPath(path);
+            updateDeliveryMap(selectedDelivery);
+            /*mainFrame.getDeliveryMap().updateDeliveryNodesPath(path);
             ArrayList<Delivery> temp=new ArrayList<>();
             temp.add(selectedDelivery);
             ArrayList<Delivery> tempDel=(ArrayList<Delivery>)deliverySheet.getDeliveries();
@@ -444,9 +474,7 @@ public class MainController extends Invoker implements Listener {
                     temp.add(tempDel.get(i));
                     break;
                 }
-            }
-            mainFrame.getDeliveryMap().updateDeliveryNodes(temp);
-
+            }*/
         }
     }
 
