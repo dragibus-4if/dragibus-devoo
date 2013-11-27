@@ -16,7 +16,6 @@ import java.util.List;
 import junit.framework.TestCase;
 import model.Client;
 import model.Delivery;
-import model.DeliveryEmployee;
 import model.DeliverySheet;
 import model.RoadNode;
 import model.RoadSection;
@@ -110,21 +109,6 @@ public class DeliverySheetTest extends TestCase {
         }
     }
 
-    public void testSetDeliveryEmployee() {
-        DeliverySheet sheet = new DeliverySheet();
-        // Test avec un paramètre null
-        try {
-            sheet.setDeliveryEmployee(null);
-            fail("Set un employé avec un null");
-        } catch (NullPointerException e) {
-        }
-
-        // Vérifie l'égalité entre le getter/setter
-        DeliveryEmployee e = new DeliveryEmployee();
-        sheet.setDeliveryEmployee(e);
-        assertSame(sheet.getDeliveryEmployee(), e);
-    }
-
     public void testExportEmpty() {
         DeliverySheet sheet = new DeliverySheet();
 
@@ -154,6 +138,8 @@ public class DeliverySheetTest extends TestCase {
         // Création d'un chemin basique
         HashMap<Delivery, List<RoadNode>> map = new HashMap<>();
         List<RoadNode> path = new ArrayList<>();
+        List<RoadNode> path1 = new ArrayList<>();
+        List<RoadNode> path2 = new ArrayList<>();
         DeliverySheet sheet = new DeliverySheet();
         
         
@@ -167,14 +153,23 @@ public class DeliverySheetTest extends TestCase {
         path.get(2).addNeighbor(new RoadSection(path.get(2), path.get(3), 1, 1, "R3"));
         path.get(3).addNeighbor(new RoadSection(path.get(3), path.get(0), 1, 1, "R4"));
 
-        map.put((new Delivery(new Long(0), new Long(1),
-                new TimeSlot(new Date(), new Long(0)), new Client())), path);
+        path1 = path.subList(0, 1);
+        path2 = path.subList(1, 3);
+        Delivery d1 = new Delivery(new Long(0), new Long(1),
+                new TimeSlot(new Date(), new Long(0)), new Client());
+        Delivery d2 = new Delivery(new Long(1), new Long(3),
+                new TimeSlot(new Date(), new Long(0)), new Client());
+        
+        
+        map.put(d1,path1);
+        map.put(d2,path2);
+        List<Delivery> dL = new ArrayList<>();
+        dL.add(d1);
+        dL.add(d2);
+        sheet.setDelivery(dL);
         
         sheet.setDeliveryRound(map);
-        sheet.addDelivery(new Delivery(new Long(0), new Long(1),
-                new TimeSlot(new Date(), new Long(0)), new Client()));
-        sheet.addDelivery(new Delivery(new Long(1), new Long(3),
-                new TimeSlot(new Date(), new Long(0)), new Client()));
+        
 
         String result = "";
         result += "Prochaine livraison : R1\n\n";

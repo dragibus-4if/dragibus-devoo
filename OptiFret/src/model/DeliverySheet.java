@@ -26,7 +26,7 @@ import org.xml.sax.SAXException;
 import tsp.AStar;
 
 /**
- * Feuille de route d'un livreur. {@literal DeliverySheet} encapsule le
+ * Modèle de la feuille de route d'un livreur. {@literal DeliverySheet} encapsule le
  * chargement XML des demandes de livraisons pour définir la tournée
  * (représentée par {@literal DeliveryRound}) et le livreur associé (représentée
  * par {@literal DeliveryEmployee}).
@@ -41,7 +41,6 @@ public class DeliverySheet {
     private List<Delivery> deliveries;
     private Map<Delivery, List<RoadNode>> deliveryRound;
 
-    private DeliveryEmployee deliveryEmployee;
     private long warehouseAddress;
     private RoadNetwork network;
 
@@ -65,7 +64,6 @@ public class DeliverySheet {
      * Constructeur standard.
      */
     public DeliverySheet() {
-        deliveryEmployee = new DeliveryEmployee();
         deliveries = null;
         deliveryRound = null;
         network = null;
@@ -129,10 +127,6 @@ public class DeliverySheet {
         this.deliveryRound = deliveryRound;
     }
 
-    public DeliveryEmployee getDeliveryEmployee() {
-        return deliveryEmployee;
-    }
-
     public long getWarehouseAddress() {
         return warehouseAddress;
     }
@@ -163,18 +157,6 @@ public class DeliverySheet {
     }
 
     /**
-     * Setteur pour l'instance de DeliveryEmployee.
-     *
-     * @param deliveryEmployee
-     */
-    public void setDeliveryEmployee(DeliveryEmployee deliveryEmployee) {
-        if (deliveryEmployee == null) {
-            throw new NullPointerException();
-        }
-        this.deliveryEmployee = deliveryEmployee;
-    }
-
-    /**
      * Méthode d'export d'une feuille de route en format texte.
      *
      * @param writer
@@ -198,6 +180,8 @@ public class DeliverySheet {
 
         String bufferRoad = "";      //Buffer de toute la route à effectuer
 
+        writer.write("Nouvelle Tournée\n\n\n**********************\n\n\n\n");
+        
         for (RoadNode liv : path) {
             if (old == null) {
                 old = liv;
@@ -257,10 +241,7 @@ public class DeliverySheet {
                     break;
                 }
             }
-
-            writer.write(bufferRoad);
-            writer.write("RoadNodeID : "+liv.getId() +" Adresse: " +delv.get(indexDelivs).getAddress());
-            bufferRoad = "";
+            
             // Coupure dans le chemin
             if (rs == null) {
                 throw new RuntimeException();
@@ -285,9 +266,9 @@ public class DeliverySheet {
         }
 
         // On est pas passé par toutes les livraisons
-//        if (indexDelivs != delv.size()) {
-//            throw new RuntimeException();
-//        }
+        if (indexDelivs != delv.size()) {
+            throw new RuntimeException();
+        }
         writer.flush();
     }
 
