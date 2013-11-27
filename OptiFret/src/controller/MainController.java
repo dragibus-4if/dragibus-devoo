@@ -165,7 +165,6 @@ public class MainController extends Invoker implements Listener {
     private void calculRoute() {
         if (roadNetwork.makeRoute(deliverySheet)) {
             deliverySheet.setDelivery(roadNetwork.getSortedDeliveries());
-            deliverySheet.setDeliveryRound(roadNetwork.getPaths());
             updateDeliveryMap(deliverySheet);
             mainFrame.getDeliveryList().setDeliveries(deliverySheet.getDeliveries());
         }
