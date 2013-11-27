@@ -295,6 +295,9 @@ public class RoadNetwork {
     }
 
     public boolean makeRoute(DeliverySheet sheet) {
+        if(sheet == null) {
+            throw new NullPointerException();
+        }
         List<Delivery> deliveries = sheet.getDeliveries();
         deliveries.add(0, new Delivery(new Long(-1),
                 sheet.getWarehouseAddress(),
@@ -302,17 +305,19 @@ public class RoadNetwork {
                 null));
         RegularGraph graph = RegularGraph.loadFromRoadNetwork(this, deliveries);
         TSP tsp = new TSP(graph);
-        SolutionState s = tsp.solve(100000000, 10000000);
+        SolutionState s = tsp.solve(100000, 100000);
         if (s == SolutionState.OPTIMAL_SOLUTION_FOUND || s == SolutionState.SOLUTION_FOUND) {
             int[] ls = tsp.getNext();
             System.out.print("Solution : ");
             for(int i : ls) {
                 System.out.print(i);
+                System.out.print(" ");
             }
             System.out.println();
             this.paths = graph.getPaths(ls);
+            
             int index = 0;
-            this.sortedDeliveries.clear();
+            this.sortedDeliveries = new ArrayList<>();
             do {
                 this.sortedDeliveries.add(deliveries.get(index));
                 index = ls[index];
