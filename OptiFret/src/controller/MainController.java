@@ -56,6 +56,34 @@ public class MainController extends Invoker implements Listener {
         mainFrame.setVisible(true);
     }
 
+<<<<<<< Updated upstream
+=======
+    private void configureStartup(Entry entry) {
+        Helper helper = new Helper(entry);
+        try {
+            String rnFilename = helper.getString("load-road-network");
+            roadNetwork = RoadNetwork.loadFromXML(new FileReader(rnFilename));
+            mainFrame.getLoadRound().setEnabled(true);
+            mainFrame.getDeliveryMap().updateNetwork(roadNetwork.getNodes());
+            try {
+                String dsFilename = helper.getString("load-delivery-sheet");
+                deliverySheet = DeliverySheet.loadFromXML(new FileReader(dsFilename));
+                deliverySheet.setRoadNetwork(roadNetwork);
+                calculRoute();
+                mainFrame.getExportRound().setEnabled(true);
+            } catch (MissingAttributeException ex) {
+                System.out.println("Aucune configuration trouvée pour les demandes de livraison");
+            } catch (IOException ex) {
+                System.err.println(ex.getMessage());
+            }
+        } catch (MissingAttributeException ex) {
+            System.out.println("Aucune configuration trouvée pour la carte");
+        } catch (IOException ex) {
+            System.err.println(ex.getMessage());
+        }
+    }
+
+>>>>>>> Stashed changes
     private void addDelivery(long address) {
         long id = 0; // TODO
         CreateDeliveryDialog cdd = new CreateDeliveryDialog(mainFrame, id, address);
@@ -236,6 +264,7 @@ public class MainController extends Invoker implements Listener {
                         currentDeliverySheet = deliverySheet;
 
                         deliverySheet = loadedDeliverySheet;
+<<<<<<< Updated upstream
                         if(roadNetwork.makeRoute(deliverySheet)) {
                             deliverySheet.setDelivery(roadNetwork.getSortedDeliveries());
                             deliverySheet.setDeliveryRound(roadNetwork.getPaths());
@@ -244,6 +273,10 @@ public class MainController extends Invoker implements Listener {
                             // TODO
                         }
                         mainFrame.getDeliveryList().setDeliveries(deliverySheet.getDeliveries());
+=======
+                        deliverySheet.setRoadNetwork(roadNetwork);
+                        calculRoute();
+>>>>>>> Stashed changes
                         mainFrame.getExportRound().setEnabled(true);
                         mainFrame.repaint();
                     }
@@ -257,7 +290,12 @@ public class MainController extends Invoker implements Listener {
                             mainFrame.getDeliveryList().setDeliveries(new ArrayList<Delivery>());
                             mainFrame.getExportRound().setEnabled(false);
                         } else {
+<<<<<<< Updated upstream
                             mainFrame.getDeliveryList().setDeliveries(deliverySheet.getDeliveries());
+=======
+                            deliverySheet.setRoadNetwork(roadNetwork);
+                            calculRoute();
+>>>>>>> Stashed changes
                         }
                         mainFrame.repaint();
                     }
