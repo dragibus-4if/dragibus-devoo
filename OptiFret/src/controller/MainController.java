@@ -165,17 +165,34 @@ public class MainController extends Invoker implements Listener {
         if (roadNetwork.makeRoute(deliverySheet)) {
             deliverySheet.setDelivery(roadNetwork.getSortedDeliveries());
             deliverySheet.setDeliveryRound(roadNetwork.getPaths());
-            mainFrame.getDeliveryMap().updateDeliveryNodesPath(deliverySheet.getDeliveryRound());
-            mainFrame.getDeliveryMap().updateDeliveryNodes(deliverySheet.getDeliveries());
+            updateDeliveryMap(deliverySheet);
             mainFrame.getDeliveryList().setDeliveries(deliverySheet.getDeliveries());
         }
         else {
             // Pas de solution
             // TODO afficher un message
-            mainFrame.getDeliveryMap().updateDeliveryNodesPath(deliverySheet.getDeliveryRound());
-            mainFrame.getDeliveryMap().updateDeliveryNodes(deliverySheet.getDeliveries());
+            updateDeliveryMap(deliverySheet);
             mainFrame.getDeliveryList().setDeliveries(deliverySheet.getDeliveries());
         }
+    }
+    
+    private void updateDeliveryMap(List<RoadNode> path, List<Delivery> deliveries) {
+        mainFrame.getDeliveryMap().clearNodeViewMode();
+        mainFrame.getDeliveryMap().updateDeliveryNodesPath(path);
+        mainFrame.getDeliveryMap().updateDeliveryNodes(deliveries);
+    }
+    
+    private void updateDeliveryMap(DeliverySheet sheet) {
+        updateDeliveryMap(sheet.getDeliveryRound(), sheet.getDeliveries());
+    }
+    
+    private void updateDeliveryMap(Delivery del) {
+        List<RoadNode> path = deliverySheet.getDeliveryRound(del);
+        List<Delivery> ls = new ArrayList<>();
+        ls.add(del);
+        int index = deliverySheet.getDeliveries().indexOf(del);
+        ls.add(deliverySheet.getDeliveries().get((index + 1) % deliverySheet.getDeliveries().size()));
+        updateDeliveryMap(path, ls);
     }
 
     private void loadRoadNetwork() {
@@ -257,7 +274,6 @@ public class MainController extends Invoker implements Listener {
 
                         deliverySheet = loadedDeliverySheet;
                         calculRoute();
-                        mainFrame.getDeliveryList().setDeliveries(deliverySheet.getDeliveries());
                         mainFrame.getExportRound().setEnabled(true);
                         mainFrame.repaint();
                     }
@@ -271,7 +287,7 @@ public class MainController extends Invoker implements Listener {
                             mainFrame.getDeliveryList().setDeliveries(new ArrayList<Delivery>());
                             mainFrame.getExportRound().setEnabled(false);
                         } else {
-                            mainFrame.getDeliveryList().setDeliveries(deliverySheet.getDeliveries());
+                            calculRoute();
                         }
                         mainFrame.repaint();
                     }
@@ -406,9 +422,7 @@ public class MainController extends Invoker implements Listener {
         if (selectedNode == null) {
             mainFrame.getDeliveryList().setSelectionById(-1);
             mainFrame.getAddDeliveryButton().setEnabled(false);
-            List<RoadNode> path = deliverySheet.getDeliveryRound();
-            mainFrame.getDeliveryMap().updateDeliveryNodesPath(path);
-            mainFrame.getDeliveryMap().updateDeliveryNodes(deliverySheet.getDeliveries());
+            updateDeliveryMap(deliverySheet);
 
         } else {
             mainFrame.getDeliveryList().setSelectionById(selectedNode.getAddress());
@@ -442,9 +456,8 @@ public class MainController extends Invoker implements Listener {
             mainFrame.getDeliveryMap().setSelectedNodeById(selectedDelivery.getAddress());
             mainFrame.getAddDeliveryButton().setEnabled(false);
             mainFrame.getDelDeliveryButton().setEnabled(true);
-
-            List<RoadNode> path = deliverySheet.getDeliveryRound(selectedDelivery);
-            mainFrame.getDeliveryMap().updateDeliveryNodesPath(path);
+            updateDeliveryMap(selectedDelivery);
+            /*mainFrame.getDeliveryMap().updateDeliveryNodesPath(path);
             ArrayList<Delivery> temp=new ArrayList<>();
             temp.add(selectedDelivery);
             ArrayList<Delivery> tempDel=(ArrayList<Delivery>)deliverySheet.getDeliveries();
@@ -453,9 +466,7 @@ public class MainController extends Invoker implements Listener {
                     temp.add(tempDel.get(i));
                     break;
                 }
-            }
-            mainFrame.getDeliveryMap().updateDeliveryNodes(temp);
-
+            }*/
         }
     }
 
