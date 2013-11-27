@@ -345,4 +345,8 @@ public class RoadNetwork {
         return getNodes().size();
     }
 
+    RoadNode getNodeById(Long address) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
 }
