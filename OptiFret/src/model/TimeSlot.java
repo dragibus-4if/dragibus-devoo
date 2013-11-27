@@ -3,7 +3,7 @@ package model;
 import java.util.Date;
 
 /**
- * Classe correspondant à un créneau horaire.
+ * Modèle correspondant à un créneau horaire.
  */
 public class TimeSlot {
 

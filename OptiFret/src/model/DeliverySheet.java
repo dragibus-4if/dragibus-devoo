@@ -26,7 +26,7 @@ import org.xml.sax.SAXException;
 import tsp.AStar;
 
 /**
- * Feuille de route d'un livreur. {@literal DeliverySheet} encapsule le
+ * Modèle de la feuille de route d'un livreur. {@literal DeliverySheet} encapsule le
  * chargement XML des demandes de livraisons pour définir la tournée
  * (représentée par {@literal DeliveryRound}) et le livreur associé (représentée
  * par {@literal DeliveryEmployee}).
@@ -41,7 +41,6 @@ public class DeliverySheet {
     private List<Delivery> deliveries;
     private Map<Delivery, List<RoadNode>> deliveryRound;
 
-    private DeliveryEmployee deliveryEmployee;
     private long warehouseAddress;
     private RoadNetwork network;
 
@@ -65,7 +64,6 @@ public class DeliverySheet {
      * Constructeur standard.
      */
     public DeliverySheet() {
-        deliveryEmployee = new DeliveryEmployee();
         deliveries = null;
         deliveryRound = null;
         network = null;
@@ -129,10 +127,6 @@ public class DeliverySheet {
         this.deliveryRound = deliveryRound;
     }
 
-    public DeliveryEmployee getDeliveryEmployee() {
-        return deliveryEmployee;
-    }
-
     public long getWarehouseAddress() {
         return warehouseAddress;
     }
@@ -160,18 +154,6 @@ public class DeliverySheet {
 
     public void setRoadNetwork(RoadNetwork rn) {
         network = rn;
-    }
-
-    /**
-     * Setteur pour l'instance de DeliveryEmployee.
-     *
-     * @param deliveryEmployee
-     */
-    public void setDeliveryEmployee(DeliveryEmployee deliveryEmployee) {
-        if (deliveryEmployee == null) {
-            throw new NullPointerException();
-        }
-        this.deliveryEmployee = deliveryEmployee;
     }
 
     /**
