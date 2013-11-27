@@ -186,7 +186,7 @@ public class MainController extends Invoker implements Listener {
         mainFrame.getDeliveryMap().updateDeliveryNodes(new ArrayList<Delivery>());
     }
 
-    private void updateDeliveryMap(List<RoadNode> path, List<Delivery> deliveries) {
+    private void updateDeliveryMap(List<RoadNode> path, List<Delivery> deliveries, Long wharehouseAdress) {
         if(path == null || deliveries == null) {
             updateDeliveryMap();
             return;
@@ -194,13 +194,15 @@ public class MainController extends Invoker implements Listener {
         mainFrame.getDeliveryMap().clearNodeViewMode();
         mainFrame.getDeliveryMap().updateDeliveryNodesPath(path);
         mainFrame.getDeliveryMap().updateDeliveryNodes(deliveries);
+        mainFrame.getDeliveryMap().updateWhareHouse(wharehouseAdress);
+        mainFrame.getDeliveryMap().updateTimeSlots(deliveries);
     }
 
     private void updateDeliveryMap(DeliverySheet sheet) {
         if(sheet == null)
             updateDeliveryMap();
         else
-            updateDeliveryMap(sheet.getDeliveryRound(), sheet.getDeliveries());
+            updateDeliveryMap(sheet.getDeliveryRound(), sheet.getDeliveries(),sheet.getWarehouseAddress());
     }
 
     private void updateDeliveryMap(Delivery del) {
@@ -218,7 +220,7 @@ public class MainController extends Invoker implements Listener {
         if(deliverySheet.getDeliveries().get(0) == del) {
             path.addAll(0, deliverySheet.getWarehouseRound());
         }
-        updateDeliveryMap(path, ls);
+        updateDeliveryMap(path, ls,-1l);
     }
 
     private void loadRoadNetwork() {

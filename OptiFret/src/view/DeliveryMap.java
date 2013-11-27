@@ -3,12 +3,15 @@ package view;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 import model.Delivery;
 import model.RoadNode;
+import model.TimeSlot;
+import org.ini4j.MultiMap;
 import view.NodeView.MODE;
 
 /**
@@ -21,10 +24,11 @@ public class DeliveryMap extends NavigablePanel {
     private Map<Long, NodeView> mapNodes;
     private WeakReference<NodeView> selectedNode;
     private CopyOnWriteArrayList<Listener> listeners;
+    private Map<Long,TimeSlot> mapIdTimeSlot;
+    
     public static final int PADDING = 20;
-
+   
     public enum NODE_RETURN {
-
         NOTHING_SELECTED,
         NODE_SELECTED,
         NODE_ALLREADY_SELECTED
@@ -72,6 +76,12 @@ public class DeliveryMap extends NavigablePanel {
         }
     }
 
+    public void updateWhareHouse(Long id) {
+        if (id != -1 && mapNodes.get(id)!=null) {
+            mapNodes.get(id).setMode(MODE.WAREHOUSE);
+        }
+    }
+
     public void updateDeliveryNodesPath(List<RoadNode> nodes) {
         if (nodes == null) {
             return;
@@ -90,25 +100,53 @@ public class DeliveryMap extends NavigablePanel {
             }
             if (i >= 1) {
                 RoadNode neighbor = nodes.get(i - 1);
-                ArcView temp = new ArcView(neighbor.getX(), neighbor.getY(), rn.getX(), rn.getY(), 0);
+                ArcView temp = new ArcView(neighbor, rn, 0);
                 if (mapArcs.containsKey(temp.hashCode())) {
                     mapArcs.get(temp.hashCode()).incrementNbLines();
                 }
             }
         }
     }
-
+    
+    public void updateTimeSlots(List<Delivery> dels){
+        if (dels == null) {
+            return;
+        }
+        List<Integer> temp=new ArrayList<>();
+        Long currentTimeSlot;
+        Long testedTimeSlot=0L;
+        for(Delivery del:dels){
+            currentTimeSlot=del.getTimeSlot().getBegin().getTime();
+            if(currentTimeSlot!=testedTimeSlot){
+                testedTimeSlot=currentTimeSlot;
+                temp.add(dels.indexOf(del));
+            }
+        }
+        int nbTimeSlots=temp.size();
+        int i=0,j=0;
+        while(i<dels.size()){
+            if(i<temp.get(j)){
+                
+                if (!mapArcs.containsKey(temp.hashCode())) {
+                mapArcs.get(dels.get(i).getAddress()).updateColorPerTimeSlot(nbTimeSlots,j);
+                i++;
+            }else{
+                j++;
+            }
+        }
+    }
     public void updateDeliveryNodes(List<Delivery> dels) {
         if (dels == null) {
             return;
         }
-        for (Delivery del:dels) {
+        for (Delivery del : dels) {
+            
             mapNodes.get(del.getAddress()).setMode(MODE.DELIVERY_NODE);
         }
     }
-    
+
     public void clearNodeViewMode() {
-        for(NodeView n : mapNodes.values()) {
+        for (NodeView n : mapNodes.values()) {
             n.setMode(MODE.CLASSIC);
         }
     }

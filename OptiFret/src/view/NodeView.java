@@ -24,16 +24,19 @@ public class NodeView {
     private static final int STROKE_ENLIGHT = 5;
     private static final int PATH_NODE_DIAMETER = 12;
     private static final int DEL_NODE_DIAMETER = 14;
+    private static final int WHAREHOUSE_DIAMETER = 14;
     private final BasicStroke basicNodeStroke = new BasicStroke(BASIC_NODE_STROKE);
     private final BasicStroke myStrokeEnlight = new BasicStroke(STROKE_ENLIGHT);
     private Ellipse2D circle;
-    private final Color cBasic = new Color(100, 100, 100);
-    private final Color cSelectedBasic = new Color(255, 204, 0);
-    private final Color cBasicDelPath = new Color(0, 151, 202);
-    private final Color cSelectedBasicDelPath = new Color(0, 151, 202);
-    private final Color cBasicDelNode = new Color(255, 100, 100);
-    private final Color cSelectedBasicDelNode = new Color(255, 100, 100);
-    private final Color cMouseOver = new Color(204, 204, 204);
+    private static final Color cBasic = new Color(100, 100, 100);
+    private static final Color cSelectedBasic = new Color(255, 204, 0);
+    private static final Color cBasicDelPath = new Color(0, 151, 202);
+    private static final Color cSelectedBasicDelPath = new Color(0, 151, 202);
+    private static final Color cBasicDelNode = new Color(255, 100, 100);
+    private static final Color cSelectedBasicDelNode = new Color(255, 100, 100);
+    private static final Color cBasicWharehouse = new Color(0, 0, 0);
+    private static final Color cSelectedWhareHouse = new Color(0, 0, 0);
+    private static final Color cMouseOver = new Color(204, 204, 204);
     private final WeakReference<DeliveryMap> parent;
     private int x1;
     private int y1;
@@ -43,7 +46,7 @@ public class NodeView {
 
     public enum MODE {
 
-        CLASSIC, DELIVERY_PATH, DELIVERY_NODE
+        CLASSIC, DELIVERY_PATH, DELIVERY_NODE, WAREHOUSE
     };
     private MODE mode;
 
@@ -66,6 +69,10 @@ public class NodeView {
             case DELIVERY_PATH:
                 circle = new Ellipse2D.Double((float) x1, (float) y1,
                         (float) PATH_NODE_DIAMETER, (float) PATH_NODE_DIAMETER);
+                break;
+            case WAREHOUSE:
+                circle = new Ellipse2D.Double((float) x1, (float) y1,
+                        (float) WHAREHOUSE_DIAMETER, (float) WHAREHOUSE_DIAMETER);
                 break;
             default:
                 circle = new Ellipse2D.Double((float) x1, (float) y1,
@@ -101,7 +108,7 @@ public class NodeView {
         g2d.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS,
                 RenderingHints.VALUE_FRACTIONALMETRICS_ON);
         g2d.setStroke(basicNodeStroke);
-        g2d.translate(-DIAMETER / 2, -DIAMETER / 2);
+        g2d.translate(-circle.getWidth() / 2, -circle.getWidth() / 2);
         g2d.setColor(parent.get().getBackground());
         g2d.fill(circle);
         switch (mode) {
@@ -128,6 +135,10 @@ public class NodeView {
                 } else {
                     g2d.setColor(cBasicDelNode);
                 }
+                break;
+            case WAREHOUSE:
+                g2d.setColor(cSelectedWhareHouse);
+                g2d.fill(circle);
                 break;
         }
 
@@ -171,10 +182,8 @@ public class NodeView {
 
     public NODE_RETURN onMouseDown(int x, int y) {
         NODE_RETURN ret = NODE_RETURN.NOTHING_SELECTED;
-        //boolean voidClic = true;
-        if (circle.contains(x + DIAMETER / 2, y + DIAMETER / 2) && (parent.get() != null)) {
+        if (circle.contains(x + DIAMETER / 2, y + DIAMETER / 2) && (parent.get() != null) && this.mode!= MODE.WAREHOUSE) {
             selected = true;
-            // voidClic = false;
             ret = NODE_RETURN.NODE_SELECTED;
             if (parent.get().getSelectedNode().get() != null) {
                 if (parent.get().getSelectedNode().get().equals(this)) {
@@ -188,7 +197,6 @@ public class NodeView {
         } else {
             selected = false;
         }
-        //return voidClic;
         return ret;
     }
 
@@ -205,7 +213,7 @@ public class NodeView {
 
     public void setMode(MODE mode) {
         this.mode = mode;
-        circle=generateCircle();
+        circle = generateCircle();
     }
 
     public Long getAddress() {
