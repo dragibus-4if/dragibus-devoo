@@ -7,6 +7,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
+import model.Delivery;
 import model.RoadNode;
 import view.NodeView.MODE;
 
@@ -71,7 +72,7 @@ public class DeliveryMap extends NavigablePanel {
         }
     }
 
-    public void updateDeliveryNodes(List<RoadNode> nodes) {
+    public void updateDeliveryNodesPath(List<RoadNode> nodes) {
         if (nodes == null) {
             return;
         }
@@ -84,7 +85,7 @@ public class DeliveryMap extends NavigablePanel {
                     new WeakReference<>(this), MODE.CLASSIC);
             for (Long j = new Long(0); j < mapNodes.size(); j++) {
                 if (tempNode.equals(mapNodes.get(j))) {
-                    mapNodes.get(j).setMode(MODE.DELIVERY);
+                    mapNodes.get(j).setMode(MODE.DELIVERY_PATH);
                 }
             }
             if (i >= 1) {
@@ -94,6 +95,15 @@ public class DeliveryMap extends NavigablePanel {
                     mapArcs.get(temp.hashCode()).incrementNbLines();
                 }
             }
+        }
+    }
+
+    public void updateDeliveryNodes(List<Delivery> dels) {
+        if (dels == null) {
+            return;
+        }
+        for (Delivery del:dels) {
+            mapNodes.get(del.getAddress()).setMode(MODE.DELIVERY_NODE);
         }
     }
 

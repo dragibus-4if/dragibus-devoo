@@ -64,6 +64,7 @@ public abstract class NavigablePanel extends JPanel {
 
             @Override
             public void mouseMoved(MouseEvent e) {
+                doMouseMoved(e);
             }
         });
         addMouseWheelListener(new MouseWheelListener() {
@@ -131,7 +132,6 @@ public abstract class NavigablePanel extends JPanel {
     }
 
     private void doMouseDragged(MouseEvent e) {
-        notifyMoved(getActualX(e.getX()), getActualY(e.getY()));
         if (dragging) {
             offX = e.getX() - grabX;
             offY = e.getY() - grabY;
@@ -139,6 +139,10 @@ public abstract class NavigablePanel extends JPanel {
         }
     }
 
+    private void doMouseMoved(MouseEvent e){
+        notifyMoved(getActualX(e.getX()), getActualY(e.getY()));
+        repaint();
+    }
     private int getActualX(int x) {
         return (int) ((x - offX) / scale);
     }
