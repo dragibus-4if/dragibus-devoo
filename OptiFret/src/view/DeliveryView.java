@@ -1,6 +1,7 @@
 package view;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -23,10 +24,11 @@ import org.jdesktop.swingx.VerticalLayout;
  */
 public class DeliveryView extends JPanel {
 
-    private static final Color MINIMAL_BG_COLOR = new Color(0,0,0,0);
-    private static final Color MINIMAL_BG_OVER_COLOR = new Color(240, 240, 240,175);
-    private static final Color MINIMAL_BG_SELECT_COLOR = new Color(180, 180, 180,100);
-    private static final Color MINIMAL_BG_UNCOLLAPSED_COLOR = new Color(200, 200, 200,100);
+    private static final Color MINIMAL_BG_COLOR = new Color(0, 0, 0, 0);
+    private static final Color MINIMAL_BG_OVER_COLOR = new Color(240, 240, 240, 175);
+    //private static final Color MINIMAL_BG_SELECT_COLOR = new Color(170, 170, 170, 100);
+    private static final Color MINIMAL_BG_SELECT_COLOR = new Color(0,0,0,40);
+    private static final Color MINIMAL_BG_UNCOLLAPSED_COLOR = new Color(200, 200, 200, 100);
     private final Delivery delivery;
     private final JPanel minimal;
     private final JXCollapsiblePane extend;
@@ -39,8 +41,7 @@ public class DeliveryView extends JPanel {
     private boolean folded;
     private static final String ARROW_UP = "\u2191";
     private static final String ARROW_DOWN = "\u2193";
-    
-    
+
     public DeliveryView(Delivery delivery, DeliveryList parent) {
         super(new VerticalLayout());
         folded = true;
@@ -75,7 +76,7 @@ public class DeliveryView extends JPanel {
             }
         });
         setOpaque(false);
-        setBackground(new Color(0, 0, 0, 0));
+        
         validate();
         repaint();
     }
@@ -91,19 +92,21 @@ public class DeliveryView extends JPanel {
         extend.add(clientNameLabel);
         extend.add(clientAddressLabel);
         extend.add(clientPhoneNumLabel);
-        
-        //deprecated
+
+
         //extend.getContentPane().setBackground(MINIMAL_BG_OVER_COLOR);
         extend.setOpaque(false);
-        extend.setBackground(new Color(0, 0, 0, 0));
-        
+        for(Component c : extend.getComponents()){
+            c.setBackground(MINIMAL_BG_COLOR);
+        }
+        extend.setBorder(BorderFactory.createLineBorder(Color.black, 1));
         extend.validate();
         extend.repaint();
         return extend;
     }
 
     private JPanel makeMinimal() {
-        
+
         minimal.setBackground(MINIMAL_BG_COLOR);
         minimal.setOpaque(true);
         minimal.setBackground(new Color(0, 0, 0, 0));
@@ -131,22 +134,22 @@ public class DeliveryView extends JPanel {
 
             @Override
             public void mouseEntered(MouseEvent e) {
-                if (extend.isCollapsed() && parent.getSelected() != that) {
-                    //deprecated
-                    that.minimal.setBackground(MINIMAL_BG_OVER_COLOR);
+               
+
+                    //that.minimal.setBackground(MINIMAL_BG_OVER_COLOR);
                     that.minimal.setBorder(BorderFactory.createLineBorder(Color.gray, 1, false));
                     repaintall();
-                }
+                
             }
 
             @Override
             public void mouseExited(MouseEvent e) {
-                if (extend.isCollapsed() && parent.getSelected() != that) {
-                    //deprecated
-                   that.minimal.setBackground(MINIMAL_BG_COLOR);
-                   that.minimal.setBorder(null);
-                   repaintall();
-                }
+                
+
+                    //that.minimal.setBackground(MINIMAL_BG_COLOR);
+                    that.minimal.setBorder(null);
+                    repaintall();
+                
             }
         });
         toggleButton.addMouseListener(new MouseListener() {
@@ -186,15 +189,6 @@ public class DeliveryView extends JPanel {
                 .actionPerformed(new ActionEvent(e, WIDTH, TOOL_TIP_TEXT_KEY));
         updateToggleButton();
         folded = !folded;
-        if (!extend.isCollapsed() && parent.getSelected() != this) {
-            //deprecated
-            minimal.setBackground(MINIMAL_BG_UNCOLLAPSED_COLOR);
-            repaintall();
-        } else {
-            //deprecated
-           minimal.setBackground(MINIMAL_BG_COLOR);
-           repaintall();
-        }
 
 
         validate();
@@ -212,7 +206,7 @@ public class DeliveryView extends JPanel {
     }
 
     public void onEventSelect() {
-        //deprecated
+
         minimal.setBackground(MINIMAL_BG_SELECT_COLOR);
         repaintall();
         parent.setSelected(this);
@@ -220,7 +214,7 @@ public class DeliveryView extends JPanel {
     }
 
     public void select() {
-        //deprecated
+
         minimal.setBackground(MINIMAL_BG_SELECT_COLOR);
         repaintall();
         parent.setSelected(this);
@@ -231,11 +225,11 @@ public class DeliveryView extends JPanel {
 
     public void unselect() {
         if (!extend.isCollapsed()) {
-            //deprecated
+
             minimal.setBackground(MINIMAL_BG_UNCOLLAPSED_COLOR);
             repaintall();
         } else {
-            //deprecated
+
             minimal.setBackground(MINIMAL_BG_COLOR);
             repaintall();
         }
