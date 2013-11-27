@@ -1,5 +1,6 @@
 package model;
 
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
@@ -75,43 +76,49 @@ public class DeliverySheet {
         l.addAll(getWarehouseRound());
         if (deliveries != null && deliveryRound != null) {
             for (Delivery d : deliveries) {
-                if(deliveryRound.containsKey(d)) {
+                if (deliveryRound.containsKey(d)) {
                     l.addAll(deliveryRound.get(d));
                     if (deliveries.get(deliveries.size() - 1) != d) {
                         l.remove(l.size() - 1);
                     }
-                }
-                else
+                } else {
                     throw new ArrayIndexOutOfBoundsException();
+                }
             }
         }
         return l;
     }
-    
+
     public List<RoadNode> getWarehouseRound() {
-        if(network == null)
+        if (network == null) {
             return new ArrayList<>();
-        if(deliveries.isEmpty())
+        }
+        if (deliveries.isEmpty()) {
             return new ArrayList<>();
+        }
         RoadNode n1 = network.getNodeById(deliveries.get(0).getAddress());
         RoadNode n2 = network.getNodeById(warehouseAddress);
-        if(n1 == null || n2 == null)
+        if (n1 == null || n2 == null) {
             return new ArrayList<>();
+        }
         return AStar.findPath(n1, n2);
     }
-    
+
     public List<RoadNode> getDeliveryRound(Delivery from) {
-        if(network == null)
+        if (network == null) {
             return new ArrayList<>();
+        }
         int index = deliveries.indexOf(from) + 1;
         RoadNode n1 = network.getNodeById(from.getAddress());
         RoadNode n2 = null;
-        if(index < deliveries.size())
+        if (index < deliveries.size()) {
             n2 = network.getNodeById(deliveries.get(index).getAddress());
-        else
+        } else {
             n2 = network.getNodeById(warehouseAddress);
-        if(n1 == null || n2 == null)
+        }
+        if (n1 == null || n2 == null) {
             return new ArrayList<>();
+        }
         return AStar.findPath(n1, n2);
         //if(!deliveryRound.containsKey(from))
         //    throw new ArrayIndexOutOfBoundsException();
@@ -150,7 +157,7 @@ public class DeliverySheet {
         }
         return null;
     }
-    
+
     public void setRoadNetwork(RoadNetwork rn) {
         network = rn;
     }
@@ -251,6 +258,9 @@ public class DeliverySheet {
                 }
             }
 
+            writer.write(bufferRoad);
+            writer.write("RoadNodeID : "+liv.getId() +" Adresse: " +delv.get(indexDelivs).getAddress());
+            bufferRoad = "";
             // Coupure dans le chemin
             if (rs == null) {
                 throw new RuntimeException();
@@ -275,9 +285,9 @@ public class DeliverySheet {
         }
 
         // On est pas passé par toutes les livraisons
-        if (indexDelivs != delv.size()) {
-            throw new RuntimeException();
-        }
+//        if (indexDelivs != delv.size()) {
+//            throw new RuntimeException();
+//        }
         writer.flush();
     }
 
@@ -374,7 +384,6 @@ public class DeliverySheet {
 
             // Traiter la liste des livraisons
             for (int j = 0; j < deliveryNodes.getLength(); j++, deliveryIdCursor++) {
-                System.out.println(deliveryIdCursor);
                 Node deliveryNode = deliveryNodes.item(j);
                 Delivery del = parseDelivery(deliveryNode);
                 deliveries.add(new Delivery(deliveryIdCursor, del.getAddress(), ts, del.getClient()));
