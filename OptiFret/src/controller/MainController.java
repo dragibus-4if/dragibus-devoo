@@ -162,6 +162,10 @@ public class MainController extends Invoker implements Listener {
     }
 
     private void calculRoute() {
+        if(roadNetwork == null)
+            throw new NullPointerException();
+        if(deliverySheet == null)
+            throw new NullPointerException();
         if (roadNetwork.makeRoute(deliverySheet)) {
             deliverySheet.setDelivery(roadNetwork.getSortedDeliveries());
             updateDeliveryMap(deliverySheet);
@@ -173,18 +177,35 @@ public class MainController extends Invoker implements Listener {
             mainFrame.getDeliveryList().setDeliveries(deliverySheet.getDeliveries());
         }
     }
+    
+    private void updateDeliveryMap() {
+        mainFrame.getDeliveryMap().clearNodeViewMode();
+        mainFrame.getDeliveryMap().updateDeliveryNodesPath(new ArrayList<RoadNode>());
+        mainFrame.getDeliveryMap().updateDeliveryNodes(new ArrayList<Delivery>());
+    }
 
     private void updateDeliveryMap(List<RoadNode> path, List<Delivery> deliveries) {
+        if(path == null || deliveries == null) {
+            updateDeliveryMap();
+            return;
+        }
         mainFrame.getDeliveryMap().clearNodeViewMode();
         mainFrame.getDeliveryMap().updateDeliveryNodesPath(path);
         mainFrame.getDeliveryMap().updateDeliveryNodes(deliveries);
     }
 
     private void updateDeliveryMap(DeliverySheet sheet) {
-        updateDeliveryMap(sheet.getDeliveryRound(), sheet.getDeliveries());
+        if(sheet == null)
+            updateDeliveryMap();
+        else
+            updateDeliveryMap(sheet.getDeliveryRound(), sheet.getDeliveries());
     }
 
     private void updateDeliveryMap(Delivery del) {
+        if(del == null || deliverySheet == null) {
+            updateDeliveryMap();
+            return;
+        }
         List<RoadNode> path = deliverySheet.getDeliveryRound(del);
         List<Delivery> ls = new ArrayList<>();
         ls.add(del);
@@ -217,6 +238,7 @@ public class MainController extends Invoker implements Listener {
                         currentDeliverySheet = deliverySheet;
 
                         roadNetwork = loadedNetwork;
+                        deliverySheet = null;
                         mainFrame.getLoadRound().setEnabled(true);
                         mainFrame.getDeliveryMap().updateNetwork(roadNetwork.getNodes());
                         mainFrame.getDeliveryList().setDeliveries(new ArrayList<Delivery>());
