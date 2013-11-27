@@ -11,11 +11,11 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Reader;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.EmptyStackException;
 import java.util.List;
-import java.util.Stack;
 import javax.swing.JFileChooser;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
@@ -23,6 +23,7 @@ import model.Delivery;
 import model.DeliverySheet;
 import model.RoadNetwork;
 import model.RoadNode;
+import view.CreateDeliveryDialog;
 import view.DeliveryMap;
 import view.Listener;
 import view.MainFrame;
@@ -31,15 +32,14 @@ import view.DeliveryList;
 import view.DeliveryView;
 import view.NodeView;
 
-public class MainController implements Listener {
+public class MainController extends Invoker implements Listener {
 
-    private final Stack<Command> history = new Stack<>();
-    private final Stack<Command> redoneHistory = new Stack<>();
     private RoadNetwork roadNetwork;
     private DeliverySheet deliverySheet;
     private MainFrame mainFrame;
 
     public MainController(MainFrame mainFrame) {
+        super();
         if (mainFrame == null) {
             throw new NullPointerException("'view' ne doit pas être nul");
         }
@@ -48,56 +48,12 @@ public class MainController implements Listener {
     }
 
     public void run() {
-        String startupConfigEntryName = "startup";
         try {
-            configureStartup(Manager.getInstance().registerEntry(startupConfigEntryName));
+            configureStartup(Manager.getInstance().registerEntry("startup"));
         } catch (MissingEntryException e) {
-            System.out.println("Aucune configuration trouvée pour " + startupConfigEntryName);
+            System.out.println("Aucune configuration trouvée pour le MainController");
         }
         mainFrame.setVisible(true);
-    }
-    
-    private void addDelivery() {
-        executeCommand(new Command("") {
-            
-            private DeliverySheet currentDeliverySheet;
-
-            @Override
-            public void execute() {
-                // stocker l'etat courant
-                currentDeliverySheet = deliverySheet;
-                
-                // TODO - ouvrir la fenetre avec le formulair pour les livs et
-                // recuperer les valeurs
-                
-                // pour l'instant: ajouter une livraison fixe
-                Delivery newDelivery = new Delivery(Long.MAX_VALUE);
-                
-                // recuperer la liste de livraisons et ajouter la nouvelle liv
-                deliverySheet.addDelivery(newDelivery);
-                
-                // ajouter la nouvelle liste a la fenetre et mettre a jour
-                mainFrame.getDeliveryList().setDeliveries(deliverySheet.getDeliveries());
-                mainFrame.getExportRound().setEnabled(true);
-                mainFrame.repaint();
-            }
-
-            @Override
-            public void undo() {
-                // revenir a l'ancien DeliverySheet
-                deliverySheet = currentDeliverySheet;
-                
-                // TODO - ajouter fonctionnalite
-                if (deliverySheet.getDeliveries() == null) {
-                    mainFrame.getDeliveryList().setDeliveries(new ArrayList<Delivery>());
-                    mainFrame.getExportRound().setEnabled(false);
-                } else {
-                    mainFrame.getDeliveryList().setDeliveries(deliverySheet.getDeliveries());
-                }
-                
-                mainFrame.repaint();
-            }
-        });
     }
 
     private void configureStartup(Entry entry) {
@@ -109,8 +65,9 @@ public class MainController implements Listener {
             mainFrame.getDeliveryMap().updateNetwork(roadNetwork.getNodes());
             try {
                 String dsFilename = helper.getString("load-delivery-sheet");
-                deliverySheet = DeliverySheet.loadFromXML(new FileReader(dsFilename));
-                mainFrame.getDeliveryList().setDeliveries(deliverySheet.getDeliveries());
+                deliverySheet = doloadDeliverySheet(new FileReader(dsFilename));
+                deliverySheet.setRoadNetwork(roadNetwork);
+                calculRoute();
                 mainFrame.getExportRound().setEnabled(true);
             } catch (MissingAttributeException ex) {
                 System.out.println("Aucune configuration trouvée pour les demandes de livraison");
@@ -122,6 +79,121 @@ public class MainController implements Listener {
         } catch (IOException ex) {
             System.err.println(ex.getMessage());
         }
+    }
+
+    private void addDelivery(long address) {
+        // Calcul du max des id
+        long id = 0;
+        for (Delivery d : deliverySheet.getDeliveries()) {
+            if (id < d.getId()) {
+                id = d.getId();
+            }
+        }
+        // ...incrémenté de 1
+        id++;
+
+        // Formulaire de création de la livraison
+        CreateDeliveryDialog cdd = new CreateDeliveryDialog(mainFrame, id, address);
+        cdd.setVisible(true);
+
+        // Validation préalable: livraison créée si formulaire validé
+        final Delivery delivery = cdd.getDelivery();
+        if (delivery == null) {
+            return;
+        }
+
+        executeCommand(new Command("Ajouter la livraison d'id " + id) {
+
+            @Override
+            public void execute() {
+                // recuperer la liste de livraisons et ajouter la nouvelle liv
+                deliverySheet.addDelivery(delivery);
+                calculRoute();
+
+                // ajouter la nouvelle liste a la fenetre et mettre a jour
+                mainFrame.getExportRound().setEnabled(true);
+
+                // recalculer le chemin et mettre a jour le plan
+                //mainFrame.getDeliveryMap().updateNetwork(deliverySheet.getDeliveryRound());
+                mainFrame.repaint();
+            }
+
+            @Override
+            public void undo() {
+                deliverySheet.getDeliveries().remove(delivery);
+                calculRoute();
+
+                if (deliverySheet.getDeliveries() == null) {
+                    mainFrame.getDeliveryList().setDeliveries(new ArrayList<Delivery>());
+                    mainFrame.getExportRound().setEnabled(false);
+                } else {
+                    mainFrame.getDeliveryList().setDeliveries(deliverySheet.getDeliveries());
+                }
+
+                mainFrame.repaint();
+            }
+        });
+    }
+
+    private void deleteDelivery(long deliveryId) {
+        final Delivery delivery = deliverySheet.findDeliveryById(deliveryId);
+        if (delivery == null) {
+            throw new IllegalArgumentException("Livraison d'id '" + deliveryId + "' indéfinie");
+        }
+
+        executeCommand(new Command("Supprimer la livraison d'id " + delivery.getId()) {
+
+            @Override
+            public void execute() {
+                List<Delivery> deliveries = deliverySheet.getDeliveries();
+                deliverySheet.getDeliveries().remove(delivery);
+                calculRoute();
+
+                mainFrame.getExportRound().setEnabled(deliveries.isEmpty());
+                //mainFrame.getDeliveryMap().updateNetwork(deliverySheet.getDeliveryRound());
+                mainFrame.repaint();
+            }
+
+            @Override
+            public void undo() {
+                deliverySheet.getDeliveries().add(delivery);
+                calculRoute();
+                mainFrame.repaint();
+            }
+        });
+    }
+
+    private void calculRoute() {
+        if (roadNetwork.makeRoute(deliverySheet)) {
+            deliverySheet.setDelivery(roadNetwork.getSortedDeliveries());
+            deliverySheet.setDeliveryRound(roadNetwork.getPaths());
+            updateDeliveryMap(deliverySheet);
+            mainFrame.getDeliveryList().setDeliveries(deliverySheet.getDeliveries());
+        } else {
+            // Pas de solution
+            // TODO afficher un message
+            updateDeliveryMap(deliverySheet);
+            mainFrame.getDeliveryList().setDeliveries(deliverySheet.getDeliveries());
+        }
+    }
+
+    private void updateDeliveryMap(List<RoadNode> path, List<Delivery> deliveries) {
+        mainFrame.getDeliveryMap().clearNodeViewMode();
+        mainFrame.getDeliveryMap().updateDeliveryNodesPath(path);
+        mainFrame.getDeliveryMap().updateDeliveryNodes(deliveries);
+    }
+
+    private void updateDeliveryMap(DeliverySheet sheet) {
+        updateDeliveryMap(sheet.getDeliveryRound(), sheet.getDeliveries());
+    }
+
+    private void updateDeliveryMap(Delivery del) {
+        List<RoadNode> path = deliverySheet.getDeliveryRound(del);
+        List<Delivery> ls = new ArrayList<>();
+        ls.add(del);
+        int index = deliverySheet.getDeliveries().indexOf(del);
+        ls.add(deliverySheet.getDeliveries().get((index + 1) % deliverySheet.getDeliveries().size()));
+        updateDeliveryMap(path, ls);
     }
 
     private void loadRoadNetwork() {
@@ -144,35 +216,35 @@ public class MainController implements Listener {
 
                         roadNetwork = loadedNetwork;
                         mainFrame.getLoadRound().setEnabled(true);
-                        mainFrame.getDeliveryMap()
-                                .updateNetwork(roadNetwork.getNodes());
-                        mainFrame.getDeliveryList()
-                                .setDeliveries(new ArrayList<Delivery>());
-                        mainFrame.pack();
+                        mainFrame.getDeliveryMap().updateNetwork(roadNetwork.getNodes());
+                        mainFrame.getDeliveryList().setDeliveries(new ArrayList<Delivery>());
+                        mainFrame.getExportRound().setEnabled(false);
                         mainFrame.repaint();
                     }
 
                     @Override
                     public void undo() {
-
                         roadNetwork = currentNetwork;
                         deliverySheet = currentDeliverySheet;
+
+                        if (deliverySheet != null) {
+                            deliverySheet.setRoadNetwork(roadNetwork);
+                            calculRoute();
+                        }
 
                         // verifier si un reseau a deja ete charge
                         if (roadNetwork == null) {
                             mainFrame.getLoadRound().setEnabled(false);
                             mainFrame.getDeliveryMap().updateNetwork(new ArrayList<RoadNode>());
                         } else {
-                            mainFrame.getDeliveryMap().updateNetwork(
-                                    roadNetwork.getNodes());
+                            mainFrame.getDeliveryMap().updateNetwork(roadNetwork.getNodes());
                         }
 
                         // verifier si une liste de livraisons a deja ete charge
                         if (deliverySheet == null) {
-                            mainFrame.getDeliveryList().setDeliveries(null);
+                            mainFrame.getDeliveryList().setDeliveries(new ArrayList<Delivery>());
                         } else {
-                            mainFrame.getDeliveryList().setDeliveries(
-                                    deliverySheet.getDeliveries());
+                            mainFrame.getDeliveryList().setDeliveries(deliverySheet.getDeliveries());
                         }
                         mainFrame.repaint();
                     }
@@ -183,21 +255,26 @@ public class MainController implements Listener {
         }
     }
 
+    private DeliverySheet doloadDeliverySheet(Reader reader) throws IOException {
+        DeliverySheet ds = DeliverySheet.loadFromXML(reader);
+        // Vérification comme quoi toutes les livraisons sont présentes sur la carte
+        List<Delivery> deliveries = ds.getDeliveries();
+        List<Long> idList = new ArrayList<>(deliveries.size());
+        for (Delivery delivery : deliveries) {
+            idList.add(delivery.getId());
+        }
+        if (!roadNetwork.allValidNodes(idList)) {
+            throw new IOException("Addresse indéfinie dans la tournée,\nchargement annulé.");
+        }
+        return ds;
+    }
+
     private void loadDeliverySheet() {
         JFileChooser fc = new JFileChooser();
         fc.setDialogTitle(MainFrame.LOAD_ROUND_TOOLTIP);
         if (fc.showOpenDialog(mainFrame) == JFileChooser.APPROVE_OPTION) {
             try {
-                final DeliverySheet loadedDeliverySheet = DeliverySheet
-                        .loadFromXML(new FileReader(fc.getSelectedFile()));
-
-                // Vérification comme quoi toutes les livraisons sont présentes sur la carte
-                for (Delivery delivery : loadedDeliverySheet.getDeliveries()) {
-                    if (roadNetwork.getNodeById(delivery.getAddress()) == null) {
-                        throw new IOException("Addresse '" + delivery.getAddress()
-                                + "' indéfinie,\nchargement annulé.");
-                    }
-                }
+                final DeliverySheet loadedDeliverySheet = doloadDeliverySheet(new FileReader(fc.getSelectedFile()));
 
                 executeCommand(new Command(fc.getDialogTitle()) {
                     private DeliverySheet currentDeliverySheet;
@@ -208,14 +285,8 @@ public class MainController implements Listener {
                         currentDeliverySheet = deliverySheet;
 
                         deliverySheet = loadedDeliverySheet;
-                        if(roadNetwork.makeRoute(deliverySheet.getDeliveries())) {
-                            deliverySheet.setDelivery(roadNetwork.getSortedDeliveries());
-                            deliverySheet.setDeliveryRound(roadNetwork.getPaths());
-                        }
-                        else {
-                            // TODO
-                        }
-                        mainFrame.getDeliveryList().setDeliveries(deliverySheet.getDeliveries());
+                        deliverySheet.setRoadNetwork(roadNetwork);
+                        calculRoute();
                         mainFrame.getExportRound().setEnabled(true);
                         mainFrame.repaint();
                     }
@@ -229,7 +300,8 @@ public class MainController implements Listener {
                             mainFrame.getDeliveryList().setDeliveries(new ArrayList<Delivery>());
                             mainFrame.getExportRound().setEnabled(false);
                         } else {
-                            mainFrame.getDeliveryList().setDeliveries(deliverySheet.getDeliveries());
+                            deliverySheet.setRoadNetwork(roadNetwork);
+                            calculRoute();
                         }
                         mainFrame.repaint();
                     }
@@ -254,101 +326,17 @@ public class MainController implements Listener {
                         return;
                     }
                 }
-                deliverySheet.export(new FileWriter(file));
+                FileWriter fw = new FileWriter(file, true);
+                deliverySheet.export(fw);
             } catch (IOException e) {
                 mainFrame.showErrorMessage(e.getMessage());
             }
         }
     }
 
-    /**
-     * Permet d'annuler la dernière commande et de l'ajouter à l'historique des
-     * "redo".
-     *
-     * @throws EmptyStackException
-     */
-    private void undoLastCommand() throws EmptyStackException {
-        Command cmd = history.pop();
-        undoCommand(cmd);
-        JMenuItem redo = mainFrame.getRedo();
-        JMenuItem undo = mainFrame.getUndo();
-        redo.setEnabled(true);
-        redo.setText(MainFrame.REDO_TOOLTIP + " \"" + cmd.getName() + '"');
-        if (history.size() == 0) {
-            undo.setEnabled(false);
-            undo.setText(MainFrame.UNDO_TOOLTIP);
-        } else {
-            Command cmd2 = history.peek();
-            undo.setText(MainFrame.UNDO_TOOLTIP + " \"" + cmd2.getName() + '"');
-        }
-    }
-
-    /**
-     * Permet de refaire la dernière commande annulée et de l'ajouter à
-     * l'historique des "undo".
-     *
-     * @throws EmptyStackException
-     */
-    private void redoLastCommand() throws EmptyStackException {
-        executeCommand(redoneHistory.pop(), false);
-        JMenuItem redo = mainFrame.getRedo();
-        if (redoneHistory.size() == 0) {
-            redo.setEnabled(false);
-            redo.setText(MainFrame.REDO_TOOLTIP);
-        } else {
-            Command cmd2 = redoneHistory.peek();
-            redo.setText(MainFrame.REDO_TOOLTIP + " \"" + cmd2.getName() + '"');
-        }
-    }
-
-    /**
-     * Permet d'exécuter une commande et de l'ajouter à l'historique.
-     *
-     * On gère ici les effets de bords éventuels : - dépassement de la taille de
-     * l'historique (TODO) - vidage de l'historique des "redo"
-     *
-     * @param cmd
-     */
-    private void executeCommand(Command cmd, boolean clearRedoHistory) {
-        // Exécuter la commande et l'ajouter à l'historique
-        cmd.execute();
-        history.add(cmd);
-        JMenuItem undo = mainFrame.getUndo();
-        undo.setEnabled(true);
-        undo.setText(MainFrame.UNDO_TOOLTIP + " \"" + cmd.getName() + '"');
-
-        // Empêcher de revenir en avant dans l'historique
-        if (clearRedoHistory) {
-            redoneHistory.clear();
-            mainFrame.getRedo().setText(MainFrame.REDO_TOOLTIP);
-        }
-    }
-
-    /**
-     * Surcharge spécifiant la valeur par défaut de {@literal clearRedoHistory}.
-     *
-     * @param cmd
-     */
-    private void executeCommand(Command cmd) {
-        executeCommand(cmd, true);
-    }
-
-    /**
-     * Permet d'annuler une commande et de l'ajouter à l'historique des "redo".
-     *
-     * On gère ici les effets de bords éventuels : - dépassement de la taille de
-     * l'historique des "redo" (TODO)
-     *
-     * @param cmd
-     */
-    private void undoCommand(Command cmd) {
-        cmd.undo();
-        redoneHistory.add(cmd);
-    }
-
     private void setupNewView() {
         // Historique
-        history.clear();
+        clearAllHistory();
         mainFrame.getUndo().setEnabled(false);
         mainFrame.getRedo().setEnabled(false);
         mainFrame.getLoadRound().setEnabled(false);
@@ -406,6 +394,24 @@ public class MainController implements Listener {
                 redoLastCommand();
             }
         });
+
+        // "supprimer une livraison"
+        mainFrame.getAddDeliveryButton().addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                addDelivery(mainFrame.getDeliveryMap().getSelectedNode().get().getAddress());
+            }
+        });
+
+        // "ajouter"
+        mainFrame.getDelDeliveryButton().addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                deleteDelivery(mainFrame.getDeliveryList().getSelected().getDelivery().getId());
+            }
+        });
     }
 
     @Override
@@ -431,14 +437,16 @@ public class MainController implements Listener {
         if (selectedNode == null) {
             mainFrame.getDeliveryList().setSelectionById(-1);
             mainFrame.getAddDeliveryButton().setEnabled(false);
+            updateDeliveryMap(deliverySheet);
+
         } else {
             mainFrame.getDeliveryList().setSelectionById(selectedNode.getAddress());
-            if (selectedNode.getMode() == NodeView.MODE.DELIVERY) {
-                mainFrame.getDelDeliveryButton().setEnabled(true);
-                mainFrame.getAddDeliveryButton().setEnabled(false);
-            } else {
+            if (selectedNode.getMode() == NodeView.MODE.DELIVERY_PATH) {
                 mainFrame.getDelDeliveryButton().setEnabled(false);
                 mainFrame.getAddDeliveryButton().setEnabled(true);
+            } else {
+                mainFrame.getDelDeliveryButton().setEnabled(true);
+                mainFrame.getAddDeliveryButton().setEnabled(false);
             }
         }
     }
@@ -463,27 +471,58 @@ public class MainController implements Listener {
             mainFrame.getDeliveryMap().setSelectedNodeById(selectedDelivery.getAddress());
             mainFrame.getAddDeliveryButton().setEnabled(false);
             mainFrame.getDelDeliveryButton().setEnabled(true);
-            
-            List<RoadNode> path = deliverySheet.getDeliveryRound(selectedDelivery);
-            mainFrame.getDeliveryMap().updateDeliveryNodes(path);
+            updateDeliveryMap(selectedDelivery);
+            /*mainFrame.getDeliveryMap().updateDeliveryNodesPath(path);
+             ArrayList<Delivery> temp=new ArrayList<>();
+             temp.add(selectedDelivery);
+             ArrayList<Delivery> tempDel=(ArrayList<Delivery>)deliverySheet.getDeliveries();
+             for(int i=0;i < tempDel.size();i++){
+             if(tempDel.get(i).getAddress()==selectedDelivery.getAddress() && ++i<tempDel.size()){
+             temp.add(tempDel.get(i));
+             break;
+             }
+             }*/
         }
-
     }
 
-    private abstract class Command {
-
-        private final String name;
-
-        Command(String name) {
-            this.name = name;
+    @Override
+    protected void executeCommand(Command cmd, boolean clearRedoHistory) {
+        super.executeCommand(cmd, clearRedoHistory);
+        JMenuItem undo = mainFrame.getUndo();
+        undo.setEnabled(true);
+        undo.setText(MainFrame.UNDO_TOOLTIP + " \"" + cmd.getName() + '"');
+        if (clearRedoHistory) {
+            mainFrame.getRedo().setText(MainFrame.REDO_TOOLTIP);
         }
+    }
 
-        public abstract void execute();
+    @Override
+    protected void undoLastCommand() throws EmptyStackException {
+        Command cmd = getHistory().peek();
+        super.undoLastCommand();
+        JMenuItem redo = mainFrame.getRedo();
+        JMenuItem undo = mainFrame.getUndo();
+        redo.setEnabled(true);
+        redo.setText(MainFrame.REDO_TOOLTIP + " \"" + cmd.getName() + '"');
+        if (getHistory().size() == 0) {
+            undo.setEnabled(false);
+            undo.setText(MainFrame.UNDO_TOOLTIP);
+        } else {
+            Command cmd2 = getHistory().peek();
+            undo.setText(MainFrame.UNDO_TOOLTIP + " \"" + cmd2.getName() + '"');
+        }
+    }
 
-        public abstract void undo();
-
-        public String getName() {
-            return name;
+    @Override
+    protected void redoLastCommand() throws EmptyStackException {
+        super.redoLastCommand();
+        JMenuItem redo = mainFrame.getRedo();
+        if (getRedoneHistory().size() == 0) {
+            redo.setEnabled(false);
+            redo.setText(MainFrame.REDO_TOOLTIP);
+        } else {
+            Command cmd = getRedoneHistory().peek();
+            redo.setText(MainFrame.REDO_TOOLTIP + " \"" + cmd.getName() + '"');
         }
     }
 }

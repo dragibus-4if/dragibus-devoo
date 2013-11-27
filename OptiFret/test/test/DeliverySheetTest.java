@@ -11,6 +11,7 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import junit.framework.TestCase;
 import model.Client;
@@ -151,7 +152,11 @@ public class DeliverySheetTest extends TestCase {
 
     public void testExportBasic() {
         // Création d'un chemin basique
+        HashMap<Delivery, List<RoadNode>> map = new HashMap<>();
         List<RoadNode> path = new ArrayList<>();
+        DeliverySheet sheet = new DeliverySheet();
+        
+        
         path.add(new RoadNode(0));
         path.add(new RoadNode(1));
         path.add(new RoadNode(2));
@@ -162,8 +167,10 @@ public class DeliverySheetTest extends TestCase {
         path.get(2).addNeighbor(new RoadSection(path.get(2), path.get(3), 1, 1, "R3"));
         path.get(3).addNeighbor(new RoadSection(path.get(3), path.get(0), 1, 1, "R4"));
 
-        DeliverySheet sheet = new DeliverySheet();
-        sheet.setDeliveryRound(path);
+        map.put((new Delivery(new Long(0), new Long(1),
+                new TimeSlot(new Date(), new Long(0)), new Client())), path);
+        
+        sheet.setDeliveryRound(map);
         sheet.addDelivery(new Delivery(new Long(0), new Long(1),
                 new TimeSlot(new Date(), new Long(0)), new Client()));
         sheet.addDelivery(new Delivery(new Long(1), new Long(3),
@@ -191,6 +198,7 @@ public class DeliverySheetTest extends TestCase {
 
     public void testExportWithoutSection() {
         // Création d'un chemin basique
+        HashMap<Delivery, List<RoadNode>> map = new HashMap<>();
         List<RoadNode> path = new ArrayList<>();
         path.add(new RoadNode(0));
         path.add(new RoadNode(1));
@@ -201,8 +209,11 @@ public class DeliverySheetTest extends TestCase {
         path.get(1).addNeighbor(new RoadSection(path.get(1), path.get(2), 1, 1, "R2"));
         path.get(3).addNeighbor(new RoadSection(path.get(3), path.get(0), 1, 1, "R4"));
 
+        map.put(new Delivery(new Long(0), new Long(1),
+                new TimeSlot(new Date(), new Long(0)), new Client()), path);
+        
         DeliverySheet sheet = new DeliverySheet();
-        sheet.setDeliveryRound(path);
+        sheet.setDeliveryRound(map);
         sheet.addDelivery(new Delivery(new Long(0), new Long(1),
                 new TimeSlot(new Date(), new Long(0)), new Client()));
         sheet.addDelivery(new Delivery(new Long(1), new Long(3),
@@ -242,6 +253,8 @@ public class DeliverySheetTest extends TestCase {
         n1.addNeighbor(new RoadSection(n1, n4, 1, 1, "R4"));
         n4.addNeighbor(new RoadSection(n4, n1, 1, 1, "-R4"));
         n4.addNeighbor(new RoadSection(n4, n0, 1, 1, "R5"));
+        
+        HashMap<Delivery, List<RoadNode>> map = new HashMap<>();
         List<RoadNode> path = new ArrayList<>();
         path.add(n0);
         path.add(n1);
@@ -251,9 +264,12 @@ public class DeliverySheetTest extends TestCase {
         path.add(n1);
         path.add(n4);
         path.add(n0);
+        
+        map.put(new Delivery(new Long(0), new Long(1),
+                new TimeSlot(new Date(), new Long(0)), new Client()),path);
 
         DeliverySheet sheet = new DeliverySheet();
-        sheet.setDeliveryRound(path);
+        sheet.setDeliveryRound(map);
         sheet.addDelivery(new Delivery(new Long(0), new Long(1),
                 new TimeSlot(new Date(), new Long(0)), new Client()));
         sheet.addDelivery(new Delivery(new Long(1), new Long(2),
@@ -290,13 +306,15 @@ public class DeliverySheetTest extends TestCase {
 
     public void testExportDeliveryOutPath() {
         // Création d'un chemin basique
+        HashMap<Delivery, List<RoadNode>> map = new HashMap<>();
         List<RoadNode> path = new ArrayList<>();
         path.add(new RoadNode(0));
         path.add(path.get(0));
         path.get(0).addNeighbor(new RoadSection(path.get(0), path.get(0), 1, 1, "R"));
 
+        map.put(null, path);
         DeliverySheet sheet = new DeliverySheet();
-        sheet.setDeliveryRound(path);
+        sheet.setDeliveryRound(map);
         sheet.addDelivery(new Delivery(new Long(0), new Long(1),
                 new TimeSlot(new Date(), new Long(0)), new Client()));
 
@@ -317,8 +335,11 @@ public class DeliverySheetTest extends TestCase {
         path.add(path.get(0));
         path.get(0).addNeighbor(new RoadSection(path.get(0), path.get(0), 1, 1, "R"));
 
+        HashMap<Delivery, List<RoadNode>> map = new HashMap<>();
+        map.put(null, path);
+        
         DeliverySheet sheet = new DeliverySheet();
-        sheet.setDeliveryRound(path);
+        sheet.setDeliveryRound(map);
 
         String result = "Prendre la rue R\n\n";
         StringWriter sw = new StringWriter();
@@ -331,9 +352,10 @@ public class DeliverySheetTest extends TestCase {
 
     public void testExportEmptyPath() {
         // Création d'un chemin basique
+        HashMap<Delivery, List<RoadNode>> map = new HashMap<>();
         List<RoadNode> path = new ArrayList<>();
         DeliverySheet sheet = new DeliverySheet();
-        sheet.setDeliveryRound(path);
+        sheet.setDeliveryRound(map);
 
         String result = "";
         StringWriter sw = new StringWriter();
@@ -346,10 +368,11 @@ public class DeliverySheetTest extends TestCase {
 
     public void testExportNoPath() {
         // Création d'un chemin basique
+        HashMap<Delivery, List<RoadNode>> map = new HashMap<>();
         List<RoadNode> path = new ArrayList<>();
         path.add(new RoadNode(0));
         DeliverySheet sheet = new DeliverySheet();
-        sheet.setDeliveryRound(path);
+        sheet.setDeliveryRound(map);
 
         String result = "";
         StringWriter sw = new StringWriter();

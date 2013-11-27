@@ -3,10 +3,10 @@ package model;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -18,32 +18,32 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-import tsp.AStar;
 import tsp.RegularGraph;
 import tsp.SolutionState;
 import tsp.TSP;
 
 public class RoadNetwork {
 
-    private static final String ROOT_ELEM = "Reseau";
-    private static final String NODE_ELEM = "Noeud";
-    private static final String DEST_ATTR = "destination";
-    private static final String LENGTH_ATTR = "longueur";
-    private static final String SPEED_ATTR = "vitesse";
-    private static final String ROAD_ATTR = "nomRue";
-    private static final String SECTION_ELEM = "TronconSortant";
-    private static final String Y_ATTR = "y";
-    private static final String X_ATTR = "x";
-    private static final String ID_ATTR = "id";
+    public static final String ROOT_ELEM = "Reseau";
+    public static final String NODE_ELEM = "Noeud";
+    public static final String SECTION_ELEM = "TronconSortant";
+    public static final String ID_ATTR = "id";
+    public static final String X_ATTR = "x";
+    public static final String Y_ATTR = "y";
+    public static final String DEST_ATTR = "destination";
+    public static final String LENGTH_ATTR = "longueur";
+    public static final String SPEED_ATTR = "vitesse";
+    public static final String ROAD_ATTR = "nomRue";
+
     private RoadNode root;
     private HashMap<Delivery, List<RoadNode>> paths = new HashMap<>();
     private List<Delivery> sortedDeliveries = new ArrayList<>();
-    
+
     /**
-     * 
+     *
      * @param input
      * @return
-     * @throws IOException 
+     * @throws IOException
      */
     public static RoadNetwork loadFromXML(Reader input) throws IOException {
         if (input == null) {
@@ -234,24 +234,24 @@ public class RoadNetwork {
     public RoadNode getRoot() {
         return root;
     }
-    
+
     public void setRoot(RoadNode root) {
         this.root = root;
     }
-    
+
     public RoadNode getNodeById(long id) {
         return getNodeById(new Long(id));
     }
-    
+
     public RoadNode getNodeById(Long id) {
         if (id == null) {
             throw new NullPointerException("'id' ne doit pas être null");
         }
-        
+
         if (root == null) {
             return null;
         }
-        
+
         Set<RoadNode> open = new HashSet<>();
         Set<RoadNode> close = new HashSet<>();
         open.add(root);
@@ -269,6 +269,43 @@ public class RoadNetwork {
             }
         }
         return null;
+    }
+
+    public boolean allValidNodes(List<Long> idList) {
+        if (idList == null) {
+            throw new NullPointerException("'idList' ne doit pas être null");
+        }
+        if (root == null) {
+            return idList.isEmpty();
+        }
+        for (Long id : idList) {
+            if (id == null) {
+                throw new NullPointerException("'id' ne doit pas être null");
+            }
+
+            Set<RoadNode> open = new HashSet<>();
+            Set<RoadNode> close = new HashSet<>();
+            open.add(root);
+            boolean found = false;
+            while (!open.isEmpty()) {
+                RoadNode current = open.iterator().next();
+                if (current.getId() == id) {
+                    found = true;
+                    break;
+                }
+                open.remove(current);
+                close.add(current);
+                for (RoadNode n : current.getNodes()) {
+                    if (!close.contains(n)) {
+                        open.add(n);
+                    }
+                }
+            }
+            if (!found) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public List<RoadNode> getNodes() {
@@ -293,34 +330,45 @@ public class RoadNetwork {
         return l;
     }
 
-    public boolean makeRoute(List<Delivery> deliveries) {
+    public boolean makeRoute(DeliverySheet sheet) {
+        if (sheet == null) {
+            throw new NullPointerException();
+        }
+        List<Delivery> deliveries = sheet.getDeliveries();
+        deliveries.add(0, new Delivery(new Long(-1),
+                sheet.getWarehouseAddress(),
+                new TimeSlot(new Date(new Long(0)), new Long(0)),
+                null));
         RegularGraph graph = RegularGraph.loadFromRoadNetwork(this, deliveries);
         TSP tsp = new TSP(graph);
-        SolutionState s = tsp.solve(100000000, 10000000);
+        SolutionState s = tsp.solve(100000, 100000);
         if (s == SolutionState.OPTIMAL_SOLUTION_FOUND || s == SolutionState.SOLUTION_FOUND) {
             int[] ls = tsp.getNext();
-            System.out.print("Solution : ");
-            for(int i : ls) {
-                System.out.print(i);
-            }
-            System.out.println();
+            /*System.out.print("Solution : ");
+             for(int i : ls) {
+             System.out.print(i);
+             System.out.print(" ");
+             }
+             System.out.println();*/
             this.paths = graph.getPaths(ls);
+
             int index = 0;
-            this.sortedDeliveries.clear();
+            this.sortedDeliveries = new ArrayList<>();
             do {
                 this.sortedDeliveries.add(deliveries.get(index));
                 index = ls[index];
-            } while(index != 0);
+            } while (index != 0);
+            this.sortedDeliveries.remove(0); // Remove the warehouse
             return true;
         }
-        System.out.println("Pas de solution trouvé");
+        System.err.println("Pas de solution trouvée");
         return false;
     }
-    
+
     public HashMap<Delivery, List<RoadNode>> getPaths() {
         return this.paths;
     }
-    
+
     public List<Delivery> getSortedDeliveries() {
         return this.sortedDeliveries;
     }

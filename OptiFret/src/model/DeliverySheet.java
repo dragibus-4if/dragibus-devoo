@@ -1,5 +1,6 @@
 package model;
 
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
@@ -22,6 +23,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+import tsp.AStar;
 
 /**
  * Feuille de route d'un livreur. {@literal DeliverySheet} encapsule le
@@ -41,6 +43,7 @@ public class DeliverySheet {
 
     private DeliveryEmployee deliveryEmployee;
     private long warehouseAddress;
+    private RoadNetwork network;
 
     public static final String ROOT_ELEM = "JourneeType";
     public static final String WAREHOUSE_NAME = "Entrepot";
@@ -65,25 +68,61 @@ public class DeliverySheet {
         deliveryEmployee = new DeliveryEmployee();
         deliveries = null;
         deliveryRound = null;
+        network = null;
     }
 
     public List<RoadNode> getDeliveryRound() {
-        if(this.deliveries == null)
-            return new ArrayList<>();
-        if(this.deliveryRound == null)
-            return new ArrayList<>();
         List<RoadNode> l = new ArrayList<>();
-        for(Delivery d : this.deliveries) {
-            l.addAll(deliveryRound.get(d));
-            if(this.deliveries.get(this.deliveries.size() - 1) != d) {
-                l.remove(l.size() - 1);
+        l.addAll(getWarehouseRound());
+        if (deliveries != null && deliveryRound != null) {
+            for (Delivery d : deliveries) {
+                if (deliveryRound.containsKey(d)) {
+                    l.addAll(deliveryRound.get(d));
+                    if (deliveries.get(deliveries.size() - 1) != d) {
+                        l.remove(l.size() - 1);
+                    }
+                } else {
+                    throw new ArrayIndexOutOfBoundsException();
+                }
             }
         }
         return l;
     }
-    
+
+    public List<RoadNode> getWarehouseRound() {
+        if (network == null) {
+            return new ArrayList<>();
+        }
+        if (deliveries.isEmpty()) {
+            return new ArrayList<>();
+        }
+        RoadNode n1 = network.getNodeById(deliveries.get(0).getAddress());
+        RoadNode n2 = network.getNodeById(warehouseAddress);
+        if (n1 == null || n2 == null) {
+            return new ArrayList<>();
+        }
+        return AStar.findPath(n1, n2);
+    }
+
     public List<RoadNode> getDeliveryRound(Delivery from) {
-        return deliveryRound.get(from);
+        if (network == null) {
+            return new ArrayList<>();
+        }
+        int index = deliveries.indexOf(from) + 1;
+        RoadNode n1 = network.getNodeById(from.getAddress());
+        RoadNode n2 = null;
+        if (index < deliveries.size()) {
+            n2 = network.getNodeById(deliveries.get(index).getAddress());
+        } else {
+            n2 = network.getNodeById(warehouseAddress);
+        }
+        if (n1 == null || n2 == null) {
+            return new ArrayList<>();
+        }
+        return AStar.findPath(n1, n2);
+        //if(!deliveryRound.containsKey(from))
+        //    throw new ArrayIndexOutOfBoundsException();
+        //return deliveryRound.get(from);
     }
 
     public void setDeliveryRound(HashMap<Delivery, List<RoadNode>> deliveryRound) {
@@ -94,10 +133,14 @@ public class DeliverySheet {
         return deliveryEmployee;
     }
 
+    public long getWarehouseAddress() {
+        return warehouseAddress;
+    }
+
     public List<Delivery> getDeliveries() {
         return deliveries;
     }
-    
+
     public void setDelivery(List<Delivery> deliveries) {
         this.deliveries = deliveries;
     }
@@ -106,8 +149,17 @@ public class DeliverySheet {
         deliveries.add(delivery);
     }
 
-    public long getWarehouseAddress() {
-        return warehouseAddress;
+    public Delivery findDeliveryById(long deliveryId) {
+        for (Delivery delivery : deliveries) {
+            if (delivery.getId() == deliveryId) {
+                return delivery;
+            }
+        }
+        return null;
+    }
+
+    public void setRoadNetwork(RoadNetwork rn) {
+        network = rn;
     }
 
     /**
@@ -206,6 +258,9 @@ public class DeliverySheet {
                 }
             }
 
+            writer.write(bufferRoad);
+            writer.write("RoadNodeID : "+liv.getId() +" Adresse: " +delv.get(indexDelivs).getAddress());
+            bufferRoad = "";
             // Coupure dans le chemin
             if (rs == null) {
                 throw new RuntimeException();
@@ -230,9 +285,9 @@ public class DeliverySheet {
         }
 
         // On est pas passé par toutes les livraisons
-        if (indexDelivs != delv.size()) {
-            throw new RuntimeException();
-        }
+//        if (indexDelivs != delv.size()) {
+//            throw new RuntimeException();
+//        }
         writer.flush();
     }
 
@@ -329,7 +384,6 @@ public class DeliverySheet {
 
             // Traiter la liste des livraisons
             for (int j = 0; j < deliveryNodes.getLength(); j++, deliveryIdCursor++) {
-                System.out.println(deliveryIdCursor);
                 Node deliveryNode = deliveryNodes.item(j);
                 Delivery del = parseDelivery(deliveryNode);
                 deliveries.add(new Delivery(deliveryIdCursor, del.getAddress(), ts, del.getClient()));
