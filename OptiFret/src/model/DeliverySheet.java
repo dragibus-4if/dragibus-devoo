@@ -94,8 +94,8 @@ public class DeliverySheet {
         if (deliveries.isEmpty()) {
             return new ArrayList<>();
         }
-        RoadNode n1 = network.getNodeById(deliveries.get(0).getAddress());
-        RoadNode n2 = network.getNodeById(warehouseAddress);
+        RoadNode n1 = network.getNodeById(warehouseAddress);
+        RoadNode n2 = network.getNodeById(deliveries.get(0).getAddress());
         if (n1 == null || n2 == null) {
             return new ArrayList<>();
         }
