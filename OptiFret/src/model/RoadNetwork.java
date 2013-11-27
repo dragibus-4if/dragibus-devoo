@@ -258,7 +258,7 @@ public class RoadNetwork {
         open.add(root);
         while (!open.isEmpty()) {
             RoadNode current = open.iterator().next();
-            if (current.getId() == id) {
+            if (current.getId().equals(id)) {
                 return current;
             }
             open.remove(current);

@@ -65,6 +65,7 @@ public class MainController extends Invoker implements Listener {
             try {
                 String dsFilename = helper.getString("load-delivery-sheet");
                 deliverySheet = DeliverySheet.loadFromXML(new FileReader(dsFilename));
+                deliverySheet.setRoadNetwork(roadNetwork);
                 calculRoute();
                 mainFrame.getExportRound().setEnabled(true);
             } catch (MissingAttributeException ex) {
@@ -224,6 +225,11 @@ public class MainController extends Invoker implements Listener {
                     public void undo() {
                         roadNetwork = currentNetwork;
                         deliverySheet = currentDeliverySheet;
+                        
+                        if(deliverySheet != null) {
+                           deliverySheet.setRoadNetwork(roadNetwork);
+                           calculRoute();
+                        }
 
                         // verifier si un reseau a deja ete charge
                         if (roadNetwork == null) {
@@ -273,6 +279,7 @@ public class MainController extends Invoker implements Listener {
                         currentDeliverySheet = deliverySheet;
 
                         deliverySheet = loadedDeliverySheet;
+                        deliverySheet.setRoadNetwork(roadNetwork);
                         calculRoute();
                         mainFrame.getExportRound().setEnabled(true);
                         mainFrame.repaint();
@@ -287,6 +294,7 @@ public class MainController extends Invoker implements Listener {
                             mainFrame.getDeliveryList().setDeliveries(new ArrayList<Delivery>());
                             mainFrame.getExportRound().setEnabled(false);
                         } else {
+                            deliverySheet.setRoadNetwork(roadNetwork);
                             calculRoute();
                         }
                         mainFrame.repaint();
