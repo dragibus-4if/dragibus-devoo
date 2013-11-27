@@ -1,5 +1,6 @@
 package model;
 
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
@@ -257,6 +258,9 @@ public class DeliverySheet {
                 }
             }
 
+            writer.write(bufferRoad);
+            writer.write("RoadNodeID : "+liv.getId() +" Adresse: " +delv.get(indexDelivs).getAddress());
+            bufferRoad = "";
             // Coupure dans le chemin
             if (rs == null) {
                 throw new RuntimeException();
@@ -281,9 +285,9 @@ public class DeliverySheet {
         }
 
         // On est pas passé par toutes les livraisons
-        if (indexDelivs != delv.size()) {
-            throw new RuntimeException();
-        }
+//        if (indexDelivs != delv.size()) {
+//            throw new RuntimeException();
+//        }
         writer.flush();
     }
 
