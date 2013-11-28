@@ -2,6 +2,7 @@ package view;
 
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.event.MouseWheelEvent;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Date;
@@ -25,7 +26,6 @@ public class DeliveryMap extends NavigablePanel {
     private Map<Long, NodeView> mapNodes;
     private WeakReference<NodeView> selectedNode;
     private CopyOnWriteArrayList<Listener> listeners;
-    private Map<Long, TimeSlot> mapIdTimeSlot;
     public static final int PADDING = 20;
 
     public enum NODE_RETURN {
@@ -195,6 +195,8 @@ public class DeliveryMap extends NavigablePanel {
         }
     }
 
+   
+    
     public void clearNodeViewMode() {
         for (NodeView n : mapNodes.values()) {
             n.setMode(MODE.CLASSIC);
@@ -207,6 +209,7 @@ public class DeliveryMap extends NavigablePanel {
         }
     }
 
+    
     @Override
     public void notifyPressed(int x, int y) {
         //boolean voidClic = true;
