@@ -4,6 +4,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,11 +25,11 @@ public class DeliveryMap extends NavigablePanel {
     private Map<Long, NodeView> mapNodes;
     private WeakReference<NodeView> selectedNode;
     private CopyOnWriteArrayList<Listener> listeners;
-    private Map<Long,TimeSlot> mapIdTimeSlot;
-    
+    private Map<Long, TimeSlot> mapIdTimeSlot;
     public static final int PADDING = 20;
-   
+
     public enum NODE_RETURN {
+
         NOTHING_SELECTED,
         NODE_SELECTED,
         NODE_ALLREADY_SELECTED
@@ -67,8 +68,7 @@ public class DeliveryMap extends NavigablePanel {
                 mapNodes.put(rn.getId(), tempNode);
             }
             for (RoadNode neighbor : rn.getNeighbors()) {
-                ArcView temp = new ArcView(rn.getX(), rn.getY(),
-                        neighbor.getX(), neighbor.getY(), 0);
+                ArcView temp = new ArcView(rn, neighbor, 0);
                 if (!mapArcs.containsKey(temp.hashCode())) {
                     mapArcs.put(temp.hashCode(), temp);
                 }
@@ -77,7 +77,7 @@ public class DeliveryMap extends NavigablePanel {
     }
 
     public void updateWhareHouse(Long id) {
-        if (id != -1 && mapNodes.get(id)!=null) {
+        if (id != -1 && mapNodes.get(id) != null) {
             mapNodes.get(id).setMode(MODE.WAREHOUSE);
         }
     }
@@ -88,6 +88,7 @@ public class DeliveryMap extends NavigablePanel {
         }
         for (ArcView arc : mapArcs.values()) {
             arc.resetNbLines();
+            arc.resetColors();
         }
         for (int i = 0; i < nodes.size(); i++) {
             RoadNode rn = nodes.get(i);
@@ -107,40 +108,89 @@ public class DeliveryMap extends NavigablePanel {
             }
         }
     }
-    
-    public void updateTimeSlots(List<Delivery> dels){
+
+    public void updateTimeSlots(List<Delivery> dels, List<RoadNode> path) {
         if (dels == null) {
             return;
         }
-        List<Integer> temp=new ArrayList<>();
-        Long currentTimeSlot;
-        Long testedTimeSlot=0L;
-        for(Delivery del:dels){
-            currentTimeSlot=del.getTimeSlot().getBegin().getTime();
-            if(currentTimeSlot!=testedTimeSlot){
-                testedTimeSlot=currentTimeSlot;
-                temp.add(dels.indexOf(del));
+        List<Integer> listPosDeliveries = new ArrayList<>();
+        List<Integer> listPosPath = new ArrayList<>();
+
+        TimeSlot currentTimeSlot;
+        TimeSlot testedTimeSlot = new TimeSlot(new Date(0L), new Date(0L));
+        for (Delivery del : dels) {
+            currentTimeSlot = del.getTimeSlot();
+            if (!currentTimeSlot.getBegin().equals(testedTimeSlot.getBegin())) {
+                testedTimeSlot = currentTimeSlot;
+                listPosDeliveries.add(dels.indexOf(del));
+                System.out.println("CurrentTimeSlot : " + currentTimeSlot.toString());
             }
         }
-        int nbTimeSlots=temp.size();
-        int i=0,j=0;
-        while(i<dels.size()){
-            if(i<temp.get(j)){
-                
-                if (!mapArcs.containsKey(temp.hashCode())) {
-                mapArcs.get(dels.get(i).getAddress()).updateColorPerTimeSlot(nbTimeSlots,j);
-                i++;
-            }else{
-                j++;
+
+        int nbTimeSlots = listPosDeliveries.size();
+        System.out.println(nbTimeSlots);
+
+        int itPath = 0, itDels = 1, itTS = 1;
+        while (itPath < path.size()) {
+            if (itDels<dels.size() && path.get(itPath).getId().equals(dels.get(itDels).getAddress()) ) {
+                if (itTS<listPosDeliveries.size() && listPosDeliveries.get(itTS).equals(new Integer(itDels))) {
+                    listPosPath.add(itPath);
+                    itTS++;
+                }
+                itDels++;
+            }
+
+            itPath++;
+        }
+        itPath = 0;
+        for (int i = 0; i < path.size()-1; i++) {
+            if (itPath<listPosPath.size() &&listPosPath.get(itPath).equals(new Integer(i))) {
+                itPath++;
+            }
+            ArcView arcTemp = new ArcView(path.get(i),
+                    path.get(i + 1), 0);
+
+            if (mapArcs.get(arcTemp.hashCode()) != null) {
+                mapArcs.get(arcTemp.hashCode()).
+                        updateColorPerTimeSlot(nbTimeSlots-1, itPath);
             }
         }
+
+//        while(i<dels.size() && j<nbTimeSlots){
+//            if(i<=listPosDeliveries.get(j)){
+//                for(int k=savek ; k < path.size()-1 && k<i ; k++){
+//                    if(i<dels.size() &&     
+//                            path.get(k).getId()== dels.get(i+1).getAddress()){
+//                        savek=k;
+//                        System.out.println("SAVED : "+savek);
+//                        break;
+//                    }
+//                    ArcView arcTemp = new ArcView (path.get(k), 
+//                            path.get(k+1),0);
+//                    
+//                    if (mapArcs.get(arcTemp.hashCode()) != null  ) {
+//                        System.out.println("j : " + j);
+//
+//                        mapArcs.get(arcTemp.hashCode()).
+//                            updateColorPerTimeSlot(nbTimeSlots,j);
+//                    }
+//                }
+//             
+//                i++;
+//                
+//            }else{
+//                j++;
+//
+//            }
+//        }
     }
+
     public void updateDeliveryNodes(List<Delivery> dels) {
         if (dels == null) {
             return;
         }
         for (Delivery del : dels) {
-            
+
             mapNodes.get(del.getAddress()).setMode(MODE.DELIVERY_NODE);
         }
     }
