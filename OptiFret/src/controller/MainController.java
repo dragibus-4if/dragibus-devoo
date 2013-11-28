@@ -32,12 +32,23 @@ import view.DeliveryList;
 import view.DeliveryView;
 import view.NodeView;
 
+/**
+ * Controlleur principal de l'application, permettant la liaison entre les
+ * modèles et leurs vues.
+ *
+ * @author dragibus
+ */
 public class MainController extends Invoker implements Listener {
 
     private RoadNetwork roadNetwork;
     private DeliverySheet deliverySheet;
     private MainFrame mainFrame;
 
+    /**
+     * Constructeur prenant la {@code MainFrame} associée.
+     *
+     * @param mainFrame
+     */
     public MainController(MainFrame mainFrame) {
         super();
         if (mainFrame == null) {
@@ -47,15 +58,23 @@ public class MainController extends Invoker implements Listener {
         setupNewView();
     }
 
+    /**
+     * Méthode à appeler pour lancer l'application.
+     */
     public void run() {
         try {
-            configureStartup(Manager.getInstance().registerEntry("startup"));
+            configureStartup(Manager.getInstance().getEntry("startup"));
         } catch (MissingEntryException e) {
             System.out.println("Aucune configuration trouvée pour le MainController");
         }
         mainFrame.setVisible(true);
     }
 
+    /**
+     * Méthode de configuration pour le démarrage.
+     *
+     * @param entry
+     */
     private void configureStartup(Entry entry) {
         Helper helper = new Helper(entry);
         try {
@@ -81,6 +100,12 @@ public class MainController extends Invoker implements Listener {
         }
     }
 
+    /**
+     * Encapsulation du comportement pour l'ajout d'une livraison (bouton
+     * "ajouter").
+     *
+     * @param address
+     */
     private void addDelivery(long address) {
         if (deliverySheet == null) {
             throw new NullPointerException();
@@ -137,6 +162,12 @@ public class MainController extends Invoker implements Listener {
         });
     }
 
+    /**
+     * Encapsulation du comportement pour la suppression d'une livraison (bouton
+     * "supprimer").
+     *
+     * @param deliveryId
+     */
     private void deleteDelivery(long deliveryId) {
         final Delivery delivery = deliverySheet.findDeliveryById(deliveryId);
         if (delivery == null) {
@@ -165,6 +196,9 @@ public class MainController extends Invoker implements Listener {
         });
     }
 
+    /**
+     * Encapsulation du comportement de la génération de la route.
+     */
     private void makeRoute() {
         if (roadNetwork == null) {
             throw new NullPointerException();
@@ -185,12 +219,23 @@ public class MainController extends Invoker implements Listener {
         }
     }
 
+    /**
+     * Mise à jour de la map.
+     */
     private void updateDeliveryMap() {
         mainFrame.getDeliveryMap().clearNodeViewMode();
         mainFrame.getDeliveryMap().updateDeliveryNodesPath(new ArrayList<RoadNode>());
         mainFrame.getDeliveryMap().updateDeliveryNodes(new ArrayList<Delivery>());
     }
 
+    /**
+     * Mise à jour de la map.
+     *
+     * @param path
+     * @param deliveries
+     * @param wharehouseAdress
+     * @param wholePath
+     */
     private void updateDeliveryMap(List<RoadNode> path, List<Delivery> deliveries, Long wharehouseAdress, boolean wholePath) {
         if (path == null || deliveries == null) {
             updateDeliveryMap();
@@ -208,6 +253,11 @@ public class MainController extends Invoker implements Listener {
         }
     }
 
+    /**
+     * Mise à jour de la map.
+     *
+     * @param sheet
+     */
     private void updateDeliveryMap(DeliverySheet sheet) {
         if (sheet == null) {
             updateDeliveryMap();
@@ -216,6 +266,11 @@ public class MainController extends Invoker implements Listener {
         }
     }
 
+    /**
+     * Mise à jour de la map.
+     *
+     * @param del
+     */
     private void updateDeliveryMap(Delivery del) {
         if (del == null || deliverySheet == null) {
             updateDeliveryMap();
@@ -234,6 +289,9 @@ public class MainController extends Invoker implements Listener {
         updateDeliveryMap(path, ls, -1l, false);
     }
 
+    /**
+     * Encapsulation du comportement de chargement d'un plan.
+     */
     private void loadRoadNetwork() {
         final JFileChooser fc = new JFileChooser();
         fc.setMultiSelectionEnabled(false);
@@ -317,6 +375,13 @@ public class MainController extends Invoker implements Listener {
         }
     }
 
+    /**
+     * Refactoring du chargement d'une demande de livraison
+     *
+     * @param reader
+     * @return la demande de livraison chargée
+     * @throws IOException
+     */
     private DeliverySheet doloadDeliverySheet(Reader reader) throws IOException {
         DeliverySheet ds = DeliverySheet.loadFromXML(reader);
         // Vérification comme quoi toutes les livraisons sont présentes sur la carte
@@ -331,6 +396,9 @@ public class MainController extends Invoker implements Listener {
         return ds;
     }
 
+    /**
+     * Encapsulation du comportement de chargement d'une demande de livraison.
+     */
     private void loadDeliverySheet() {
         JFileChooser fc = new JFileChooser();
         fc.setDialogTitle(MainFrame.LOAD_ROUND_TOOLTIP);
@@ -400,6 +468,9 @@ public class MainController extends Invoker implements Listener {
         }
     }
 
+    /**
+     * Encapsulation du comportement d'export d'une tournée.
+     */
     private void exportRound() {
         JFileChooser fc = new JFileChooser();
         fc.setDialogTitle(MainFrame.EXPORT_ROUND_TOOLTIP);
@@ -423,6 +494,9 @@ public class MainController extends Invoker implements Listener {
         }
     }
 
+    /**
+     * Mise en place complète d'une nouvelle vue ("reset").
+     */
     private void setupNewView() {
         // Historique
         clearAllHistory();
@@ -439,6 +513,9 @@ public class MainController extends Invoker implements Listener {
         setupViewListeners();
     }
 
+    /**
+     * Mise en place des listeners pour les différentes vues.
+     */
     private void setupViewListeners() {
         // sélectionner un noeud/une livraison
         mainFrame.getDeliveryMap().addListener(this);
@@ -518,6 +595,11 @@ public class MainController extends Invoker implements Listener {
         }
     }
 
+    /**
+     * Callback quand la map voit sa sélection changée.
+     *
+     * @param map
+     */
     public void onMapNodeSelected(DeliveryMap map) {
         if (map == null) {
             return;
@@ -557,6 +639,11 @@ public class MainController extends Invoker implements Listener {
         }
     }
 
+    /**
+     * Callback quand la liste des livraisons voit sa sélection changée.
+     *
+     * @param deliveryList
+     */
     private void onListDeliverySelected(DeliveryList deliveryList) {
         if (deliveryList == null) {
             return;

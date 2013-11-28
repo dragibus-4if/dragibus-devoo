@@ -3,45 +3,27 @@ package config;
 import java.io.IOException;
 
 /**
+ * Loader de configuration, gérant l'accés spécifique aux entrées de la
+ * configuration et l'interfaçage pour le chargement.
  *
- * @author jmcomets
+ * @author Jean-Marie
  */
 public abstract class Loader {
 
-    private static final String DEFAULT_CONFIG_FILENAME = "config.ini";
-    private String filename;
+    private boolean loaded = false;
 
-    private boolean loaded;
-
-    public Loader() {
-        filename = DEFAULT_CONFIG_FILENAME;
-        loaded = false;
-    }
-
-    public Loader(String filename) {
-        this.filename = filename;
-        loaded = false;
-    }
-
-    public String getFilename() {
-        return filename;
-    }
-
-    public void setFilename(String filename) {
-        if (filename == null) {
-            throw new NullPointerException("configFilename ne peut pas être nul");
-        }
-        this.filename = filename;
-    }
-
+    /**
+     * Accesseur de l'état de chargement de la configuration
+     * 
+     * @return si la configuration a été chargée
+     */
     public boolean isLoaded() {
         return loaded;
     }
 
-    public void setLoaded(boolean loaded) {
-        this.loaded = loaded;
-    }
-
+    /**
+     * Chargement explicite de la configuration.
+     */
     public void load() {
         try {
             doLoad();
@@ -51,7 +33,20 @@ public abstract class Loader {
         }
     }
 
+    /**
+     * Méthode sensée réellement faire le chargement de la configuration en
+     * gérant une erreur éventuelle par une IOException.
+     *
+     * @throws IOException
+     */
     public abstract void doLoad() throws IOException;
 
+    /**
+     * Accesseur récupérant une entrée nommé.
+     * 
+     * @param name
+     * @return l'entrée associée au nom passé
+     * @throws MissingEntryException si l'entrée demandée n'existe pas
+     */
     public abstract Entry getEntry(String name) throws MissingEntryException;
 }
