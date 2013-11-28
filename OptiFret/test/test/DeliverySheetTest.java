@@ -166,7 +166,7 @@ public class DeliverySheetTest extends TestCase {
         List<Delivery> dL = new ArrayList<>();
         dL.add(d1);
         dL.add(d2);
-        sheet.setDelivery(dL);
+        sheet.setDeliveries(dL);
 
         String result = "Nouvelle Tournée\n\n\n**********************\n\n\n\n";
         result += "Prochaine livraison : R1\n\n";
@@ -211,7 +211,7 @@ public class DeliverySheetTest extends TestCase {
         List<Delivery> ld = new ArrayList<>();
         ld.add(d1);
         ld.add(d2);
-        sheet.setDelivery(ld);
+        sheet.setDeliveries(ld);
         
         RoadNetwork rn = new RoadNetwork();
         rn.setRoot(path.get(0));
@@ -278,7 +278,7 @@ public class DeliverySheetTest extends TestCase {
         ld.add(d1);
         ld.add(d2);
         ld.add(d3);
-        sheet.setDelivery(ld);
+        sheet.setDeliveries(ld);
 
         String result = "Prochaine livraison : R1\n\n";
         result += "Prendre la rue R1\n\n";

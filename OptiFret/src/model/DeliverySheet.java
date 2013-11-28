@@ -1,17 +1,14 @@
 package model;
 
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -26,10 +23,10 @@ import org.xml.sax.SAXException;
 import tsp.AStar;
 
 /**
- * Modèle de la feuille de route d'un livreur. {@literal DeliverySheet} encapsule le
- * chargement XML des demandes de livraisons pour définir la tournée
- * (représentée par {@literal DeliveryRound}) et le livreur associé (représentée
- * par {@literal DeliveryEmployee}).
+ * Modèle de la feuille de route d'un livreur. {@literal DeliverySheet}
+ * encapsule le chargement XML des demandes de livraisons pour définir la
+ * tournée (représentée par {@literal DeliveryRound}) et le livreur associé
+ * (représentée par {@literal DeliveryEmployee}).
  *
  * @author Patrizia
  * @author Jean-Marie
@@ -56,8 +53,8 @@ public class DeliverySheet {
     public static final String TIMESLOT_BEGIN = "heureDebut";
     public static final String TIMESLOT_END = "heureFin";
 
-    private static final double CONE_FRONT = Math.PI*(1/4);
-    private static final double CONE_BACK = Math.PI*(1-1/4);
+    private static final double CONE_FRONT = Math.PI * (1 / 4);
+    private static final double CONE_BACK = Math.PI * (1 - 1 / 4);
 
     /**
      * Constructeur standard.
@@ -70,7 +67,7 @@ public class DeliverySheet {
     public List<RoadNode> getDeliveryRound() {
         List<RoadNode> l = new ArrayList<>();
         l.addAll(getWarehouseRound());
-        for(Delivery d : deliveries) {
+        for (Delivery d : deliveries) {
             l.addAll(getDeliveryRound(d));
         }
         return l;
@@ -117,7 +114,7 @@ public class DeliverySheet {
         return deliveries;
     }
 
-    public void setDelivery(List<Delivery> deliveries) {
+    public void setDeliveries(List<Delivery> deliveries) {
         this.deliveries = deliveries;
     }
 
@@ -139,12 +136,11 @@ public class DeliverySheet {
     }
 
     /**
-     * Méthode d'export d'une feuille de route en format texte.
-     * Cette méthode se base sur la liste des livraisons et le chemin total
-     * des tournées. Elle déclare la prochaine livraison à effectuer, donne 
-     * quelques informations appréciables la concernant, puis donne le chemin
-     * noeud par noeud jusqu'à la livraison sus-citée. Elle recommence, jusqu'à
-     * la dernière livraison.
+     * Méthode d'export d'une feuille de route en format texte. Cette méthode se
+     * base sur la liste des livraisons et le chemin total des tournées. Elle
+     * déclare la prochaine livraison à effectuer, donne quelques informations
+     * appréciables la concernant, puis donne le chemin noeud par noeud jusqu'à
+     * la livraison sus-citée. Elle recommence, jusqu'à la dernière livraison.
      *
      * @param writer
      * @throws IOException
@@ -168,7 +164,7 @@ public class DeliverySheet {
         String bufferRoad = "";      //Buffer de toute la route à effectuer
 
         writer.write("Nouvelle Tournée\n\n\n**********************\n\n\n\n");
-        
+
         for (RoadNode liv : path) {
             if (old == null) {
                 old = liv;
@@ -196,54 +192,52 @@ public class DeliverySheet {
                         bufferRoad += " mètres : \n";
 
                         /*int v1X = oldRs.getRoadNodeEnd().getX()
-                                - oldRs.getRoadNodeBegin().getX();
-                        int v1Y = oldRs.getRoadNodeEnd().getY()
-                                - oldRs.getRoadNodeBegin().getY();
-                        int v2X = rs.getRoadNodeEnd().getX()
-                                - rs.getRoadNodeBegin().getX();
-                        int v2Y = rs.getRoadNodeEnd().getY()
-                                - rs.getRoadNodeBegin().getY();*/
-
+                         - oldRs.getRoadNodeBegin().getX();
+                         int v1Y = oldRs.getRoadNodeEnd().getY()
+                         - oldRs.getRoadNodeBegin().getY();
+                         int v2X = rs.getRoadNodeEnd().getX()
+                         - rs.getRoadNodeBegin().getX();
+                         int v2Y = rs.getRoadNodeEnd().getY()
+                         - rs.getRoadNodeBegin().getY();*/
                         //double angle1 = Math.atan2(v1Y, v1X);
                         //if ( angle1 <= 0 ) {angle1 += 2*Math.PI;}
                         //double angle2 = Math.atan2(v2Y, v2X);
                         //if ( angle2 <= 0 ) {angle2 += 2*Math.PI;}
                         //double angle = angle2 - angle1;
                         /*double angle = Math.atan2(v1X*v2Y - v1Y*v1X, v1X*v2X + v1Y*v2Y);
-                        System.out.print("Angle : (");
-                        System.out.print(v1X);
-                        System.out.print(", ");
-                        System.out.print(v1Y);
-                        System.out.print(") ; (");
-                        System.out.print(v2X);
-                        System.out.print(", ");
-                        System.out.print(v2Y);
-                        System.out.print(") -> ");
-                        System.out.println(angle);
+                         System.out.print("Angle : (");
+                         System.out.print(v1X);
+                         System.out.print(", ");
+                         System.out.print(v1Y);
+                         System.out.print(") ; (");
+                         System.out.print(v2X);
+                         System.out.print(", ");
+                         System.out.print(v2Y);
+                         System.out.print(") -> ");
+                         System.out.println(angle);
 
-                        if(Math.abs(angle) < CONE_FRONT) {
-                            bufferRoad += "Prenez tout droit ";
-                        }
-                        else if(angle > CONE_FRONT && angle < CONE_BACK) {
-                            bufferRoad += "Prenez à gauche ";
-                        }
-                        else if(angle < -CONE_FRONT && angle > -CONE_BACK) {
-                            bufferRoad += "Prenez à droite ";
-                        }
-                        else {
-                            bufferRoad += "Faite demi-tour ";
-                        }*/
+                         if(Math.abs(angle) < CONE_FRONT) {
+                         bufferRoad += "Prenez tout droit ";
+                         }
+                         else if(angle > CONE_FRONT && angle < CONE_BACK) {
+                         bufferRoad += "Prenez à gauche ";
+                         }
+                         else if(angle < -CONE_FRONT && angle > -CONE_BACK) {
+                         bufferRoad += "Prenez à droite ";
+                         }
+                         else {
+                         bufferRoad += "Faite demi-tour ";
+                         }*/
                         /*if (angle < -CONE_FRONT && angle > -CONE_BACK) {
-                            bufferRoad += "Prenez à gauche ";
-                        } else if (angle > CONE_FRONT && angle < CONE_BACK) {
-                            bufferRoad += "Prenez à droite ";
-                        } else if (angle >= CONE_BACK
-                                || angle <= -CONE_BACK) {
-                            bufferRoad += "Faites demi-tour ";
-                        } else {
-                            bufferRoad += "Prenez tout droit ";
-                        }*/
-
+                         bufferRoad += "Prenez à gauche ";
+                         } else if (angle > CONE_FRONT && angle < CONE_BACK) {
+                         bufferRoad += "Prenez à droite ";
+                         } else if (angle >= CONE_BACK
+                         || angle <= -CONE_BACK) {
+                         bufferRoad += "Faites demi-tour ";
+                         } else {
+                         bufferRoad += "Prenez tout droit ";
+                         }*/
                         //bufferRoad += "sur la rue ";
                         bufferRoad += "Prenez la rue ";
                         bufferRoad += rs.getRoadName();
@@ -254,7 +248,7 @@ public class DeliverySheet {
                     break;
                 }
             }
-            
+
             // Coupure dans le chemin
             if (rs == null) {
                 throw new RuntimeException();
@@ -520,56 +514,55 @@ public class DeliverySheet {
 
         return new Delivery(deliveryId, address, null, new Client(clientId));
     }
-    
+
     /**
-     * Méthode de création de l'horaire prévisionnel pour l'ensemble des 
+     * Méthode de création de l'horaire prévisionnel pour l'ensemble des
      * livraisons à effectuer.
-     * 
+     *
      */
-    public void createPredTimeSlot(){
+    public void createPredTimeSlot() {
         TimeSlot departure = null;
         TimeSlot curTimeSlot = null;
-        
-        for(int it = 0; it<deliveries.size();it++){
+
+        for (int it = 0; it < deliveries.size(); it++) {
             long tv = tempsVoyage(getDeliveryRound(deliveries.get(it)));
-            
+
             if (departure == null) {
                 curTimeSlot = deliveries.get(it).getTimeSlot();
                 departure = curTimeSlot;
-            }
-            else if(!deliveries.get(it).getTimeSlot().getBegin().
-                    equals(curTimeSlot.getBegin())){
+            } else if (!deliveries.get(it).getTimeSlot().getBegin().
+                    equals(curTimeSlot.getBegin())) {
                 curTimeSlot = deliveries.get(it).getTimeSlot();
-                
-                if (curTimeSlot.getBegin().getTime()>departure.getBegin().getTime()+tv) {
-                    deliveries.get(it).setPredTimeSlot(new TimeSlot(new Date(departure.getBegin().getTime()+tv),0l));
+
+                if (curTimeSlot.getBegin().getTime() > departure.getBegin().getTime() + tv) {
+                    deliveries.get(it).setPredTimeSlot(new TimeSlot(new Date(departure.getBegin().getTime() + tv), 0l));
                     departure = curTimeSlot;
                     continue;
                 }
-             
+
             }
-            deliveries.get(it).setPredTimeSlot(new TimeSlot(new Date(departure.getBegin().getTime()+tv),0l));
-            departure = deliveries.get(it).getPredTimeSlot();            
-            
+            deliveries.get(it).setPredTimeSlot(new TimeSlot(new Date(departure.getBegin().getTime() + tv), 0l));
+            departure = deliveries.get(it).getPredTimeSlot();
+
         }
     }
-    
+
     /**
-     * Méthode de calcul du temps mis pour parcourir un ensemble de noeuds,
-     * en fonction de la longueur et la vitesse des rues considérées.
-     * 
+     * Méthode de calcul du temps mis pour parcourir un ensemble de noeuds, en
+     * fonction de la longueur et la vitesse des rues considérées.
+     *
      * @param path la liste de noeuds dont on veut calculer le temps de parcourt
      * @return le temps de parcourt pour la liste de noeuds <code>path</code>
      */
-    private long tempsVoyage(List<RoadNode> path){
-        long tv=0l;
-        for(int it = 0;it<path.size()-1;it++){
-            for(RoadSection rs : path.get(it).getSections()){
-                if(rs.getRoadNodeEnd().equals(path.get(it+1))){
-                    tv+=(rs.getCost()*1000l);
+    private long tempsVoyage(List<RoadNode> path) {
+        long tv = 0l;
+        for (int it = 0; it < path.size() - 1; it++) {
+            for (RoadSection rs : path.get(it).getSections()) {
+                if (rs.getRoadNodeEnd().equals(path.get(it + 1))) {
+                    tv += (rs.getCost() * 1000l);
                     break;
                 }
-                    
+
             }
         }
         return tv;
