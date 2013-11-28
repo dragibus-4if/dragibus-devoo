@@ -107,7 +107,7 @@ public abstract class NavigablePanel extends JPanel {
 
     public abstract void notifyMoved(int x, int y);
 
-    private void doScroll(MouseWheelEvent e) {
+    protected void doScroll(MouseWheelEvent e) {
         double diff = SCALE_INC * (double) e.getWheelRotation();
         offX += SCALE_INC * ((getWidth() / 2 - e.getX()) - offX);
         offY += SCALE_INC * ((getHeight() / 2 - e.getY()) - offY);

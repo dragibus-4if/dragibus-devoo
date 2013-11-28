@@ -236,6 +236,24 @@ public class MainController extends Invoker implements Listener {
 
     private void loadRoadNetwork() {
         final JFileChooser fc = new JFileChooser();
+        fc.setMultiSelectionEnabled(false);
+        fc.setFileFilter(new javax.swing.filechooser.FileFilter() {
+            @Override
+            public boolean accept(File f) {
+                if (f.isDirectory()) {
+                    return true;
+                } else if (f.getName().endsWith(".xml")) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+
+            @Override
+            public String getDescription() {
+                return ".xml";
+            }
+        });
         fc.setDialogTitle(MainFrame.LOAD_MAP_TOOLTIP);
         File dir = new File(getClass().getClassLoader().getResource(".").getPath());
         fc.setCurrentDirectory(dir.getParentFile().getParentFile().getParentFile());
@@ -320,6 +338,24 @@ public class MainController extends Invoker implements Listener {
         File dir = new File(getClass().getClassLoader().getResource(".").getPath());
         fc.setCurrentDirectory(dir.getParentFile().getParentFile().getParentFile());
         
+        fc.setMultiSelectionEnabled(false);
+        fc.setFileFilter(new javax.swing.filechooser.FileFilter() {
+            @Override
+            public boolean accept(File f) {
+                if (f.isDirectory()) {
+                    return true;
+                } else if (f.getName().endsWith(".xml")) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+
+            @Override
+            public String getDescription() {
+                return ".xml";
+            }
+        });
         if (fc.showOpenDialog(mainFrame) == JFileChooser.APPROVE_OPTION) {
             try {
                 final DeliverySheet loadedDeliverySheet = doloadDeliverySheet(new FileReader(fc.getSelectedFile()));
@@ -367,6 +403,24 @@ public class MainController extends Invoker implements Listener {
     private void exportRound() {
         JFileChooser fc = new JFileChooser();
         fc.setDialogTitle(MainFrame.EXPORT_ROUND_TOOLTIP);
+        fc.setMultiSelectionEnabled(false);
+        fc.setFileFilter(new javax.swing.filechooser.FileFilter() {
+            @Override
+            public boolean accept(File f) {
+                if (f.isDirectory()) {
+                    return true;
+                } else if (f.getName().endsWith(".xml")) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+
+            @Override
+            public String getDescription() {
+                return ".xml";
+            }
+        });
         if (fc.showSaveDialog(mainFrame) == JFileChooser.APPROVE_OPTION) {
             try {
                 File file = fc.getSelectedFile();
