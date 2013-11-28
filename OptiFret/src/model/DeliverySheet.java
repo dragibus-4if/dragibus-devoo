@@ -437,14 +437,14 @@ public class DeliverySheet {
 
         // minutes
         try {
-            calendar.set(Calendar.MINUTE, Integer.parseInt(splitTime[0]));
+            calendar.set(Calendar.MINUTE, Integer.parseInt(splitTime[1]));
         } catch (NumberFormatException ex) {
             throw new IOException("Mauvais champ minutes spécifié '" + splitTime[1] + "'");
         }
 
         // secondes
         try {
-            calendar.set(Calendar.SECOND, Integer.parseInt(splitTime[0]));
+            calendar.set(Calendar.SECOND, Integer.parseInt(splitTime[2]));
         } catch (NumberFormatException ex) {
             throw new IOException("Mauvais champ secondes spécifié '" + splitTime[2] + "'");
         } catch (ArrayIndexOutOfBoundsException ex) {
