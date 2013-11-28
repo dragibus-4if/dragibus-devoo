@@ -123,12 +123,12 @@ public class DeliveryMap extends NavigablePanel {
             if (!currentTimeSlot.getBegin().equals(testedTimeSlot.getBegin())) {
                 testedTimeSlot = currentTimeSlot;
                 listPosDeliveries.add(dels.indexOf(del));
-                System.out.println("CurrentTimeSlot : " + currentTimeSlot.toString());
+                
             }
         }
 
         int nbTimeSlots = listPosDeliveries.size();
-        System.out.println(nbTimeSlots);
+        
 
         int itPath = 0, itDels = 1, itTS = 1;
         while (itPath < path.size()) {
