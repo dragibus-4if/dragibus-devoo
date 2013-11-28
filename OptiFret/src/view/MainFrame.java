@@ -1,12 +1,15 @@
 package view;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.KeyEvent;
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import static javax.swing.JFrame.EXIT_ON_CLOSE;
@@ -86,23 +89,26 @@ public class MainFrame extends JFrame {
 
     private Component makeDeliveryMap() {
         JPanel panel = new JPanel(new GridBagLayout());
+        JPanel panelButtons=new JPanel(new FlowLayout());
         deliveryMap = new DeliveryMap();
         deliveryMap.setPreferredSize(new Dimension(DELIVERY_MAP_WIDTH, getHeight()));
         addDeliveryButton = new JButton(ADD_DELIVERY_TOOLTIP);
-        addDeliveryButton.setPreferredSize(new Dimension(100, 70));
+       // addDeliveryButton.setPreferredSize(new Dimension(100, 70));
         delDeliveryButton = new JButton(DEL_DELIVERY_TOOLTIP);
-        addDeliveryButton.setPreferredSize(addDeliveryButton.getPreferredSize());
+       // addDeliveryButton.setPreferredSize(addDeliveryButton.getPreferredSize());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.BOTH;
         gbc.weightx = gbc.weighty = 1;
         gbc.gridwidth = GridBagConstraints.REMAINDER;
         panel.add(deliveryMap, gbc);
-        int padding = 10;
-        gbc.insets = new Insets(padding, padding, padding, padding);
-        gbc.gridwidth = 1;
-        gbc.weighty = 0.1;
-        panel.add(addDeliveryButton, gbc);
-        panel.add(delDeliveryButton, gbc);
+        //int padding = 0;
+        //gbc.insets = new Insets(padding, padding, padding, padding);
+        gbc.gridwidth =1;
+        gbc.weighty = 0.001;
+        panelButtons.setBorder(BorderFactory.createEtchedBorder());
+        panelButtons.add(addDeliveryButton);
+        panelButtons.add(delDeliveryButton);
+        panel.add(panelButtons, gbc);
         return panel;
     }
 

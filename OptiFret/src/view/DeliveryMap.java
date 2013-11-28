@@ -251,7 +251,7 @@ public class DeliveryMap extends NavigablePanel {
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-        g.drawRect(2, 2, getWidth() - 5, getHeight() - 5);
+//        g.drawRect(2, 2, getWidth() - 5, getHeight() - 5);
         applyTransform((Graphics2D) g);
         draw(g);
     }
