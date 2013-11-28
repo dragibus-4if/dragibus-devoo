@@ -132,8 +132,8 @@ public class DeliveryMap extends NavigablePanel {
 
         int itPath = 0, itDels = 1, itTS = 1;
         while (itPath < path.size()) {
-            if (itDels<dels.size() && path.get(itPath).getId().equals(dels.get(itDels).getAddress()) ) {
-                if (itTS<listPosDeliveries.size() && listPosDeliveries.get(itTS).equals(new Integer(itDels))) {
+            if (itDels < dels.size() && path.get(itPath).getId().equals(dels.get(itDels).getAddress())) {
+                if (itTS < listPosDeliveries.size() && listPosDeliveries.get(itTS).equals(new Integer(itDels))) {
                     listPosPath.add(itPath);
                     itTS++;
                 }
@@ -143,8 +143,8 @@ public class DeliveryMap extends NavigablePanel {
             itPath++;
         }
         itPath = 0;
-        for (int i = 0; i < path.size()-1; i++) {
-            if (itPath<listPosPath.size() &&listPosPath.get(itPath).equals(new Integer(i))) {
+        for (int i = 0; i < path.size() - 1; i++) {
+            if (itPath < listPosPath.size() && listPosPath.get(itPath).equals(new Integer(i))) {
                 itPath++;
             }
             ArcView arcTemp = new ArcView(path.get(i),
@@ -152,7 +152,7 @@ public class DeliveryMap extends NavigablePanel {
 
             if (mapArcs.get(arcTemp.hashCode()) != null) {
                 mapArcs.get(arcTemp.hashCode()).
-                        updateColorPerTimeSlot(nbTimeSlots-1, itPath);
+                        updateColorPerTimeSlot(nbTimeSlots - 1, itPath);
             }
         }
 
@@ -195,21 +195,18 @@ public class DeliveryMap extends NavigablePanel {
         }
     }
 
-   
-    
     public void clearNodeViewMode() {
         for (NodeView n : mapNodes.values()) {
             n.setMode(MODE.CLASSIC);
         }
     }
-    
+
     public void clearArrowColors() {
-        for(ArcView arc:mapArcs.values()){
+        for (ArcView arc : mapArcs.values()) {
             arc.resetColors();
         }
     }
 
-    
     @Override
     public void notifyPressed(int x, int y) {
         //boolean voidClic = true;
@@ -258,7 +255,7 @@ public class DeliveryMap extends NavigablePanel {
 
     private void draw(Graphics g) {
         for (ArcView arc : mapArcs.values()) {
-            arc.draw(g);
+            arc.draw(g, getScale());
         }
         for (NodeView node : mapNodes.values()) {
             node.draw(g);

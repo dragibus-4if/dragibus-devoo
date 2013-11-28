@@ -15,7 +15,7 @@ public class ArcView {
     private static final boolean RAINBOW = false;
     private static final int STROKE = 2;
     private static final int HUGE_STROKE = 4;
-    private int arrowSize = 7;
+    private int arrowSize = 6;
     private Color EM_COLOR = new Color(0, 151, 202);
     private ArrayList<Color> arrowColors;
     private static final Color LINE_COLOR = new Color(0, 0, 0);
@@ -84,12 +84,12 @@ public class ArcView {
         return hash;
     }
 
-    public void draw(Graphics g) {
+    public void draw(Graphics g, double scale) {
         Graphics2D g2d = (Graphics2D) g;
-        drawArrow(g2d, x1, y1, x2, y2);
+        drawArrow(g2d, x1, y1, x2, y2, scale);
     }
 
-    void drawArrow(Graphics g1, int x1, int y1, int x2, int y2) {
+    void drawArrow(Graphics g1, int x1, int y1, int x2, int y2, double scale) {
         Graphics2D g = (Graphics2D) g1.create();
         g.setRenderingHint(
                 RenderingHints.KEY_ANTIALIASING,
@@ -123,13 +123,20 @@ public class ArcView {
             }
             g.drawLine(0, 2, len, 2);
         }
+        int oldSize = arrowSize;
+
         for (int i = 0; i < nbLines; i++) {
-            if (i<arrowColors.size()) {
+            if (i < arrowColors.size()) {
                 g.setColor(arrowColors.get(i));
             }
-            g.fillPolygon(new int[]{len, len - arrowSize, len-arrowSize},
+            if (scale >= 1) {
+                arrowSize = (int) (arrowSize / (Math.sqrt(scale)/1.5));
+            } 
+            System.out.println(arrowSize);
+            g.fillPolygon(new int[]{len, len - arrowSize, len - arrowSize},
                     new int[]{3, arrowSize + 3, 3}, 3);
             g.translate(-arrowSize - 1, 0);
+            arrowSize = oldSize;
         }
     }
 
@@ -168,13 +175,17 @@ public class ArcView {
     public void setY2(int y2) {
         this.y2 = y2;
     }
-    public void setArrowSize(int arrSize){
-        this.arrowSize=arrSize;
+
+    public void setArrowSize(int arrSize) {
+        this.arrowSize = arrSize;
     }
+
     void resetColors() {
         this.arrowColors.clear();
         EM_COLOR = new Color(0, 151, 202);
     }
-    
-  
+
+    public int getArrowSize() {
+        return arrowSize;
+    }
 }
