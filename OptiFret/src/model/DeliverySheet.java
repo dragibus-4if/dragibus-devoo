@@ -545,6 +545,7 @@ public class DeliverySheet {
             for(RoadSection rs : path.get(it).getSections()){
                 if(rs.getRoadNodeEnd().equals(path.get(it+1))){
                     tv+=(rs.getCost()*1000l);
+                    break;
                 }
                     
             }

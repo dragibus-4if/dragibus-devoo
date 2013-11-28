@@ -344,12 +344,6 @@ public class RoadNetwork {
         SolutionState s = tsp.solve(100000, 100000);
         if (s == SolutionState.OPTIMAL_SOLUTION_FOUND || s == SolutionState.SOLUTION_FOUND) {
             int[] ls = tsp.getNext();
-            /*System.out.print("Solution : ");
-             for(int i : ls) {
-             System.out.print(i);
-             System.out.print(" ");
-             }
-             System.out.println();*/
             this.paths = graph.getPaths(ls);
 
             int index = 0;
