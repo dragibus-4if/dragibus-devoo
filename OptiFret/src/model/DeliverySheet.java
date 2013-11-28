@@ -140,6 +140,11 @@ public class DeliverySheet {
 
     /**
      * Méthode d'export d'une feuille de route en format texte.
+     * Cette méthode se base sur la liste des livraisons et le chemin total
+     * des tournées. Elle déclare la prochaine livraison à effectuer, donne 
+     * quelques informations appréciables la concernant, puis donne le chemin
+     * noeud par noeud jusqu'à la livraison sus-citée. Elle recommence, jusqu'à
+     * la dernière livraison.
      *
      * @param writer
      * @throws IOException
@@ -516,6 +521,11 @@ public class DeliverySheet {
         return new Delivery(deliveryId, address, null, new Client(clientId));
     }
     
+    /**
+     * Méthode de création de l'horaire prévisionnel pour l'ensemble des 
+     * livraisons à effectuer.
+     * 
+     */
     public void createPredTimeSlot(){
         TimeSlot departure = null;
         TimeSlot curTimeSlot = null;
@@ -544,6 +554,13 @@ public class DeliverySheet {
         }
     }
     
+    /**
+     * Méthode de calcul du temps mis pour parcourir un ensemble de noeuds,
+     * en fonction de la longueur et la vitesse des rues considérées.
+     * 
+     * @param path la liste de noeuds dont on veut calculer le temps de parcourt
+     * @return le temps de parcourt pour la liste de noeuds <code>path</code>
+     */
     private long tempsVoyage(List<RoadNode> path){
         long tv=0l;
         for(int it = 0;it<path.size()-1;it++){
