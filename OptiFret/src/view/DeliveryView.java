@@ -26,12 +26,13 @@ public class DeliveryView extends JPanel {
     
     private static final Color MINIMAL_BG_COLOR = new Color(0, 0, 0, 0);
     private static final Color MINIMAL_BG_OVER_COLOR = new Color(240, 240, 240, 175);
-    //private static final Color MINIMAL_BG_SELECT_COLOR = new Color(170, 170, 170, 100);
     private static final Color MINIMAL_BG_SELECT_COLOR = new Color(0, 0, 0, 40);
     private static final Color MINIMAL_BG_UNCOLLAPSED_COLOR = new Color(200, 200, 200, 100);
     private final Delivery delivery;
     private final JPanel minimal;
     private final JXCollapsiblePane extend;
+    private final JLabel timeSlotHour;
+    private final JLabel predHour;
     private final JLabel idDeliveryLabel;
     private final JLabel clientAddressLabel;
     private final JLabel clientPhoneNumLabel;
@@ -56,6 +57,11 @@ public class DeliveryView extends JPanel {
 
         // Labels
         idDeliveryLabel.setText("Livraison : " + delivery.getId());
+        timeSlotHour = new JLabel();
+        timeSlotHour.setText("Tranche : "+ delivery.getTimeSlot().getBegin().getHours()+"h"+delivery.getTimeSlot().getBegin().getMinutes());
+        System.err.println(delivery.getTimeSlot().toString());
+        predHour = new JLabel();
+        predHour.setText("Horaire prévu"+delivery.getTimeSlot().getDuration());
         Client client = delivery.getClient();
         if (client != null) {
             String unspecified = "non spécifié";
@@ -88,11 +94,13 @@ public class DeliveryView extends JPanel {
     }
     
     private JXCollapsiblePane makeExtend() {
-        extend.setLayout(new GridLayout(3, 1));
+        extend.setLayout(new GridLayout(5, 1));
         extend.add(clientNameLabel);
         extend.add(clientAddressLabel);
         extend.add(clientPhoneNumLabel);
-
+        extend.add(timeSlotHour);
+        extend.add(predHour);
+        
         extend.setBackground(MINIMAL_BG_COLOR);
         extend.getContentPane().setBackground(MINIMAL_BG_COLOR);
         for (Component c : extend.getComponents()) {
@@ -105,6 +113,7 @@ public class DeliveryView extends JPanel {
     }
     
     private JPanel makeMinimal() {
+        
         
         minimal.setBackground(MINIMAL_BG_COLOR);
         minimal.setOpaque(true);
