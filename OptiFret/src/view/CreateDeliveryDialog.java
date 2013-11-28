@@ -164,6 +164,12 @@ public class CreateDeliveryDialog extends JDialog {
         try {
             Date begin = ((SpinnerDateModel) timeSlotBegin.getModel()).getDate();
             Date end = ((SpinnerDateModel) timeSlotEnd.getModel()).getDate();
+            begin.setDate(new Date().getDate());
+            begin.setMonth(new Date().getMonth());
+            begin.setYear(new Date().getYear());
+            end.setDate(new Date().getDate());
+            end.setMonth(new Date().getMonth());
+            end.setYear(new Date().getYear());
             timeSlot = new TimeSlot(begin, end);
         } catch (IllegalArgumentException e) {
             throw new ValidationError("Créneau horaire invalide");
