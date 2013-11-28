@@ -132,7 +132,6 @@ public class ArcView {
             if (scale >= 1) {
                 arrowSize = (int) (arrowSize / (Math.sqrt(scale)/1.5));
             } 
-            System.out.println(arrowSize);
             g.fillPolygon(new int[]{len, len - arrowSize, len - arrowSize},
                     new int[]{3, arrowSize + 3, 3}, 3);
             g.translate(-arrowSize - 1, 0);
