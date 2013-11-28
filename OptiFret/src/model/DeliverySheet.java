@@ -510,4 +510,45 @@ public class DeliverySheet {
 
         return new Delivery(deliveryId, address, null, new Client(clientId));
     }
+    
+    public void createPredTimeSlot(){
+        TimeSlot departure = null;
+        TimeSlot curTimeSlot = null;
+        
+        for(int it = 0; it<deliveries.size();it++){
+            long tv = tempsVoyage(getDeliveryRound(deliveries.get(it)));
+            
+            if (departure == null) {
+                curTimeSlot = deliveries.get(it).getTimeSlot();
+                departure = curTimeSlot;
+            }
+            else if(!deliveries.get(it).getTimeSlot().getBegin().
+                    equals(curTimeSlot.getBegin())){
+                curTimeSlot = deliveries.get(it).getTimeSlot();
+                
+                if (curTimeSlot.getBegin().getTime()>departure.getBegin().getTime()+tv) {
+                    deliveries.get(it).setPredTimeSlot(new TimeSlot(new Date(departure.getBegin().getTime()+tv),0l));
+                    departure = curTimeSlot;
+                    continue;
+                }
+             
+            }
+            deliveries.get(it).setPredTimeSlot(new TimeSlot(new Date(departure.getBegin().getTime()+tv),0l));
+            departure = deliveries.get(it).getPredTimeSlot();            
+            
+        }
+    }
+    
+    private long tempsVoyage(List<RoadNode> path){
+        long tv=0l;
+        for(int it = 0;it<path.size()-1;it++){
+            for(RoadSection rs : path.get(it).getSections()){
+                if(rs.getRoadNodeEnd().equals(path.get(it+1))){
+                    tv+=(rs.getCost()*1000l);
+                }
+                    
+            }
+        }
+        return tv;
+    }
 }

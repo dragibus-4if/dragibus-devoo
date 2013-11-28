@@ -16,7 +16,16 @@ public class Delivery {
     private Long address;
     private TimeSlot timeSlot;
     private Client client;
+    private TimeSlot predTimeSlot;
 
+    public void setPredTimeSlot(TimeSlot predTimeSlot) {
+        this.predTimeSlot = predTimeSlot;
+    }
+
+    public TimeSlot getPredTimeSlot() {
+        return predTimeSlot;
+    }
+    
     /**
      * Constructeur par ID
      *
@@ -40,8 +49,7 @@ public class Delivery {
         this(new Long(id));
     }
     public boolean isLate(){
-        if(timeSlot.getEnd().getTime()<(timeSlot.getBegin().getTime()+timeSlot.getDuration()))
-        {
+        if(timeSlot.getEnd().getTime()<(predTimeSlot.getBegin().getTime())){
         return true;
         }
         else
