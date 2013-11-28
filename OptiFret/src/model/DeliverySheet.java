@@ -257,8 +257,13 @@ public class DeliverySheet {
             if (indexDelivs < delv.size() && liv.getId().equals(
                     delv.get(indexDelivs).getAddress())) {
 
+                Delivery d = delv.get(indexDelivs);
                 writer.write("Prochaine livraison : ");
-                writer.write(rs.getRoadName() + "\n\n");
+                writer.write(rs.getRoadName() + "\n");
+                writer.write("Horaire programmé : ");
+                writer.write(d.getTimeSlot().getBegin().getHours() + "h" + d.getTimeSlot().getBegin().getMinutes() + "\n");
+                writer.write("Horaire prévu : ");
+                writer.write(d.getPredTimeSlot().getBegin().getHours() + "h" + d.getPredTimeSlot().getBegin().getMinutes() + "\n\n");
                 writer.write(bufferRoad);
                 writer.write("Arrivée à la livraison : ");
                 writer.write(rs.getRoadName());

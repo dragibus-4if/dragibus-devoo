@@ -370,7 +370,7 @@ public class MainController extends Invoker implements Listener {
                         return;
                     }
                 }
-                FileWriter fw = new FileWriter(file, true);
+                FileWriter fw = new FileWriter(file, false);
                 deliverySheet.export(fw);
             } catch (IOException e) {
                 mainFrame.showErrorMessage(e.getMessage());
