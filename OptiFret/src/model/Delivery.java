@@ -1,7 +1,5 @@
 package model;
 
-import java.util.Date;
-
 /**
  * Modèle correspondant à une livraison
  *

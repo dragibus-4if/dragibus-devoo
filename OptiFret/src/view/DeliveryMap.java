@@ -2,7 +2,6 @@ package view;
 
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.event.MouseWheelEvent;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Date;
@@ -13,7 +12,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import model.Delivery;
 import model.RoadNode;
 import model.TimeSlot;
-import org.ini4j.MultiMap;
 import view.NodeView.MODE;
 
 /**
