@@ -66,7 +66,6 @@ public class DeliveryView extends JPanel {
         idDeliveryLabel.setText("Livraison : " + delivery.getId());
         timeSlotHour = new JLabel();
         timeSlotHour.setText("Tranche : " + delivery.getTimeSlot().getBegin().getHours() + "h" + delivery.getTimeSlot().getBegin().getMinutes());
-        System.err.println(delivery.getTimeSlot().toString());
         predHour = new JLabel();
         predHour.setText("Horaire prévu " + delivery.getPredTimeSlot().getBegin().getHours()+"h"+delivery.getPredTimeSlot().getBegin().getMinutes());
 

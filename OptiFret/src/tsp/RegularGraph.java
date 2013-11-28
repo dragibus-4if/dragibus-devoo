@@ -26,6 +26,18 @@ public class RegularGraph implements Graph {
     private final Map<Integer, RoadNode> index2Node;
     private final List<Delivery> objectives;
     
+    
+    /*
+     * Permet de convertir <code>net</code> (graphe entier) et <code>objectives</code>
+     *  (la liste des livraisons) en un <code>RegularGraph</code> qui est un graphe
+     *  qui pourra être traité par le module TSP, et execute l'algorithm AStar
+     *  afin d'établir un plus court chemin parmi le graphe entier.
+     * 
+     * @param net le graphe des noeuds entier. 
+     * @param objectives la liste des livraisons à effectuer
+     * @return RegularGraph le graphe formatté que TSP est capable de traiter.
+     *  Réprésente le graphe des livraisons liées par des arcs de plus faible coût.
+     */
     public static RegularGraph loadFromRoadNetwork(RoadNetwork net, List<Delivery> objectives) {
         if (net == null || objectives == null) {
             throw new NullPointerException();
@@ -111,6 +123,16 @@ public class RegularGraph implements Graph {
         return new RegularGraph(size, new Double(max).intValue(), new Double(min).intValue(), distances, succ, indexMap, objectives);
     }
 
+    /**
+     * Constructeur du <code>RegularGraph</code>
+     * @param nbVertices le nombre de points d'un <code>RegularGraph</code> 
+     * @param maxArcCost le cout maximal d'un arc dans le graphe
+     * @param minArcCost le cout minimal d'un arc dans le graphe
+     * @param cost matrice de cout du graphe
+     * @param succ la liste des successeurs possibles pour un point donné
+     * @param index2Node map des liens entre les indexes des nodes et leur Id
+     * @param objectives la liste des livraisons à effectuer
+     */
     public RegularGraph(int nbVertices, int maxArcCost, int minArcCost,
             int[][] cost, ArrayList<ArrayList<Integer>> succ,
             Map<Integer, RoadNode> index2Node,
@@ -124,6 +146,14 @@ public class RegularGraph implements Graph {
         this.objectives = objectives;
     }
     
+    /**
+     * 
+     * 
+     * @param from 
+     * @param to 
+     * @return la liste des <code>RoadNode</code> entre <code>from</code> et 
+     * <code>to</code>, parmis le chemin de la tournée.
+     */
     private List<RoadNode> getPath(int from, int to) {
         Integer addr1 = objectives.get(from).getAddress().intValue();
         Integer addr2 = objectives.get(to).getAddress().intValue();
@@ -134,6 +164,12 @@ public class RegularGraph implements Graph {
         return l;
     }
 
+    /**
+     * 
+     * 
+     * @param indexes
+     * @return la liste des <code>RoadNode</code> , parmis le chemin de la tournée.
+     */
     public HashMap<Delivery, List<RoadNode>> getPaths(int[] indexes) {
         HashMap<Delivery, List<RoadNode>> l = new HashMap<>();
         int index = 0;
@@ -144,26 +180,50 @@ public class RegularGraph implements Graph {
         return l;
     }
 
+    
+    /**
+     * @return the maximal cost of an arc of <code>this</code>
+     */
     @Override
     public int getMaxArcCost() {
         return maxArcCost;
     }
 
+    /**
+     * @return the minimal cost of an arc of <code>this</code>
+     */
     @Override
     public int getMinArcCost() {
         return minArcCost;
     }
 
+    /**
+     * @return the number of vertices of <code>this</code>
+     */
     @Override
     public int getNbVertices() {
         return nbVertices;
     }
 
+    /**
+     * @return the <code>cost</code> matrix of <code>this</code>: for all
+     * vertices <code>i</code> and <code>j</code>, if <code>(i,j)</code> is an
+     * arc of <code>this</code>, then <code>cost[i][j]</code> = cost of
+     * <code>(i,j)</code>, otherwise
+     * <code>cost[i][j] = this.getMaxArcCost()+1</code>
+     */
     @Override
     public int[][] getCost() {
         return cost;
     }
 
+    /**
+     * @param i a vertex such that <code>0 <= i < this.getNbVertices()</code>
+     * @return an array
+     * containing all successor vertices of <code>i</code> in <code>this</code>
+     * @throws ArrayIndexOutOfBoundsException If <code>i<0</code> or
+     * <code>i>=this.getNbVertices()</code>
+     */
     @Override
     public int[] getSucc(int i) throws ArrayIndexOutOfBoundsException {
         if ((i < 0) || (i >= nbVertices)) {
@@ -178,6 +238,13 @@ public class RegularGraph implements Graph {
         return tab;
     }
 
+    /**
+     * @param i a vertex such that <code>0 <= i < this.getNbVertices()</code>
+     * @return the numbe
+     * r of successor vertices of <code>i</code> in <code>this</code>
+     * @throws ArrayIndexOutOfBoundsException If <code>i<0</code> or
+     * <code>i>=this.getNbVertices()</code>
+     */
     @Override
     public int getNbSucc(int i) throws ArrayIndexOutOfBoundsException {
         if ((i < 0) || (i >= nbVertices)) {
