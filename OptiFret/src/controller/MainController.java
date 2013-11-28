@@ -174,6 +174,7 @@ public class MainController extends Invoker implements Listener {
         if (roadNetwork.makeRoute(deliverySheet)) {
             deliverySheet.setDelivery(roadNetwork.getSortedDeliveries());
             updateDeliveryMap(deliverySheet);
+            deliverySheet.createPredTimeSlot();
             mainFrame.getDeliveryList().setDeliveries(deliverySheet.getDeliveries());
         } else {
             // Pas de solution
