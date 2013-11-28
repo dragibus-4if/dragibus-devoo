@@ -7,6 +7,8 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
+import java.util.ArrayList;
+import model.RoadNode;
 
 public class ArcView {
 
@@ -14,7 +16,12 @@ public class ArcView {
     private static final int STROKE = 2;
     private static final int HUGE_STROKE = 4;
     private static final int ARR_SIZE = 8;
-    private static final Color EM_COLOR = new Color(0, 151, 202);
+    private Color EM_COLOR = new Color(0, 151, 202);
+    private static final Color BEGIN_COLOR = new Color(255, 0, 0);
+    private static final Color END_COLOR = new Color(0, 255, 0);
+    private RoadNode node1;
+    private RoadNode node2;
+    private ArrayList<Color> arrowColors;
     private static final Color LINE_COLOR = new Color(0, 0, 0);
     private int x1;
     private int y1;
@@ -24,7 +31,13 @@ public class ArcView {
     BasicStroke myStroke;
     GradientPaint redtowhite = new GradientPaint(0, 0, Color.RED, 100, 0, Color.WHITE);
 
-    public ArcView(int x1, int y1, int x2, int y2, int nbLines) {
+    public ArcView(RoadNode node1, RoadNode node2, int nbLines) {
+        this.x1 = node1.getX();
+        this.x2 = node2.getX();
+        this.y1 = node1.getY();
+        this.y2 = node2.getY();
+        this.node1 = node1;
+        this.node2 = node2;
         this.nbLines = nbLines;
         this.myStroke = new BasicStroke(STROKE);
         float vx = x2 - x1;
@@ -32,7 +45,7 @@ public class ArcView {
         float norm = (float) Math.sqrt(vx * vx + vy * vy);
         vx /= norm;
         vy /= norm;
-
+        arrowColors = new ArrayList<>();
         this.x1 = (int) (x1 + NodeView.DIAMETER / 2 * vx);
         this.y1 = (int) (y1 + NodeView.DIAMETER / 2 * vy);
         this.x2 = (int) (x2 - NodeView.DIAMETER / 2 * vx);
@@ -54,6 +67,18 @@ public class ArcView {
 
     public void incrementNbLines() {
         nbLines++;
+    }
+
+    public void updateColorPerTimeSlot(int nbTimeSlot, int order) {
+        int red = EM_COLOR.getRed();
+        int green = EM_COLOR.getGreen();
+        if (nbTimeSlot == 0) {
+            nbTimeSlot++;
+        }
+        int range = 255 / nbTimeSlot;
+        arrowColors.add(new Color(255 - range * order, range * order, 0));
+        System.out.println("arrowSize +:" + arrowColors.size());
+        EM_COLOR = new Color(255 - range * order, range * order, 0);
     }
 
     @Override
@@ -88,34 +113,38 @@ public class ArcView {
         AffineTransform at = AffineTransform.getTranslateInstance(x1, y1);
         at.concatenate(AffineTransform.getRotateInstance(angle));
         g.transform(at);
-       
+
         g.setStroke(myStroke);
         g.setColor(new Color(255, 255, 255));
         g.drawLine(0, 0, len, 0);
         g.setColor(LINE_COLOR);
-        g.drawLine(0, 2, len , 2);
-        if(nbLines > 0) {
+        g.drawLine(0, 2, len, 2);
+        if (nbLines > 0) {
             g.setStroke(new BasicStroke(HUGE_STROKE));
             g.setColor(EM_COLOR);
             // Rainbow mode
-            if(RAINBOW) {
-                g.setColor(new Color((int)(Math.random() * 255),
-                    (int)(Math.random() * 255),
-                    (int)(Math.random() * 255)));
+            if (RAINBOW) {
+                g.setColor(new Color((int) (Math.random() * 255),
+                        (int) (Math.random() * 255),
+                        (int) (Math.random() * 255)));
             }
-            g.drawLine(0, 2, len , 2);
+            g.drawLine(0, 2, len, 2);
         }
         for (int i = 0; i < nbLines; i++) {
+            if (i<arrowColors.size()) {
+                g.setColor(arrowColors.get(i));
+            }
+            // System.out.println("NB ARROWS : "+arrowColors.size()+"\nROUGE :"+arrowColors.get(arrowColors.size()-i-1).getRed()+"\nVERT"+arrowColors.get(arrowColors.size()-i-1).getGreen());
             g.fillPolygon(new int[]{len, len - ARR_SIZE, len - ARR_SIZE, len},
-                    new int[]{3, (-ARR_SIZE / 2)+3, ARR_SIZE+3, 3}, 4);
+                    new int[]{3, (-ARR_SIZE / 2) + 3, ARR_SIZE + 3, 3}, 4);
             g.translate(-ARR_SIZE - 1, 0);
         }
     }
 
-    public void resetNbLines(){
-        nbLines=0;
+    public void resetNbLines() {
+        nbLines = 0;
     }
-    
+
     public int getX1() {
         return x1;
     }
@@ -146,5 +175,9 @@ public class ArcView {
 
     public void setY2(int y2) {
         this.y2 = y2;
+    }
+
+    void resetColors() {
+        this.arrowColors.clear();
     }
 }
