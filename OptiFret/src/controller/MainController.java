@@ -8,6 +8,7 @@ import config.MissingEntryException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -149,8 +150,8 @@ public class MainController extends Invoker implements Listener {
                 List<Delivery> deliveries = deliverySheet.getDeliveries();
                 deliverySheet.getDeliveries().remove(delivery);
                 calculRoute();
-
-                mainFrame.getExportRound().setEnabled(deliveries.isEmpty());
+                
+                mainFrame.getExportRound().setEnabled(!deliveries.isEmpty());
                 //mainFrame.getDeliveryMap().updateNetwork(deliverySheet.getDeliveryRound());
                 mainFrame.repaint();
             }
@@ -255,6 +256,9 @@ public class MainController extends Invoker implements Listener {
             }
         });
         fc.setDialogTitle(MainFrame.LOAD_MAP_TOOLTIP);
+        File dir = new File(getClass().getClassLoader().getResource(".").getPath());
+        fc.setCurrentDirectory(dir.getParentFile().getParentFile().getParentFile());
+        
         if (fc.showOpenDialog(mainFrame) == JFileChooser.APPROVE_OPTION) {
             try {
                 final RoadNetwork loadedNetwork = RoadNetwork.loadFromXML(new FileReader(fc.getSelectedFile()));
@@ -331,6 +335,10 @@ public class MainController extends Invoker implements Listener {
     private void loadDeliverySheet() {
         JFileChooser fc = new JFileChooser();
         fc.setDialogTitle(MainFrame.LOAD_ROUND_TOOLTIP);
+        
+        File dir = new File(getClass().getClassLoader().getResource(".").getPath());
+        fc.setCurrentDirectory(dir.getParentFile().getParentFile().getParentFile());
+        
         fc.setMultiSelectionEnabled(false);
         fc.setFileFilter(new javax.swing.filechooser.FileFilter() {
             @Override
