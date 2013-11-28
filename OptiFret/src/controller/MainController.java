@@ -157,6 +157,7 @@ public class MainController extends Invoker implements Listener {
 
             @Override
             public void undo() {
+                mainFrame.getExportRound().setEnabled(true);
                 deliverySheet.getDeliveries().add(delivery);
                 calculRoute();
                 mainFrame.repaint();
@@ -396,23 +397,6 @@ public class MainController extends Invoker implements Listener {
         JFileChooser fc = new JFileChooser();
         fc.setDialogTitle(MainFrame.EXPORT_ROUND_TOOLTIP);
         fc.setMultiSelectionEnabled(false);
-        fc.setFileFilter(new javax.swing.filechooser.FileFilter() {
-            @Override
-            public boolean accept(File f) {
-                if (f.isDirectory()) {
-                    return true;
-                } else if (f.getName().endsWith(".xml")) {
-                    return true;
-                } else {
-                    return false;
-                }
-            }
-
-            @Override
-            public String getDescription() {
-                return ".xml";
-            }
-        });
         if (fc.showSaveDialog(mainFrame) == JFileChooser.APPROVE_OPTION) {
             try {
                 File file = fc.getSelectedFile();
@@ -603,6 +587,7 @@ public class MainController extends Invoker implements Listener {
         undo.setText(MainFrame.UNDO_TOOLTIP + " \"" + cmd.getName() + '"');
         if (clearRedoHistory) {
             mainFrame.getRedo().setText(MainFrame.REDO_TOOLTIP);
+            mainFrame.getRedo().setEnabled(false);
         }
     }
 
