@@ -67,7 +67,7 @@ public class MainController extends Invoker implements Listener {
                 String dsFilename = helper.getString("load-delivery-sheet");
                 deliverySheet = doloadDeliverySheet(new FileReader(dsFilename));
                 deliverySheet.setRoadNetwork(roadNetwork);
-                calculRoute();
+                makeRoute();
                 mainFrame.getExportRound().setEnabled(true);
             } catch (MissingAttributeException ex) {
                 System.out.println("Aucune configuration trouvée pour les demandes de livraison");
@@ -110,7 +110,7 @@ public class MainController extends Invoker implements Listener {
             public void execute() {
                 // recuperer la liste de livraisons et ajouter la nouvelle liv
                 deliverySheet.addDelivery(delivery);
-                calculRoute();
+                makeRoute();
 
                 // ajouter la nouvelle liste a la fenetre et mettre a jour
                 mainFrame.getExportRound().setEnabled(true);
@@ -123,7 +123,7 @@ public class MainController extends Invoker implements Listener {
             @Override
             public void undo() {
                 deliverySheet.getDeliveries().remove(delivery);
-                calculRoute();
+                makeRoute();
 
                 if (deliverySheet.getDeliveries() == null) {
                     mainFrame.getDeliveryList().setDeliveries(new ArrayList<Delivery>());
@@ -148,23 +148,24 @@ public class MainController extends Invoker implements Listener {
             public void execute() {
                 List<Delivery> deliveries = deliverySheet.getDeliveries();
                 deliverySheet.getDeliveries().remove(delivery);
-                calculRoute();
+                makeRoute();
 
-                mainFrame.getExportRound().setEnabled(deliveries.isEmpty());
+                mainFrame.getExportRound().setEnabled(!deliveries.isEmpty());
                 //mainFrame.getDeliveryMap().updateNetwork(deliverySheet.getDeliveryRound());
                 mainFrame.repaint();
             }
 
             @Override
             public void undo() {
+                mainFrame.getExportRound().setEnabled(true);
                 deliverySheet.getDeliveries().add(delivery);
-                calculRoute();
+                makeRoute();
                 mainFrame.repaint();
             }
         });
     }
 
-    private void calculRoute() {
+    private void makeRoute() {
         if (roadNetwork == null) {
             throw new NullPointerException();
         }
@@ -172,7 +173,7 @@ public class MainController extends Invoker implements Listener {
             throw new NullPointerException();
         }
         if (roadNetwork.makeRoute(deliverySheet)) {
-            deliverySheet.setDelivery(roadNetwork.getSortedDeliveries());
+            deliverySheet.setDeliveries(roadNetwork.getSortedDeliveries());
             updateDeliveryMap(deliverySheet);
             deliverySheet.createPredTimeSlot();
             mainFrame.getDeliveryList().setDeliveries(deliverySheet.getDeliveries());
@@ -254,6 +255,9 @@ public class MainController extends Invoker implements Listener {
             }
         });
         fc.setDialogTitle(MainFrame.LOAD_MAP_TOOLTIP);
+        File dir = new File(getClass().getClassLoader().getResource(".").getPath());
+        fc.setCurrentDirectory(dir.getParentFile().getParentFile().getParentFile());
+
         if (fc.showOpenDialog(mainFrame) == JFileChooser.APPROVE_OPTION) {
             try {
                 final RoadNetwork loadedNetwork = RoadNetwork.loadFromXML(new FileReader(fc.getSelectedFile()));
@@ -287,7 +291,7 @@ public class MainController extends Invoker implements Listener {
 
                         if (deliverySheet != null) {
                             deliverySheet.setRoadNetwork(roadNetwork);
-                            calculRoute();
+                            makeRoute();
                         }
 
                         // verifier si un reseau a deja ete charge
@@ -330,6 +334,10 @@ public class MainController extends Invoker implements Listener {
     private void loadDeliverySheet() {
         JFileChooser fc = new JFileChooser();
         fc.setDialogTitle(MainFrame.LOAD_ROUND_TOOLTIP);
+
+        File dir = new File(getClass().getClassLoader().getResource(".").getPath());
+        fc.setCurrentDirectory(dir.getParentFile().getParentFile().getParentFile());
+
         fc.setMultiSelectionEnabled(false);
         fc.setFileFilter(new javax.swing.filechooser.FileFilter() {
             @Override
@@ -362,7 +370,7 @@ public class MainController extends Invoker implements Listener {
 
                         deliverySheet = loadedDeliverySheet;
                         deliverySheet.setRoadNetwork(roadNetwork);
-                        calculRoute();
+                        makeRoute();
                         mainFrame.getExportRound().setEnabled(true);
                         mainFrame.getAddDeliveryButton().setEnabled(false);
                         mainFrame.getDelDeliveryButton().setEnabled(false);
@@ -381,7 +389,7 @@ public class MainController extends Invoker implements Listener {
                             mainFrame.getDelDeliveryButton().setEnabled(false);
                         } else {
                             deliverySheet.setRoadNetwork(roadNetwork);
-                            calculRoute();
+                            makeRoute();
                         }
                         mainFrame.repaint();
                     }
@@ -396,23 +404,6 @@ public class MainController extends Invoker implements Listener {
         JFileChooser fc = new JFileChooser();
         fc.setDialogTitle(MainFrame.EXPORT_ROUND_TOOLTIP);
         fc.setMultiSelectionEnabled(false);
-        fc.setFileFilter(new javax.swing.filechooser.FileFilter() {
-            @Override
-            public boolean accept(File f) {
-                if (f.isDirectory()) {
-                    return true;
-                } else if (f.getName().endsWith(".xml")) {
-                    return true;
-                } else {
-                    return false;
-                }
-            }
-
-            @Override
-            public String getDescription() {
-                return ".xml";
-            }
-        });
         if (fc.showSaveDialog(mainFrame) == JFileChooser.APPROVE_OPTION) {
             try {
                 File file = fc.getSelectedFile();
@@ -603,6 +594,7 @@ public class MainController extends Invoker implements Listener {
         undo.setText(MainFrame.UNDO_TOOLTIP + " \"" + cmd.getName() + '"');
         if (clearRedoHistory) {
             mainFrame.getRedo().setText(MainFrame.REDO_TOOLTIP);
+            mainFrame.getRedo().setEnabled(false);
         }
     }
 
