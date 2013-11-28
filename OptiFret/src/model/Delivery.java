@@ -1,5 +1,7 @@
 package model;
 
+import java.util.Date;
+
 /**
  * Modèle correspondant à une livraison
  *
@@ -37,7 +39,16 @@ public class Delivery {
     public Delivery(long id) {
         this(new Long(id));
     }
-
+    public boolean isLate(){
+        if(timeSlot.getEnd().getTime()<(timeSlot.getBegin().getTime()+timeSlot.getDuration()))
+        {
+        return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
     /**
      * Constructeur par attributs, assignant tous les attributs d'un coup.
      *
