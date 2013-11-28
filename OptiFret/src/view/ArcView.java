@@ -71,7 +71,6 @@ public class ArcView {
         }
         int range = 255 / nbTimeSlot;
         arrowColors.add(new Color(255 - range * order, range * order, 0));
-        System.out.println("arrowSize +:" + arrowColors.size());
         EM_COLOR = new Color(255 - range * order, range * order, 0);
     }
 
