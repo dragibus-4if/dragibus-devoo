@@ -15,12 +15,8 @@ public class ArcView {
     private static final boolean RAINBOW = false;
     private static final int STROKE = 2;
     private static final int HUGE_STROKE = 4;
-    private static final int ARR_SIZE = 8;
+    private int arrowSize = 8;
     private Color EM_COLOR = new Color(0, 151, 202);
-    private static final Color BEGIN_COLOR = new Color(255, 0, 0);
-    private static final Color END_COLOR = new Color(0, 255, 0);
-    private RoadNode node1;
-    private RoadNode node2;
     private ArrayList<Color> arrowColors;
     private static final Color LINE_COLOR = new Color(0, 0, 0);
     private int x1;
@@ -36,8 +32,6 @@ public class ArcView {
         this.x2 = node2.getX();
         this.y1 = node1.getY();
         this.y2 = node2.getY();
-        this.node1 = node1;
-        this.node2 = node2;
         this.nbLines = nbLines;
         this.myStroke = new BasicStroke(STROKE);
         float vx = x2 - x1;
@@ -134,10 +128,9 @@ public class ArcView {
             if (i<arrowColors.size()) {
                 g.setColor(arrowColors.get(i));
             }
-            // System.out.println("NB ARROWS : "+arrowColors.size()+"\nROUGE :"+arrowColors.get(arrowColors.size()-i-1).getRed()+"\nVERT"+arrowColors.get(arrowColors.size()-i-1).getGreen());
-            g.fillPolygon(new int[]{len, len - ARR_SIZE, len - ARR_SIZE, len},
-                    new int[]{3, (-ARR_SIZE / 2) + 3, ARR_SIZE + 3, 3}, 4);
-            g.translate(-ARR_SIZE - 1, 0);
+            g.fillPolygon(new int[]{len, len - arrowSize, len-arrowSize},
+                    new int[]{3, arrowSize + 3, 3}, 3);
+            g.translate(-arrowSize - 1, 0);
         }
     }
 
@@ -176,8 +169,13 @@ public class ArcView {
     public void setY2(int y2) {
         this.y2 = y2;
     }
-
+    public void setArrowSize(int arrSize){
+        this.arrowSize=arrSize;
+    }
     void resetColors() {
         this.arrowColors.clear();
+        EM_COLOR = new Color(0, 151, 202);
     }
+    
+  
 }

@@ -200,6 +200,12 @@ public class DeliveryMap extends NavigablePanel {
             n.setMode(MODE.CLASSIC);
         }
     }
+    
+    public void clearArrowColors() {
+        for(ArcView arc:mapArcs.values()){
+            arc.resetColors();
+        }
+    }
 
     @Override
     public void notifyPressed(int x, int y) {

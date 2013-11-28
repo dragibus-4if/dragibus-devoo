@@ -82,8 +82,9 @@ public class MainController extends Invoker implements Listener {
     }
 
     private void addDelivery(long address) {
-        if(deliverySheet == null)
+        if (deliverySheet == null) {
             throw new NullPointerException();
+        }
         // Calcul du max des id
         long id = 0;
         for (Delivery d : deliverySheet.getDeliveries()) {
@@ -164,10 +165,12 @@ public class MainController extends Invoker implements Listener {
     }
 
     private void calculRoute() {
-        if(roadNetwork == null)
+        if (roadNetwork == null) {
             throw new NullPointerException();
-        if(deliverySheet == null)
+        }
+        if (deliverySheet == null) {
             throw new NullPointerException();
+        }
         if (roadNetwork.makeRoute(deliverySheet)) {
             deliverySheet.setDelivery(roadNetwork.getSortedDeliveries());
             updateDeliveryMap(deliverySheet);
@@ -179,7 +182,7 @@ public class MainController extends Invoker implements Listener {
             mainFrame.getDeliveryList().setDeliveries(deliverySheet.getDeliveries());
         }
     }
-    
+
     private void updateDeliveryMap() {
         mainFrame.getDeliveryMap().clearNodeViewMode();
         mainFrame.getDeliveryMap().updateDeliveryNodesPath(new ArrayList<RoadNode>());
@@ -187,27 +190,32 @@ public class MainController extends Invoker implements Listener {
     }
 
     private void updateDeliveryMap(List<RoadNode> path, List<Delivery> deliveries, Long wharehouseAdress, boolean wholePath) {
-        if(path == null || deliveries == null) {
+        if (path == null || deliveries == null) {
             updateDeliveryMap();
             return;
         }
         mainFrame.getDeliveryMap().clearNodeViewMode();
+        if (!wholePath) {
+            mainFrame.getDeliveryMap().clearArrowColors();
+        }
         mainFrame.getDeliveryMap().updateDeliveryNodesPath(path);
         mainFrame.getDeliveryMap().updateDeliveryNodes(deliveries);
         mainFrame.getDeliveryMap().updateWhareHouse(wharehouseAdress);
-        if(wholePath)
-        mainFrame.getDeliveryMap().updateTimeSlots(deliveries,path);
+        if (wholePath) {
+            mainFrame.getDeliveryMap().updateTimeSlots(deliveries, path);
+        }
     }
 
     private void updateDeliveryMap(DeliverySheet sheet) {
-        if(sheet == null)
+        if (sheet == null) {
             updateDeliveryMap();
-        else
-            updateDeliveryMap(sheet.getDeliveryRound(), sheet.getDeliveries(),sheet.getWarehouseAddress(),true);
+        } else {
+            updateDeliveryMap(sheet.getDeliveryRound(), sheet.getDeliveries(), sheet.getWarehouseAddress(), true);
+        }
     }
 
     private void updateDeliveryMap(Delivery del) {
-        if(del == null || deliverySheet == null) {
+        if (del == null || deliverySheet == null) {
             updateDeliveryMap();
             return;
         }
@@ -218,10 +226,10 @@ public class MainController extends Invoker implements Listener {
         if (index != -1 && index + 1 < deliverySheet.getDeliveries().size()) {
             ls.add(deliverySheet.getDeliveries().get(index + 1));
         }
-        if(deliverySheet.getDeliveries().get(0) == del) {
+        if (deliverySheet.getDeliveries().get(0) == del) {
             path.addAll(0, deliverySheet.getWarehouseRound());
         }
-        updateDeliveryMap(path, ls,-1l,false);
+        updateDeliveryMap(path, ls, -1l, false);
     }
 
     private void loadRoadNetwork() {
@@ -434,9 +442,9 @@ public class MainController extends Invoker implements Listener {
         mainFrame.getAddDeliveryButton().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(mainFrame.getDeliveryMap().getSelectedNode() != null)
+                if (mainFrame.getDeliveryMap().getSelectedNode() != null) {
                     addDelivery(mainFrame.getDeliveryMap().getSelectedNode().get().getAddress());
-                else {
+                } else {
                     mainFrame.showErrorMessage("Impossible d'ajouter une livraison");
                 }
             }
@@ -446,9 +454,9 @@ public class MainController extends Invoker implements Listener {
         mainFrame.getDelDeliveryButton().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(mainFrame.getDeliveryList().getSelected() != null)
+                if (mainFrame.getDeliveryList().getSelected() != null) {
                     deleteDelivery(mainFrame.getDeliveryList().getSelected().getDelivery().getId());
-                else {
+                } else {
                     mainFrame.showErrorMessage("Impossible de supprimer cette livraison");
                 }
             }
@@ -496,7 +504,7 @@ public class MainController extends Invoker implements Listener {
                     break;
             }
 
-            if(deliverySheet == null) {
+            if (deliverySheet == null) {
                 mainFrame.getDelDeliveryButton().setEnabled(false);
                 mainFrame.getAddDeliveryButton().setEnabled(false);
             }
@@ -526,7 +534,7 @@ public class MainController extends Invoker implements Listener {
             mainFrame.getDelDeliveryButton().setEnabled(true);
             updateDeliveryMap(selectedDelivery);
         }
-        if(deliverySheet == null) {
+        if (deliverySheet == null) {
             mainFrame.getDelDeliveryButton().setEnabled(false);
             mainFrame.getAddDeliveryButton().setEnabled(false);
         }
