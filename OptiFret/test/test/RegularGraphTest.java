@@ -91,7 +91,6 @@ public class RegularGraphTest extends TestCase {
         RegularGraph graphGCB = RegularGraph.loadFromRoadNetwork(netCB, obj);
         assertEquals(graphCB.getNbVertices(), graphGCB.getNbVertices());
         assertEquals(graphCB.getMaxArcCost(), graphGCB.getMaxArcCost());
-        assertEquals(graphCB.getMinArcCost(), graphGCB.getMinArcCost());
         assertEquals(graphCB.getCost()[0][0], graphGCB.getCost()[0][0]);
         assertEquals(graphCB.getCost()[0][1], graphGCB.getCost()[0][1]);
         assertEquals(graphCB.getCost()[1][0], graphGCB.getCost()[1][0]);
