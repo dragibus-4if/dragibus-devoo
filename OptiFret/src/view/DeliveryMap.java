@@ -15,8 +15,10 @@ import model.TimeSlot;
 import view.NodeView.MODE;
 
 /**
+ * Vue générale de la carte dans laquelle sont tracés le réseau routier et les
+ * chemins de livraison
  *
- * @author jmcomets
+ * @author Sylvain
  */
 public class DeliveryMap extends NavigablePanel {
 
@@ -26,6 +28,11 @@ public class DeliveryMap extends NavigablePanel {
     private CopyOnWriteArrayList<Listener> listeners;
     public static final int PADDING = 20;
 
+    /**
+     * Enum de retour lors d'un clic sur la carte afin de savoir l'état de ce
+     * noeud
+     *     
+*/
     public enum NODE_RETURN {
 
         NOTHING_SELECTED,
@@ -33,6 +40,9 @@ public class DeliveryMap extends NavigablePanel {
         NODE_ALLREADY_SELECTED
     }
 
+    /**
+     * Constructeur
+     */
     public DeliveryMap() {
         super();
         setDoubleBuffered(true);
@@ -40,6 +50,9 @@ public class DeliveryMap extends NavigablePanel {
         reset();
     }
 
+    /**
+     * Méthode qui vide entièrement la carte et la réinitialise
+     */
     private void reset() {
         listeners = new CopyOnWriteArrayList<>();
         mapArcs = new LinkedHashMap<>();
@@ -48,6 +61,12 @@ public class DeliveryMap extends NavigablePanel {
         resetTransform();
     }
 
+    /**
+     * Méthode qui génère le réseau routier (composé de NodeView et d'ArcView) à
+     * partir de la liste des noeuds <nodes> du réseau
+     *
+     * @param nodes liste des noeuds du réseau routier
+     */
     public void updateNetwork(List<RoadNode> nodes) {
         if (nodes == null) {
             reset();
@@ -74,12 +93,24 @@ public class DeliveryMap extends NavigablePanel {
         }
     }
 
+    /**
+     * Méthode de mise à jour visuelle du noeud correspondant à l'entrepot grâce
+     * à l'adresse de l'entrepot.
+     *
+     * @param id identifiant de l'adresse de l'entrepot
+     */
     public void updateWhareHouse(Long id) {
         if (id != -1 && mapNodes.get(id) != null) {
             mapNodes.get(id).setMode(MODE.WAREHOUSE);
         }
     }
 
+    /**
+     * Méthode de tracé du chemin qu'emprunte le livreur. Met à jour les noeuds
+     * et les arcs parcourus à partir de la liste de noeuds passée en paramètre
+     *
+     * @param nodes liste des noeuds qu'emprunte le livreur
+     */
     public void updateDeliveryNodesPath(List<RoadNode> nodes) {
         if (nodes == null) {
             return;
@@ -107,6 +138,13 @@ public class DeliveryMap extends NavigablePanel {
         }
     }
 
+    /**
+     * Méthode de mise à jour des couleurs par plage horraire du chemin
+     * qu'emprunte le livreur.
+     *
+     * @param dels liste des points de livraison (liste de <Delivery>)
+     * @param path liste des points du chemin de livraison (liste de <RoadNode>)
+     */
     public void updateTimeSlots(List<Delivery> dels, List<RoadNode> path) {
         if (dels == null) {
             return;
@@ -121,12 +159,12 @@ public class DeliveryMap extends NavigablePanel {
             if (!currentTimeSlot.getBegin().equals(testedTimeSlot.getBegin())) {
                 testedTimeSlot = currentTimeSlot;
                 listPosDeliveries.add(dels.indexOf(del));
-                
+
             }
         }
 
         int nbTimeSlots = listPosDeliveries.size();
-        
+
 
         int itPath = 0, itDels = 1, itTS = 1;
         while (itPath < path.size()) {
@@ -153,36 +191,15 @@ public class DeliveryMap extends NavigablePanel {
                         updateColorPerTimeSlot(nbTimeSlots - 1, itPath);
             }
         }
-
-//        while(i<dels.size() && j<nbTimeSlots){
-//            if(i<=listPosDeliveries.get(j)){
-//                for(int k=savek ; k < path.size()-1 && k<i ; k++){
-//                    if(i<dels.size() &&     
-//                            path.get(k).getId()== dels.get(i+1).getAddress()){
-//                        savek=k;
-//                        System.out.println("SAVED : "+savek);
-//                        break;
-//                    }
-//                    ArcView arcTemp = new ArcView (path.get(k), 
-//                            path.get(k+1),0);
-//                    
-//                    if (mapArcs.get(arcTemp.hashCode()) != null  ) {
-//                        System.out.println("j : " + j);
-//
-//                        mapArcs.get(arcTemp.hashCode()).
-//                            updateColorPerTimeSlot(nbTimeSlots,j);
-//                    }
-//                }
-//             
-//                i++;
-//                
-//            }else{
-//                j++;
-//
-//            }
-//        }
     }
 
+    /**
+     * Méthode qui met à jour les noeuds de livraison pour les faire apparaitre
+     * en rouge.
+     *
+     * @param dels liste des noeuds à faire apparaitre en rouge (Liste de
+     * <RoadNode>)
+     */
     public void updateDeliveryNodes(List<Delivery> dels) {
         if (dels == null) {
             return;
@@ -193,18 +210,35 @@ public class DeliveryMap extends NavigablePanel {
         }
     }
 
+    /**
+     * Méthode qui remet tous les noeuds de la carte en mode normal (noir)
+     */
     public void clearNodeViewMode() {
         for (NodeView n : mapNodes.values()) {
             n.setMode(MODE.CLASSIC);
         }
     }
 
+    /**
+     * Méthode qui remet tous les arcs de la carte en mode normal (noir sans
+     * flèche)
+     */
     public void clearArrowColors() {
         for (ArcView arc : mapArcs.values()) {
             arc.resetColors();
         }
     }
 
+    /**
+     * Méthode qui parcourt la liste des noeuds de la carte et détecte si les
+     * coordonnées <x> et <y> du clic passé en paramètre tombent dans un noeud
+     * de la carte.Détecte également si aucun noeud n'a été sélectionné ou si le
+     * noeud cliqué était déjà sélectionné grâce à la valeur de retour
+     * <NODE_RETURN>.
+     *
+     * @param x coordonnée horizontale du clic
+     * @param y coordonnée verticale du clic
+     */
     @Override
     public void notifyPressed(int x, int y) {
         //boolean voidClic = true;
@@ -228,6 +262,13 @@ public class DeliveryMap extends NavigablePanel {
         repaint();
     }
 
+    /**
+     * Méthode qui notifie les noeuds de la carte que le clic en cours a été
+     * relaché.
+     *
+     * @param x coordonnée horizontale du clic
+     * @param y coordonnée verticale du clic
+     */
     @Override
     public void notifyReleased(int x, int y) {
         for (NodeView node : mapNodes.values()) {
@@ -235,6 +276,13 @@ public class DeliveryMap extends NavigablePanel {
         }
     }
 
+    /**
+     * Méthode qui notifie les noeuds de la carte que la souris a été bougée aux
+     * coordonnées <x> et <y>.
+     *
+     * @param x coordonnée horizontale
+     * @param y coordonnée verticale
+     */
     @Override
     public void notifyMoved(int x, int y) {
         for (NodeView node : mapNodes.values()) {
@@ -243,6 +291,11 @@ public class DeliveryMap extends NavigablePanel {
         repaint();
     }
 
+    /**
+     * Override de la méthode de dessin du JPanel pour dessiner la carte
+     *
+     * @param g Graphics
+     */
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -251,6 +304,12 @@ public class DeliveryMap extends NavigablePanel {
         draw(g);
     }
 
+    /**
+     * Méthode qui dit aux arcs et aux noeuds de la carte de se dessiner sur le
+     * JPanel
+     *
+     * @param g Graphics
+     */
     private void draw(Graphics g) {
         for (ArcView arc : mapArcs.values()) {
             arc.draw(g, getScale());
@@ -259,11 +318,18 @@ public class DeliveryMap extends NavigablePanel {
             node.draw(g);
         }
     }
-
+    
+/**
+ * Getter qui renvoie le noeud actuellement sélectionné
+ * @return 
+ */
     public WeakReference<NodeView> getSelectedNode() {
         return selectedNode;
     }
-
+/**
+ * Méthode qui met le noeud dont l'adresse est <id> dans l'attribut <selectedNode> car il a été sélectionné  
+ * @param id adresse du noeud sélectionné
+ */
     public void setSelectedNodeById(long id) {
         if (selectedNode.get() != null) {
             selectedNode.get().setSelection(false);
@@ -277,20 +343,31 @@ public class DeliveryMap extends NavigablePanel {
         setSelectedNode(new WeakReference<>(mapNodes.get(id)));
         repaint();
     }
-
+/**
+ * Setter de la weakReference vers le noeud sélectionné
+ * @param selectedNode 
+ */
     public void setSelectedNode(WeakReference<NodeView> selectedNode) {
         this.selectedNode = selectedNode;
     }
-
+/**
+ * Ajoute le listener <l> aux listeners de cette classe.
+ * @param l 
+ */
     public void addListener(Listener l) {
         listeners.add(l);
     }
-
+/**
+ * Enlève le listener <l> des listeners de cette classe.
+ * @param l 
+ */
     public void removeListener(Listener l) {
         listeners.remove(l);
     }
 
-    // Event firing method.  Called internally by other class methods.
+/**
+ * Notifie les listeners de la classe d'un évènement
+ */
     protected void fireChangeEvent() {
         MyChangeEvent evt = new MyChangeEvent(this);
         for (Listener l : listeners) {
