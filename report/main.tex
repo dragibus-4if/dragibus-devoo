@@ -428,7 +428,7 @@ Dans cette partie nous abrégerons le terme "cas d'utilisation" par "CdU". \\
 
 \begin{figure}[H]
     \noindent\centerimg{images/tspFinal}
-    \caption{Diagramme final du package TSP, non prévu initialement}
+    \caption{Diagramme final du package config, non prévu initialement}
 \end{figure}
 
 \begin{figure}[H]
@@ -437,6 +437,34 @@ Dans cette partie nous abrégerons le terme "cas d'utilisation" par "CdU". \\
 \end{figure}
 
 \subsection{Remarques}
+
+Comme on peut le remarquer, la conception a beaucoup changé au cours du
+développement, principalement à cause du manque d'idées sur l'interface au
+début du projet, ce qui nous a limité en terme de conception. On peut notamment
+remarquer que le package \emph{view} a beaucoup changé, et c'est une
+conséquence directe du manque d'idées au début du projet. \\
+
+On a aussi vu l'émergence de deux packages non prévus initialement, le package
+\emph{tsp} étant une simple encapsulation de toute l'algorithmie concernant le
+voyage du commerce. Le package \emph{config} étant dû à la nécessité de
+rapidement tester les fonctionnalités de la carte des livraisons, sans avoir à
+chaque fois à recharger un fichier XML. \\
+
+Cette configuration a aussi permis de régler les facteurs de zoom et de scroll
+dans la carte des livraisons, et a été conçue de telle sorte à ce qu'on puisse
+rajouter une configuration dynamique à n'importe quel endroit de l'application,
+sans affecter le reste de l'application. Ceci se fait surtout grâce à
+l'utilisation d'un accés global en lecture seule de la configuration, via un
+design pattern \textbf{Singleton}. \\
+
+Une remarque importante sur l'architecture de l'application: nous considérons
+qu'elle ne respecte pas réellement le design pattern MVC, prévu à l'état
+initial de la conception. Nous aurions souhaité utiliser un design pattern
+\textbf{Observer} entre les modèles et leurs vues, pour permettre une mise à
+jour automatique des vues sans avoir à utiliser le contrôleur. Nous n'avons
+malheureusement pas eu le temps de mettre cette idée en pratique, vu qu'elle
+casserait la totalité de l'application alors qu'il restait encore quelques
+fonctionnalités à implémenter rapidement.
 
 \pagebreak
 
