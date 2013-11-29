@@ -4,7 +4,6 @@
 \usepackage[utf8x]{inputenc}
 \usepackage{hyperref}
 \usepackage{appendix}
-%\usepackage{amsmath}
 
 % Images et figures
 \usepackage{graphicx}
@@ -58,81 +57,80 @@
 \subsection{Description textuelle des cas d'utilisation}
 ~~\\
 
-Description abrégée du cas d’utilisation \textbf{Superviser les tournées}\\
+Description abrégée du cas d'utilisation \textbf{Superviser les tournées}\\
 
-L’utilisateur s’est préalablement identifié sur la plateforme OptiFret, et,
-dans le cas d’un Superviseur, la fenêtre de visualisation des feuilles de route
-est la première fenêtre apparente. Il pourra parcourir l’ensemble des feuilles
+L'utilisateur s'est préalablement identifié sur la plateforme OptiFret, et,
+dans le cas d'un Superviseur, la fenêtre de visualisation des feuilles de route
+est la première fenêtre apparente. Il pourra parcourir l'ensemble des feuilles
 de routes depuis une liste déroulante. Pour chaque feuille de route,
-l’utilisateur peut voir la liste des livraisons ordonnée (selon un ordre défini
+l'utilisateur peut voir la liste des livraisons ordonnée (selon un ordre défini
 par le système relatif au trajet à parcourir), dont les informations sont
 abrégées. Il peut dérouler chaque livraison pour en avoir les informations
 détaillées, puis les enrouler ensuite pour retrouver les informations abrégées.
 
 Il a également accès à differentes informations comme la position GPS du
-livreur ou des inforamtions sur livraisons passées (livraison à l’heure ou en
-retard, problemes eventuels).
-\\
+livreur ou des inforamtions sur livraisons passées (livraison à l'heure ou en
+retard, problemes eventuels). \\
 
-Description abrégée du cas d’utilisation \textbf{Modifier feuille de route en
-    cours de livraison}\\
+Description abrégée du cas d'utilisation \textbf{Modifier feuille de route en
+    cours de livraison} \\
 
-Au cas où un changement de l’ordre des livraisons soit nécessaire, le
+Au cas où un changement de l'ordre des livraisons soit nécessaire, le
 Superviseur doit avoir la possibilité de modifier les feuilles de route en
-temps réel. Cela comprend qu’il peut changer l’ordre des livraisons, ajouter ou
+temps réel. Cela comprend qu'il peut changer l'ordre des livraisons, ajouter ou
 bien supprimer des livraisons dans une feuille de route précisée. Le
 Superviseur ne pourra modifier la feuille de route que pour les livraisons non
 effectués ni en cours de route. Après chaque modification le système vérifiera
-automatiquement l’intégrité de l’ensemble des livraisons pour cette feuille
-avant de les rendre visibles pour le livreur concerné. 
-Si l’intégrité des livraisons ne peut pas être garantie ou bien qu’un
-changement de date et d’heure d’autres livraisons est nécessaire, le
-Superviseur est notifié tout de suite par le système et la modification n’est
+automatiquement l'intégrité de l'ensemble des livraisons pour cette feuille
+avant de les rendre visibles pour le livreur concerné.
+Si l'intégrité des livraisons ne peut pas être garantie ou bien qu'un
+changement de date et d'heure d'autres livraisons est nécessaire, le
+Superviseur est notifié tout de suite par le système et la modification n'est
 pas enregistrée. Une fois que le Superviseur a confirmé la notification, il
-revient à la fenêtre de la modification, sauf que la fenêtre montrera l’état
+revient à la fenêtre de la modification, sauf que la fenêtre montrera l'état
 initial de la feuille de route.  A chaque modification de la feuille de route
-(c’est à dire à chaque modification ou suppression d’une livraison), le système
-recalcule automatiquement l’itinéraire.\\
+(c'est à dire à chaque modification ou suppression d'une livraison), le système
+recalcule automatiquement l'itinéraire. \\
 
-Description abrégée du cas d’utilisation \textbf{Modifier feuille de route
-    avant le début de livraison}\\
+Description abrégée du cas d'utilisation \textbf{Modifier feuille de route
+    avant le début de livraison} \\
 
-Si le Superviseur veut supprimer une livraison de l’application OptiFret. Il
-sélectionne la livraison à supprimer à partir d’une liste de livraisons et
-appuie sur le bouton “supprimer”. Si le Superviseur s'est trompé il peut
+Si le Superviseur veut supprimer une livraison de l'application OptiFret. Il
+sélectionne la livraison à supprimer à partir d'une liste de livraisons et
+appuie sur le bouton "supprimer". Si le Superviseur s'est trompé il peut
 toujours annuler la dernière action en cliquant sur le bouton "Annuler" (dans
-le menu Edition).  S’il existe une erreur dans les informations d’une livraison
+le menu Edition).  S'il existe une erreur dans les informations d'une livraison
 ou à la demande du client, le Superviseur selectionne une livraison et peut
-modifier l’adresse, la date, l’horaire, le téléphone de contact ou encore
-l’intitulé de la livraison (en dehors du cadre du prototype). Dans le cas de
+modifier l'adresse, la date, l'horaire, le téléphone de contact ou encore
+l'intitulé de la livraison (en dehors du cadre du prototype). Dans le cas de
 l'ajout d'une livraison une boîte de dialogue s'ouvre et permet de saisir la
-nouvelle date.  A chaque modification de la feuille de route (c’est à dire à
-chaque modification ou suppression d’une livraison), le système recalcule
-automatiquement l’itinéraire.\\
+nouvelle date.  A chaque modification de la feuille de route (c'est à dire à
+chaque modification ou suppression d'une livraison), le système recalcule
+automatiquement l'itinéraire.\\
 
-Description abrégée du cas d’utilisation \textbf{Afficher liste des
+Description abrégée du cas d'utilisation \textbf{Afficher liste des
     livraisons}\\
 
-Si le Superviseur en a besoin, il peut aussi commander l’affichage d’une liste
+Si le Superviseur en a besoin, il peut aussi commander l'affichage d'une liste
 de toutes les livraisons à partir de la fenêtre de la liste des livraisons par
-zône géographique. En bas de cette fenêtre, il trouve un bouton “Afficher
-toutes les livraisons” qui lui amènera à la liste complète. Une fois affichée,
+zône géographique. En bas de cette fenêtre, il trouve un bouton "Afficher
+toutes les livraisons" qui lui amènera à la liste complète. Une fois affichée,
 le Superviseur a la possibilité de chercher une certaine livraison en utilisant
-“Ctrl+F” et d’en sélectionner une pour la modifier. S’il clique sur le bouton
-“Modifier” de la livraison choisie, le système va lui demander s’il veut
+"Ctrl+F" et d'en sélectionner une pour la modifier. S'il clique sur le bouton
+"Modifier" de la livraison choisie, le système va lui demander s'il veut
 vraiment modifier cette livraison. La confirmation, par conséquent, lui amènera
 à la vue de la modification.\\
 
-Description abrégée du cas d’utilisation \textbf{Contacter client}\\
+Description abrégée du cas d'utilisation \textbf{Contacter client}\\
 
 Dans le cas où la génération des feuilles de route de permet pas de placer la
-livraison à un client à l’heure prévue initialement, le Superviseur contacte le
-client afin de le prévenir et d’obtenir une nouvelle date de livraison. Il
+livraison à un client à l'heure prévue initialement, le Superviseur contacte le
+client afin de le prévenir et d'obtenir une nouvelle date de livraison. Il
 récupère les informations clients à partir de la visualisation des informations
 de la livraison et peut alors le contacter soit par téléphone, soit par adresse
 électronique. Il peut alors replacer la livraison dans la liste des demandes de
-livraisons après avoir modifié la date et l’heure d’arrivée (cas d’utilisation
-“Modifier livraison”). L’ajout dans la liste des demandes de livraisons se met
+livraisons après avoir modifié la date et l'heure d'arrivée (cas d'utilisation
+"Modifier livraison"). L'ajout dans la liste des demandes de livraisons se met
 à jour automatiquement par le système OptiFret.\\
 
 \subsection{Diagramme des cas d'utilisation}
@@ -234,7 +232,7 @@ Dans cette partie nous abrégerons le terme "cas d'utilisation" par "CdU". \\
             automatiquement recalculé.
         \item Il choisit un point du plan, puis il clique sur le bouton
             "Ajouter". Un formulaire apparaît, permettant de compléter les
-            informations à propos de cette nouvelle livraison. 
+            informations à propos de cette nouvelle livraison.
         \item Le Superviseur donne donc sa tranche horaire à la nouvelle
             livraison. Elle se retrouve alors dans la tournée.L'itinéraire sera
             alors automatiquement recalculé.
@@ -693,59 +691,52 @@ d'implémentation.
     \chapter{Glossaire}
 
     \begin{itemize}[label = \textbullet, font = \color{orange}]
-        \item \underline{Système (Définition) :} sera appelé système tout ce
-            qui concerne le traitement des données d’entrée (logs clients,
-            informations de livraison, etc(à préciser)) pour donner un certain
-            nombre de données en sortie (horaires de livraison, trajet de
-            livraison, etc(à préciser)).
-        \item \underline{Livraison (objet) :} Acte planifié de transfert d’un
-            bien d’un expéditeur à un destinataire, à partir de la demande de
-            livraison  jusqu’à sa réalisation. Traduit en anglais (dans le
-            code) par “delivery”.
-        \item \underline{Demande de livraison (objet) :} Ensemble des
-            livraisons restant à planifier ( calcul de l’itinéraire,
-            attribution à une feuille de route …). 
-        \item \underline{Feuille de route (objet) :} Ensemble des informations
-            (carte, horaire) décrivant la journée d’un livreur.
-        \item \underline{Tournée (objet) :} réalisation d’une feuille de route.
-        \item \underline{Utilisateur :} personne utilisant l’application
-            OptiFret. 
-        \item \underline{Client (objet) :}  ce terme désigne toute personne
-            ayant fait acte de l’envoi ou la réception d’une livraison. 
-        \item \underline{Destinataire :} personne à qui l’entreprise doit
-            remettre un colis dans le cadre d’une livraison.
-        \item \underline{Superviseur (objet) :} désigne tout utilisateur
-            utilisant l’interface “supervision”.
+        \item \underline{Système (Définition) :} sera appelé système
+            l'application principale, nommée par "OptiFret".
+        \item \underline{Prototype :} l'application OptiFret, développée au
+            stade de démonstration.
+        \item \underline{Utilisateur :} personne utilisant l'application
+            OptiFret.
+        \item \underline{Superviseur :} désigne tout utilisateur utilisant
+            l'interface "supervision". Utilisateur principal de l'application
+            OptiFret.
         \item \underline{Livreur :} employé à qui est attribué une feuille de
             route.
+        \item \underline{Client (objet) :}  ce terme désigne toute personne
+            ayant fait acte de l'envoi ou la réception d'une livraison. Sera
+            traduit en anglais par \emph{client}.
+        \item \underline{Destinataire :} personne à qui l'entreprise doit
+            remettre un colis dans le cadre d'une livraison.
+        \item \underline{Livraison (objet) :} Acte planifié de transfert d'un
+            bien d'un expéditeur à un destinataire, à partir de la demande de
+            livraison  jusqu'à sa réalisation. Sera traduit en anglais par
+            \emph{delivery}.
+        \item \underline{Demande de livraison (objet) :} Ensemble des
+            livraisons restant à planifier (calcul de l'itinéraire,
+            attribution à une feuille de route ...). Correspond à l'XML chargé
+            par l'application.
+        \item \underline{Feuille de route (objet) :} Ensemble des informations
+            (carte, horaire) décrivant la journée d'un livreur. Sera traduit en anglais par \emph{delivery sheet}
+        \item \underline{Tournée (objet) :} réalisation d'une feuille de route,
+            donc correspond à une feuille de route après calcul du trajet.
         \item \underline{Itinéraire (objet) :} chemin défini pour une certaine
             tournée. Correspond à un graphe formé de routes (arcs) et
-            d’intersections (noeuds).
-        \item \underline{Carte de l’itinéraire :} vue de dessus de
-            l’itinéraire, le chemin à suivre mis en valeur.
+            d'intersections (noeuds). Cette notion ressemble à la notion de
+            tournée, seulement qu'elle ne connaît en aucun cas les livraisons
+            associées aux points du trajet.
+        \item \underline{Carte de l'itinéraire :} vue de dessus de
+            l'itinéraire, le chemin à suivre mis en valeur. Sera traduit en
+            anglais par \emph{delivery map}.
         \item \underline{Plage horaire (objet) :} intervalle délimité par deux
-            heures (ex: 13h45 - 14h30), servant à classer les livraisons.
-        \item \underline{Demande de livraison :} Correspond à une tournée
-        \item \underline{Plateforme :}
-        \item \underline{Fenêtre :}
-        \item \underline{Liste déroulante :}
-        \item \underline{Temps réel :}
-        \item \underline{Intégrité des livraisons :}
-        \item \underline{Notification :}
-        \item \underline{Etat initiale :}
-        \item \underline{Zône géographique :}
-        \item \underline{Chemin :}
-        \item \underline{Prototype :}
-        % Ça sert à rien tout ça, non ?
-        %\item \underline{Google Drive :}
-        %\item \underline{WriteLaTeX :}
-        %\item \underline{LucidChart :}
-        %\item \underline{Dia :}
-        %\item \underline{VisualParadigm :}
-        %\item \underline{Trello :}
-        %\item \underline{Choco :}
-        %\item \underline{SwingX :}
-        %\item \underline{Ini4j :}
+            heures (ex: 13h45 - 14h30), servant à classer les livraisons. Sera
+            traduit en anglais par \emph{time slot}.
+        \item \underline{Liste déroulante :} liste dont l'affichage peut être
+            déroulé verticalement et/ou horizontalement. Ceci permet de limiter
+            l'affichage "visible", afin de concentrer au même endroit
+            l'affichage d'une longue liste.
+        \item \underline{Intégrité des livraisons :} notion de validation d'une
+            livraison, une livraison étant "intègre" quand aucune de ses
+            données ne sont abbhérantes.
     \end{itemize}
 
     \chapter{Abréviations}
