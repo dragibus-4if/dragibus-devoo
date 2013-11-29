@@ -382,6 +382,8 @@ Dans cette partie nous abrégerons le terme "cas d'utilisation" par "CdU". \\
 
 \section{Diagrammes de packages et de classes}
 
+\subsection{Conception initiale}
+
 \begin{figure}[H]
     \noindent\centerimg[width=\paperwidth, height=500pt]{images/ClassDiagram}
     \caption{Diagramme global}
@@ -401,6 +403,40 @@ Dans cette partie nous abrégerons le terme "cas d'utilisation" par "CdU". \\
     \noindent\centerimg{images/view}
     \caption{Diagramme du package vue}
 \end{figure}
+
+\subsection{Conception finale}
+
+\begin{figure}[H]
+    \noindent\centerimg[width=\paperwidth, height=500pt]{images/fullFinal}
+    \caption{Diagramme global final}
+\end{figure}
+
+\begin{figure}[H]
+    \noindent\centerimg[width=\paperwidth, height=700pt]{images/modelFinal}
+    \caption{Diagramme final du package modèle}
+\end{figure}
+
+\begin{figure}[H]
+    \noindent\centerimg{images/controllerFinal}
+    \caption{Diagramme final du package contrôleur}
+\end{figure}
+
+\begin{figure}[H]
+    \noindent\centerimg{images/viewFinal}
+    \caption{Diagramme final du package vue}
+\end{figure}
+
+\begin{figure}[H]
+    \noindent\centerimg{images/tspFinal}
+    \caption{Diagramme final du package TSP, non prévu initialement}
+\end{figure}
+
+\begin{figure}[H]
+    \noindent\centerimg{images/configFinal}
+    \caption{Diagramme final du package config, non prévu initialement}
+\end{figure}
+
+\subsection{Remarques}
 
 \pagebreak
 
@@ -611,6 +647,19 @@ développement, avec quelques librairies supplémentaires : \\
 
 \subsection{Bilan humain}
 
+Dans l'ensemble, l'équipe a apprécié le sujet du projet, nous permettant de
+développer pleinement une application proche de l'utilisateur et dont
+l'utilisation serait concrète. Nous avons donc pu nous concentrer sur
+l'IHM afin de construire quelque chose d'intuitif. Ceci a donc impliqué des
+changements de conception pour faciliter certaines actions, non prévues au
+départ. \\
+
+L'équipe est assez divisée en ce qui concerne les livrables demandés, notamment
+le travail en parallèle proposé avec les diagrammes UML, qui en pratique sont
+plus difficiles à comprendre que le code source commenté du projet, au vu de sa
+taille raisonnable. Nous n'avons pu nous rendre compte de nos erreurs de
+conception qu'au cours du projet, l'UML \emph{masquant} certains détails
+d'implémentation.
 
 \begin{appendices}
     \chapter{Glossaire}
@@ -673,8 +722,9 @@ développement, avec quelques librairies supplémentaires : \\
 
     \chapter{Abréviations}
     \begin{itemize}[label = \textbullet, font = \color{orange}]
-        \item \underline{GPS :}
-        \item \underline{CdU :} Cas d'utilisation
+        \item \underline{GPS :} GeoPositioning System
+        \item \underline{CdU :} Cas d'Utilisation
+        \item \underline{IHM :} Interface Homme Machine
     \end{itemize}
 \end{appendices}
 
