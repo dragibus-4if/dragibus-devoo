@@ -120,13 +120,12 @@ public class DeliverySheetTest extends TestCase {
             try {
                 sheet.export(sw);
             } catch (IOException ex) {
-        } 
+            }
         } catch (NullPointerException e) {
         }
-        
+
     }
 
-        
     public void testExportNull() {
         DeliverySheet sheet = new DeliverySheet();
         try {
@@ -137,58 +136,6 @@ public class DeliverySheetTest extends TestCase {
             fail("Appel de export avec un paramètre null");
         } catch (NullPointerException e) {
         }
-    }
-
-    public void testExportBasic() {
-        // Création d'un chemin basique
-        List<RoadNode> path = new ArrayList<>();
-        DeliverySheet sheet = new DeliverySheet();
-        
-        
-        path.add(new RoadNode(0));
-        path.add(new RoadNode(1));
-        path.add(new RoadNode(2));
-        path.add(new RoadNode(3));
-        path.get(0).addNeighbor(new RoadSection(path.get(0), path.get(1), 1, 1, "R1"));
-        path.get(1).addNeighbor(new RoadSection(path.get(1), path.get(2), 1, 1, "R2"));
-        path.get(2).addNeighbor(new RoadSection(path.get(2), path.get(3), 1, 1, "R3"));
-        path.get(3).addNeighbor(new RoadSection(path.get(3), path.get(0), 1, 1, "R4"));
-        
-        RoadNetwork rn = new RoadNetwork();
-        rn.setRoot(path.get(0));
-        sheet.setRoadNetwork(rn);
-        
-        Delivery d1 = new Delivery(new Long(0), new Long(1),
-                new TimeSlot(new Date(), new Long(0)), new Client());
-        Delivery d2 = new Delivery(new Long(1), new Long(2),
-                new TimeSlot(new Date(), new Long(0)), new Client());
-        
-        List<Delivery> dL = new ArrayList<>();
-        dL.add(d1);
-        dL.add(d2);
-        sheet.setDeliveries(dL);
-
-        String result = "Nouvelle Tournée\n\n\n**********************\n\n\n\n";
-        result += "Prochaine livraison : R1\n\n";
-        result += "Prendre la rue R1\n\n";
-        result += "Arrivée à la livraison : R1\n\n***\n\n";
-        result += "Prochaine livraison : R2\n\n";
-        result += "Dans 1 mètres : \n";
-        //result += "Prenez tout droit sur la rue R2\n\n";
-        result += "Prenez la rue R2\n\n";
-        result += "Arrivée à la livraison : R2\n\n***\n\n";
-        result += "Dans 1 mètres : \n";
-        //result += "Prenez tout droit sur la rue R3\n\n";
-        result += "Prenez la rue R3\n\n";
-        result += "Dans 1 mètres : \n";
-        //result += "Prenez tout droit sur la rue R3\n\n";
-        result += "Prenez la rue R4\n\n";
-        StringWriter sw = new StringWriter();
-        try {
-            sheet.export(sw);
-        } catch (IOException ex) {
-        }
-        assertEquals(result, sw.toString());
     }
 
     public void testExportWithoutSection() {
@@ -204,15 +151,15 @@ public class DeliverySheetTest extends TestCase {
         path.get(3).addNeighbor(new RoadSection(path.get(3), path.get(0), 1, 1, "R4"));
 
         DeliverySheet sheet = new DeliverySheet();
-        Delivery d1 =new Delivery(new Long(0), new Long(1),
+        Delivery d1 = new Delivery(new Long(0), new Long(1),
                 new TimeSlot(new Date(), new Long(0)), new Client());
-        Delivery d2 =new Delivery(new Long(1), new Long(3),
+        Delivery d2 = new Delivery(new Long(1), new Long(3),
                 new TimeSlot(new Date(), new Long(0)), new Client());
         List<Delivery> ld = new ArrayList<>();
         ld.add(d1);
         ld.add(d2);
         sheet.setDeliveries(ld);
-        
+
         RoadNetwork rn = new RoadNetwork();
         rn.setRoot(path.get(0));
         sheet.setRoadNetwork(rn);
@@ -227,109 +174,24 @@ public class DeliverySheetTest extends TestCase {
         }
     }
 
-    public void testExportCross() {
-        RoadNode n0 = new RoadNode(0);
-        n0.setX(10);
-        n0.setY(10);
-        RoadNode n1 = new RoadNode(1);
-        n1.setX(15);
-        n1.setY(25);
-        RoadNode n2 = new RoadNode(2);
-        n2.setX(12);
-        n2.setY(5);
-        RoadNode n3 = new RoadNode(3);
-        n3.setX(53);
-        n3.setY(9);
-        RoadNode n4 = new RoadNode(4);
-        n4.setX(60);
-        n4.setY(25);
-        n0.addNeighbor(new RoadSection(n0, n1, 1, 1, "R1"));
-        n1.addNeighbor(new RoadSection(n1, n2, 1, 1, "R2"));
-        n2.addNeighbor(new RoadSection(n2, n1, 1, 1, "-R2"));
-        n1.addNeighbor(new RoadSection(n1, n3, 1, 1, "R3"));
-        n3.addNeighbor(new RoadSection(n3, n1, 1, 1, "-R3"));
-        n1.addNeighbor(new RoadSection(n1, n4, 1, 1, "R4"));
-        n4.addNeighbor(new RoadSection(n4, n1, 1, 1, "-R4"));
-        n4.addNeighbor(new RoadSection(n4, n0, 1, 1, "R5"));
-        
-        List<RoadNode> path = new ArrayList<>();
-        path.add(n0);
-        path.add(n1);
-        path.add(n2);
-        path.add(n1);
-        path.add(n3);
-        path.add(n1);
-        path.add(n4);
-
-        DeliverySheet sheet = new DeliverySheet();
-        //sheet.setDeliveryRound(map);
-        Delivery d1 = new Delivery(new Long(0), new Long(1),
-                new TimeSlot(new Date(), new Long(0)), new Client());
-        Delivery d2 = new Delivery(new Long(1), new Long(2),
-                new TimeSlot(new Date(), new Long(0)), new Client());
-        Delivery d3 = new Delivery(new Long(2), new Long(4),
-                new TimeSlot(new Date(), new Long(0)), new Client());
-        
-        RoadNetwork rn = new RoadNetwork();
-        rn.setRoot(path.get(0));
-        sheet.setRoadNetwork(rn);
-        
-        List<Delivery> ld = new ArrayList<>();
-        ld.add(d1);
-        ld.add(d2);
-        ld.add(d3);
-        sheet.setDeliveries(ld);
-
-        String result = "Prochaine livraison : R1\n\n";
-        result += "Prendre la rue R1\n\n";
-        result += "Arrivée à la livraison : R1\n\n***\n\n";
-        result += "Prochaine livraison : R2\n\n";
-        result += "Dans 1 mètres : \n";
-        result += "Prenez à gauche sur la rue R2\n\n";
-        result += "Arrivée à la livraison : R2\n\n***\n\n";
-        result += "Prochaine livraison : R4\n\n";
-        result += "Dans 1 mètres : \n";
-        result += "Faites demi-tour sur la rue -R2\n\n";
-        result += "Dans 1 mètres : \n";
-        result += "Prenez à gauche sur la rue R3\n\n";
-        result += "Dans 1 mètres : \n";
-        result += "Faites demi-tour sur la rue -R3\n\n";
-        result += "Dans 1 mètres : \n";
-        result += "Prenez à gauche sur la rue R4\n\n";
-        result += "Arrivée à la livraison : R4\n\n***\n\n";
-        result += "Dans 1 mètres : \n";
-        result += "Prenez à gauche sur la rue R5\n\n";
-        StringWriter sw = new StringWriter();
-        try {
-            sheet.export(sw);
-        } catch (IOException ex) {
-        }
-        System.out.println("#### Chemin  :");
-        System.out.println(sw);
-        System.out.println("####");
-        assertEquals(result, sw.toString());
-    }
-
-
     public void testExportNoPath() {
         // Création d'un chemin basique
         List<RoadNode> path = new ArrayList<>();
         path.add(new RoadNode(0));
         DeliverySheet sheet = new DeliverySheet();
-        
+
         RoadNetwork rn = new RoadNetwork();
         rn.setRoot(path.get(0));
         sheet.setRoadNetwork(rn);
 
         String result = "";
         StringWriter sw = new StringWriter();
-        try {    
+        try {
             try {
                 sheet.export(sw);
             } catch (IOException ex) {
             }
-        } 
-        catch (NullPointerException e) {
+        } catch (NullPointerException e) {
         }
     }
 }
