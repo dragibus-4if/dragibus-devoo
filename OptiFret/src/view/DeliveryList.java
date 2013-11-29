@@ -1,16 +1,9 @@
 package view;
 
-import java.awt.Color;
-import static java.awt.Component.BOTTOM_ALIGNMENT;
-import static java.awt.Component.TOP_ALIGNMENT;
-import java.awt.GradientPaint;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
-import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import model.Delivery;
 import org.jdesktop.swingx.VerticalLayout;

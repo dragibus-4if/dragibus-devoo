@@ -5,11 +5,12 @@ import config.MissingAttributeException;
 import org.ini4j.Ini;
 
 /**
+ * Spécification d'une entrée pour une configuration à base de fichier INI.
  *
- * @author jmcomets
+ * @author Jean-Marie
  */
 public class IniEntry implements Entry {
-    
+
     Ini.Section section;
 
     public IniEntry(Ini.Section section) {

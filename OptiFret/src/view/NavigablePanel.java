@@ -76,7 +76,7 @@ public abstract class NavigablePanel extends JPanel {
         });
         String configEntryName = "navigable-panel";
         try {
-            configure(Manager.getInstance().registerEntry(configEntryName));
+            configure(Manager.getInstance().getEntry(configEntryName));
         } catch (MissingEntryException e) {
             System.out.println("Aucune configuration trouvée pour " + configEntryName);
         }

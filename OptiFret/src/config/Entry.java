@@ -1,8 +1,10 @@
 package config;
 
 /**
+ * Interface d'une entrée, correspondant à une pseudo-map de String vers String,
+ * permettant de structurer la configuration sous forme d'entrées nommées.
  *
- * @author jmcomets
+ * @author Jean-Marie
  */
 public interface Entry {
 
